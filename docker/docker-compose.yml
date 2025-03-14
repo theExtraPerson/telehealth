@@ -1,1 +1,24 @@
+version: '3.8'
+
+services:
+  web:
+    image: my-web-app:latest
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgres://db_user:db_password@db:5432/mydatabase
+
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=db_user
+      - POSTGRES_PASSWORD=db_password
+      - POSTGRES_DB=mydatabase
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
 # docker configuration

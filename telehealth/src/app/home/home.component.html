@@ -1,0 +1,17 @@
+<!-- home.component.html -->
+
+<div class="container">
+  <div class="header">
+    <h1>{{ title }}</h1>
+    <p>{{ vision }}</p>
+    <p class="mission">{{ mission }}</p>
+  </div>
+  <div class="services">
+    <h2>Our Services</h2>
+    <div class="service" *ngFor="let service of services">
+      <h3>{{ service.name }}</h3>
+      <p>{{ service.description }}</p>
+      <button routerLink="{{ service.link }}">Book an Appointment</button>
+    </div>
+  </div>
+</div>
