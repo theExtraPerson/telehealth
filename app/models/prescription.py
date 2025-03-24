@@ -1,17 +1,16 @@
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from app.database import Base
-class Prescription(Base):
+class Prescription(db.Model):
     __tablename__ = 'prescriptions'
 
-    id = Column(Integer, primary_key=True, index=True)
-    patient_id = Column(Integer, ForeignKey('patients.id'), nullable=False)
-    doctor_id = Column(Integer, ForeignKey('doctors.id'), nullable=False)
-    medication = Column(String, nullable=False)
-    dosage = Column(String, nullable=False)
-    instructions = Column(String, nullable=True)
-    date_prescribed = Column(DateTime, default=datetime.utcnow)
+    id = db.Column(Integer, primary_key=True, index=True)
+    patient_id = db.Column(db.Integer, db.ForeignKey('patients.id'), nullable=False)
+    doctor_id = db.Column(db.Integer, db.ForeignKey('doctors.id'), nullable=False)
+    medication = db.Column(db.String, nullable=False)
+    dosage = db.Column(db.String, nullable=False)
+    instructions = db.Column(db.String, nullable=True)
+    date_prescribed = db.Column(db.DateTime, default=datetime.utcnow)
 
-    patient = relationship("Patient", back_populates="prescriptions")
-    doctor = relationship("Doctor", back_populates="prescriptions")
+    patient = db.relationship("Patient", back_populates="prescriptions")
+    doctor = db.relationship("Doctor", back_populates="prescriptions")

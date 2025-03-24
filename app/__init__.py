@@ -1,14 +1,45 @@
-
-from flask import Flask, current_app
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
+from app.config import Config
 
+# Initialising extensions
 db = SQLAlchemy()
+login_manager = LoginManager()
 
-def get_db():
-    return current_app.db.session
 
 def create_app():
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
+    app.config.from_object(Config)
+
     db.init_app(app)
+    login_manager.init_app(app)
+
+    from app.api import api
+    app.register_blueprint(api, url_prefix='/api')
+
+    from app.services import services
+    app.register_blueprint(services, url_prefix='/services')
+
+    from app.utils import utils
+    app.register_blueprint(utils, url_prefix='/utils')
+
+    from app.schemas import schemas
+    app.register_blueprint(schemas, url_prefix='/schemas')
+
+    # from app.routes import routes
+    # app.register_blueprint(routes, url_prefix='/routes')
+
+    from app.api.appointments import appointments_api
+    app.register_blueprint(appointments_api, url_prefix='/appointments_api')
+
+    from app.routes.user_dashboard import user_dashboard
+    app.register_blueprint(user_dashboard, url_prefix='/user')
+
+    from app.routes.doctor_dashboard import doctor_dashboard
+    app.register_blueprint(doctor_dashboard, url_prefix='/doctor')
+
+    from app.routes.payment import payment
+    app.register_blueprint(payment, url_prefix='/payment')
+
     return app
