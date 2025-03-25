@@ -11,7 +11,7 @@ class AppointmentSchema(BaseModel):
     status: Optional[str] = Field("scheduled", description="The status of the appointment")
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "id": 1,
                 "patient_name": "John Doe",
@@ -21,3 +21,7 @@ class AppointmentSchema(BaseModel):
                 "status": "scheduled"
             }
         }
+
+
+def dump(new_appointment):
+    return None

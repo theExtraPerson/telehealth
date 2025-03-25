@@ -1,8 +1,12 @@
 from fastapi import FastAPI, HTTPException
-from flask import Blueprint
+from flask import Blueprint, jsonify, request
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import Optional
 from datetime import datetime
+
+from app import db
+# from app.schemas import appointment_schema
+# from app.schemas.appointment_schema import AppointmentSchema
 
 appointments_api = Blueprint('appointments_api', __name__)
 app = FastAPI()
@@ -15,23 +19,34 @@ class Appointment(BaseModel):
 
 appointments = []
 
-@appointments_api.post("/appointments/", response_model=Appointment)
-def create_appointment(appointment: Appointment):
-    appointments.append(appointment)
-    return appointment
+@appointments_api.route("/appointments/", methods=['POST'])
+def create_appointment(appointment_schema):
+    json_data = request.get_json()
+    if not json_data:
+        return jsonify({"error": "No input data provided"}),
 
-@appointments_api.get("/appointments/", response_model=List[Appointment])
+    errors = appointment_schema.validate(json_data)
+    if errors:
+        return jsonify(errors), 400
+
+    new_appointment = Appointment(**json_data)
+    db.session.add(new_appointment)
+    db.session.commit()
+
+    return jsonify(appointment_schema.dump(new_appointment)), 201
+
+@appointments_api.route("/appointments/", methods=['GET'])
 def get_appointments():
     return appointments
 
-@appointments_api.get("/appointments/{appointment_id}", response_model=Appointment)
+@appointments_api.route("/appointments/{appointment_id}", methods=['GET'])
 def get_appointment(appointment_id: int):
     for appointment in appointments:
         if appointment.id == appointment_id:
             return appointment
     raise HTTPException(status_code=404, detail="Appointment not found")
 
-@appointments_api.put("/appointments/{appointment_id}", response_model=Appointment)
+@appointments_api.route("/appointments/{appointment_id}", methods=['GET', 'POST'])
 def update_appointment(appointment_id: int, updated_appointment: Appointment):
     for index, appointment in enumerate(appointments):
         if appointment.id == appointment_id:
@@ -39,7 +54,7 @@ def update_appointment(appointment_id: int, updated_appointment: Appointment):
             return updated_appointment
     raise HTTPException(status_code=404, detail="Appointment not found")
 
-@appointments_api.delete("/appointments/{appointment_id}", response_model=Appointment)
+@appointments_api.route("/appointments/{appointment_id}")
 def delete_appointment(appointment_id: int):
     for index, appointment in enumerate(appointments):
         if appointment.id == appointment_id:

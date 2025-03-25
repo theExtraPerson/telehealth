@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center">Doctor Dashboard</h2>
+
+    <div class="row">
+        <!-- Appointments Section -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">Manage Appointments</div>
+                <div class="card-body">
+                    <button class="btn btn-success" id="addSchedule">Add Schedule</button>
+                    <button class="btn btn-danger" id="removeSchedule">Remove Schedule</button>
+                    <ul class="list-group mt-3" id="appointmentsList">
+                        <!-- Appointment slots dynamically added here -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Teleconferencing Section -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">Teleconference</div>
+                <div class="card-body">
+                    <button class="btn btn-primary" id="startConference">Start Video Call</button>
+                    <button class="btn btn-secondary" id="joinConference">Join Conference</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <!-- Collaboration Section -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">Collaborate with Doctors</div>
+                <div class="card-body">
+                    <input type="text" class="form-control" placeholder="Search doctors..." id="searchDoctors">
+                    <ul class="list-group mt-3" id="doctorsList">
+                        <!-- Doctors dynamically added here -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prescriptions and Medical Records -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">Manage Prescriptions & Records</div>
+                <div class="card-body">
+                    <button class="btn btn-outline-primary" id="viewRecords">View Medical Records</button>
+                    <button class="btn btn-outline-success" id="managePrescriptions">Manage Prescriptions</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- GSAP Animations -->
+<script>
+    gsap.from(".card", {opacity: 0, y: 50, duration: 0.8, stagger: 0.2});
+</script>
+{% endblock %}

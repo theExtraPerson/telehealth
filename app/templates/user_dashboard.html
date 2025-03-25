@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}User Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center">Welcome to Your Telemedicine Dashboard</h2>
+
+    <div class="row mt-4">
+        <!-- Book an Appointment -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Make an Appointment</h5>
+                    <p>Choose a doctor and schedule a visit.</p>
+                    <a href="{{ url_for('appointments.book') }}" class="btn btn-primary">Book Now</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manage Appointments -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Manage Appointments</h5>
+                    <p>View, reschedule, or cancel upcoming visits.</p>
+                    <a href="{{ url_for('appointments.manage') }}" class="btn btn-warning">View Appointments</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Doctors -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Find a Doctor</h5>
+                    <p>Search for specialists and available doctors.</p>
+                    <a href="{{ url_for('doctors.search') }}" class="btn btn-info">Search</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <!-- Prescription Refills -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Prescription Refills</h5>
+                    <p>Reorder past prescriptions easily.</p>
+                    <a href="{{ url_for('prescriptions.refill') }}" class="btn btn-success">Refill Now</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payments & Billing -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Payments & Billing</h5>
+                    <p>View & complete payments securely.</p>
+                    <a href="{{ url_for('payments.index') }}" class="btn btn-danger">Make Payment</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Medical Records -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Medical Records</h5>
+                    <p>Access lab reports & health history.</p>
+                    <a href="{{ url_for('records.view') }}" class="btn btn-secondary">View Records</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h2>Payment Status</h2>
+    <p>Transaction ID: {{ transaction.transaction_id }}</p>
+    <p>Status: <span class="badge bg-primary">{{ transaction.status }}</span></p>
+    <p>Amount: ${{ transaction.amount }}</p>
+    <p>Payment Method: {{ transaction.payment_method }}</p>
+</div>
+{% endblock %}

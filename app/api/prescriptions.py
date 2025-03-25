@@ -1,48 +1,85 @@
-from fastapi import APIRouter, HTTPException, Depends
-from sqlalchemy.orm import Session
-from typing import List
-from app.schemas import PrescriptionCreate, PrescriptionRead
-from app.models import Prescription
-from app.database import get_db
+from flask import Blueprint, request, jsonify, abort
+from app.models.prescription import Prescription
+from app import db  # or however you import your SQLAlchemy instance
+from app.schemas.prescription_schema import prescription_schema, prescriptions_schema
 
-router = APIRouter()
+prescriptions_api = Blueprint('prescriptions_api', __name__)
 
-@router.post("/", response_model=PrescriptionRead)
-def create_prescription(prescription: PrescriptionCreate, db: Session = Depends(get_db)):
-    db_prescription = Prescription(**prescription.dict())
-    db.add(db_prescription)
-    db.commit()
-    db.refresh(db_prescription)
-    return db_prescription
 
-@router.get("/", response_model=List[PrescriptionRead])
-def read_prescriptions(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    prescriptions = db.query(Prescription).offset(skip).limit(limit).all()
-    return prescriptions
+@prescriptions_api.route("/", method=["POST"])
+def create_prescription():
+    # Get JSON data from the request
+    json_data = request.get_json()
+    if not json_data:
+        abort(400, description="No input data provided")
 
-@router.get("/{prescription_id}", response_model=PrescriptionRead)
-def read_prescription(prescription_id: int, db: Session = Depends(get_db)):
-    prescription = db.query(Prescription).filter(Prescription.id == prescription_id).first()
+    # Validate input data using Marshmallow
+    errors = prescription_schema.validate(json_data)
+    if errors:
+        return jsonify(errors), 400
+
+    # Create a new Prescription instance using the validated data
+    new_prescription = Prescription(**json_data)
+    db.session.add(new_prescription)
+    db.session.commit()
+
+    # Serialize the created object and return it
+    result = prescription_schema.dump(new_prescription)
+    return jsonify(result), 201
+
+
+@prescriptions_api.route("/", method=["GET"])
+def read_prescriptions():
+    # Retrieve pagination parameters from the query string
+    skip = request.args.get("skip", default=0, type=int)
+    limit = request.args.get("limit", default=10, type=int)
+
+    # Query prescriptions with pagination
+    prescriptions = Prescription.query.offset(skip).limit(limit).all()
+    result = prescriptions_schema.dump(prescriptions)
+    return jsonify(result), 200
+
+
+@prescriptions_api.route("/<int:prescription_id>", method=["GET"])
+def read_prescription(prescription_id):
+    prescription = Prescription.query.get(prescription_id)
     if prescription is None:
-        raise HTTPException(status_code=404, detail="Prescription not found")
-    return prescription
+        abort(404, description="Prescription not found")
+    result = prescription_schema.dump(prescription)
+    return jsonify(result), 200
 
-@router.put("/{prescription_id}", response_model=PrescriptionRead)
-def update_prescription(prescription_id: int, prescription: PrescriptionCreate, db: Session = Depends(get_db)):
-    db_prescription = db.query(Prescription).filter(Prescription.id == prescription_id).first()
-    if db_prescription is None:
-        raise HTTPException(status_code=404, detail="Prescription not found")
-    for key, value in prescription.dict().items():
-        setattr(db_prescription, key, value)
-    db.commit()
-    db.refresh(db_prescription)
-    return db_prescription
 
-@router.delete("/{prescription_id}", response_model=PrescriptionRead)
-def delete_prescription(prescription_id: int, db: Session = Depends(get_db)):
-    prescription = db.query(Prescription).filter(Prescription.id == prescription_id).first()
+@prescriptions_api.route("/<int:prescription_id>", method=["PUT"])
+def update_prescription(prescription_id):
+    prescription = Prescription.query.get(prescription_id)
     if prescription is None:
-        raise HTTPException(status_code=404, detail="Prescription not found")
-    db.delete(prescription)
-    db.commit()
-    return prescription
+        abort(404, description="Prescription not found")
+
+    json_data = request.get_json()
+    if not json_data:
+        abort(400, description="No input data provided")
+
+    # Validate partial update data (allowing missing fields)
+    errors = prescription_schema.validate(json_data, partial=True)
+    if errors:
+        return jsonify(errors), 400
+
+    # Update the prescription instance with new values
+    for key, value in json_data.items():
+        setattr(prescription, key, value)
+
+    db.session.commit()
+    result = prescription_schema.dump(prescription)
+    return jsonify(result), 200
+
+
+@prescriptions_api.route("/<int:prescription_id>", method=["DELETE"])
+def delete_prescription(prescription_id):
+    prescription = Prescription.query.get(prescription_id)
+    if prescription is None:
+        abort(404, description="Prescription not found")
+
+    db.session.delete(prescription)
+    db.session.commit()
+    result = prescription_schema.dump(prescription)
+    return jsonify(result), 200

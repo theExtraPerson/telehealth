@@ -1,10 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy.orm import relationship
-from app.database import Base
+from app import db
+
 class Prescription(db.Model):
     __tablename__ = 'prescriptions'
 
-    id = db.Column(Integer, primary_key=True, index=True)
+    id = db.Column(db.Integer, primary_key=True, index=True)
     patient_id = db.Column(db.Integer, db.ForeignKey('patients.id'), nullable=False)
     doctor_id = db.Column(db.Integer, db.ForeignKey('doctors.id'), nullable=False)
     medication = db.Column(db.String, nullable=False)

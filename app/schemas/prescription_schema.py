@@ -2,10 +2,12 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import date
 
+
 class Medication(BaseModel):
     name: str = Field(..., description="Name of the medication")
     dosage: str = Field(..., description="Dosage of the medication")
     frequency: str = Field(..., description="Frequency of the medication intake")
+
 
 class Prescription(BaseModel):
     patient_id: str = Field(..., description="ID of the patient")
@@ -30,3 +32,7 @@ class Prescription(BaseModel):
                 "expiration_date": "2023-12-01"
             }
         }
+
+
+def prescription_schema():
+    return None

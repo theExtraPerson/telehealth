@@ -31,7 +31,7 @@ def create_app():
     # app.register_blueprint(routes, url_prefix='/routes')
 
     from app.api.appointments import appointments_api
-    app.register_blueprint(appointments_api, url_prefix='/appointments_api')
+    app.register_blueprint(appointments_api, url_prefix='/appointments')
 
     from app.routes.user_dashboard import user_dashboard
     app.register_blueprint(user_dashboard, url_prefix='/user')
@@ -39,7 +39,17 @@ def create_app():
     from app.routes.doctor_dashboard import doctor_dashboard
     app.register_blueprint(doctor_dashboard, url_prefix='/doctor')
 
+    from app.routes.admin import admin
+    app.register_blueprint(admin, url_prefix='/admin')
+
+    from app.routes.main import main
+    app.register_blueprint(main, url_prefix='/main')
+
     from app.routes.payment import payment
     app.register_blueprint(payment, url_prefix='/payment')
 
     return app
+
+
+# def root_path():
+#     return None

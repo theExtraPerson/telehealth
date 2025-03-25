@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Book Appointment{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h3 class="gsap-animate">Book an Appointment</h3>
+    <form action="{{ url_for('appointments.book') }}" method="POST" class="gsap-animate">
+        <div class="mb-3">
+            <label class="form-label">Select Doctor</label>
+            <select class="form-select">
+                <option>Dr. Smith - Cardiologist</option>
+                <option>Dr. Patel - Dermatologist</option>
+                <option>Dr. Lee - General Physician</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Choose Date</label>
+            <input type="date" class="form-control">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Confirm Booking</button>
+    </form>
+</div>
+{% endblock %}

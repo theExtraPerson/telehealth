@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy.orm import relationship
-from app.database import Base
+from app import db
 
 class Message(db.Model):
     __tablename__: str = 'messages'

@@ -1,5 +1,5 @@
 # from flask import Flask, g, app
-from app import create_app, db
+from app import create_app
 
 app = create_app()
 

@@ -1,13 +1,20 @@
+import os
+from flask import Blueprint, render_template, send_from_directory, current_app
 
-from flask import Flask, render_template, Blueprint
+# Define the Blueprint
+main = Blueprint("main", __name__)
 
-main = Blueprint('main_bp', __name__)
-
-@main.route('/')
+# Home page route
+@main.route("/")
 def home():
-    return render_template('main/home.html')
+    return render_template("index.html")
 
-@main.route('/index')
-def index():
-    return render_template('index.html')
+# Favicon route
+@main.route("/favicon.ico")
+def favicon():
+    return send_from_directory(
+        os.path.join(current_app.root_path, "static"),
+        "favicon.ico",
+        mimetype="image/vnd.microsoft.icon",
+    )
 

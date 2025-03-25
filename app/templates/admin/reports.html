@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h2>Business Intelligence Reports</h2>
+    <p>View insights on application performance, user engagement, revenue, and more.</p>
+    <canvas id="reportsChart"></canvas>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        gsap.from("#reportsChart", { duration: 1, opacity: 0, y: -50 });
+    });
+</script>
+{% endblock %}
