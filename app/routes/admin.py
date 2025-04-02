@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, redirect, url_for, flash
 from flask_login import login_required
 from app.models.user import User, Doctor
 from app.models.appointment import Appointment
@@ -6,7 +6,7 @@ from app.models.prescription import Prescription
 from app.models.payments import Payment
 from app import db
 
-admin = Blueprint("admin", __name__, url_prefix="/admin")
+admin = Blueprint("admin", __name__, template_folder="../../templates/admin")
 
 @admin.route("/")
 @login_required

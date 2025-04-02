@@ -1,6 +1,9 @@
 from fastapi.testclient import TestClient
-from app.api.appointments import app, appointments, Appointment
+from app import create_app
+# from app.api.appointments import app, appointments, Appointment
 from datetime import datetime
+
+app = create_app()
 
 client = TestClient(app)
 

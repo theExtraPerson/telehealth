@@ -1,4 +1,4 @@
-import os
+
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -64,3 +64,7 @@ def generate_unique_id():
 
 def get_current_timestamp():
     return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+
+def get_db():
+    return None

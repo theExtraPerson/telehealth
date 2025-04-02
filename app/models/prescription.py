@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from sqlalchemy.orm import relationship
 from app import db
 
 class Prescription(db.Model):
@@ -11,7 +10,10 @@ class Prescription(db.Model):
     medication = db.Column(db.String, nullable=False)
     dosage = db.Column(db.String, nullable=False)
     instructions = db.Column(db.String, nullable=True)
-    date_prescribed = db.Column(db.DateTime, default=datetime.utcnow)
+    date_prescribed = db.Column(db.DateTime, default=datetime.now(timezone.utc))
 
     patient = db.relationship("Patient", back_populates="prescriptions")
     doctor = db.relationship("Doctor", back_populates="prescriptions")
+
+    def __repr__(self):
+        return f"<Prescription(medication='{self.medication}', dosage='{self.dosage}', instructions='{self.instructions}')>"

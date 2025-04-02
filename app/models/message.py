@@ -1,5 +1,4 @@
-from datetime import datetime
-from sqlalchemy.orm import relationship
+from datetime import datetime, timezone
 from app import db
 
 class Message(db.Model):
@@ -10,7 +9,7 @@ class Message(db.Model):
     receiver_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     content = db.Column(db.String, nullable=False)
     file_url = db.Column(db.String, nullable=True)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=datetime.now(timezone.utc))
 
     sender = db.relationship('User', foreign_keys=[sender_id])
     receiver = db.relationship('User', foreign_keys=[receiver_id])

@@ -1,7 +1,7 @@
-from flask import Flask, render_template
-from . import main_bp
+from flask import render_template
+from .routes.main import main
 
-@main_bp.route('/')
+@main.route('/')
 def homepage():
     return render_template('main/home.html')
 

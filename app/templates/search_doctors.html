@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5 py-5">
+    <h2 class="text-center mb-4">Search and Select a Doctor</h2>
+    
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <label for="searchSpecialty"></label><input type="text" id="searchSpecialty" class="form-control" placeholder="Search by Specialty">
+        </div>
+        <div class="col-md-3">
+            <label for="searchLocation"></label><input type="text" id="searchLocation" class="form-control" placeholder="Search by Location">
+        </div>
+        <div class="col-md-3">
+            <label for="searchRating"></label><input type="number" id="searchRating" class="form-control" placeholder="Search by Rating (1-5)" min="1" max="5">
+        </div>
+        <div class="col-md-3">
+            <button class="btn btn-primary w-100" onclick="filterDoctors()">Search</button>
+        </div>
+    </div>
+
+    <div class="row" id="doctorList">
+        {% for doctor in doctors %}
+        <div class="col-md-4 doctor-card" data-specialty="{{ doctor.specialty }}" data-location="{{ doctor.location }}" data-rating="{{ doctor.rating }}">
+            <div class="card shadow-lg mb-4 p-3">
+                <h4 class="card-title">Dr. {{ doctor.name }}</h4>
+                <p class="card-text"><strong>Specialty:</strong> {{ doctor.specialty }}</p>
+                <p class="card-text"><strong>Location:</strong> {{ doctor.location }}</p>
+                <p class="card-text"><strong>Rating:</strong> ⭐{{ doctor.rating }}</p>
+                <p class="card-text"><strong>Availability:</strong> {{ doctor.availability }}</p>
+                <button class="btn btn-success select-doctor" data-id="{{ doctor.id }}" data-name="Dr. {{ doctor.name }}">Select</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    function filterDoctors() {
+        let specialty = document.getElementById('searchSpecialty').value.toLowerCase();
+        let location = document.getElementById('searchLocation').value.toLowerCase();
+        let rating = document.getElementById('searchRating').value;
+        
+        document.querySelectorAll('.doctor-card').forEach(card => {
+            let doctorSpecialty = card.getAttribute('data-specialty').toLowerCase();
+            let doctorLocation = card.getAttribute('data-location').toLowerCase();
+            let doctorRating = card.getAttribute('data-rating');
+            
+            let matchesSpecialty = specialty === '' || doctorSpecialty.includes(specialty);
+            let matchesLocation = location === '' || doctorLocation.includes(location);
+            let matchesRating = rating === '' || doctorRating >= rating;
+            
+            if (matchesSpecialty && matchesLocation && matchesRating) {
+                card.style.display = "block";
+            } else {
+                card.style.display = "none";
+            }
+        });
+    }
+
+    document.querySelectorAll('.select-doctor').forEach(button => {
+        button.addEventListener('click', function() {
+            let doctorId = this.getAttribute('data-id');
+            let doctorName = this.getAttribute('data-name');
+            
+            window.opener.document.getElementById('doctor').value = doctorId;
+            window.opener.document.getElementById('doctorNameDisplay').innerText = doctorName;
+            window.close();
+        });
+    });
+    
+    document.addEventListener("DOMContentLoaded", function() {
+        gsap.from(".doctor-card", { duration: 1, opacity: 0, y: 50, stagger: 0.2, ease: "power2.out" });
+    });
+</script>
+{% endblock %}

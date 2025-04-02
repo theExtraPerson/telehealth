@@ -4,7 +4,7 @@ from flask import Blueprint, request, jsonify
 
 from app.models.payments import Payment
 
-payment = Blueprint("payment", __name__, url_prefix="/payments")
+payment = Blueprint("payment", __name__, template_folder="../../templates/payment")
 
 
 @payment.route("/make_payment", methods=["POST"])

@@ -1,10 +1,11 @@
-import pytest
+# import pytest
 from fastapi.testclient import TestClient
-from app.api.auth import router, fake_users_db, create_access_token
-from app.main import app
+from app.routes.auth import router, create_access_token
+from app import create_app
+
+app = create_app()
 
 app.include_router(router)
-
 client = TestClient(app)
 
 def test_login_for_access_token():
@@ -41,7 +42,7 @@ def test_read_users_me_no_token():
 def test_read_users_me_invalid_token():
     response = client.get(
         "/users/me",
-        headers={"Authorization": "Bearer invalidtoken"},
+        headers={"Authorization": "Bearer invalid token"},
     )
     assert response.status_code == 401
     assert response.json() == {"detail": "Could not validate credentials"}
@@ -63,7 +64,7 @@ def test_read_own_items_no_token():
 def test_read_own_items_invalid_token():
     response = client.get(
         "/users/me/items/",
-        headers={"Authorization": "Bearer invalidtoken"},
+        headers={"Authorization": "Bearer invalid token"},
     )
     assert response.status_code == 401
     assert response.json() == {"detail": "Could not validate credentials"}

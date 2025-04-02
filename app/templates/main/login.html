@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <section class="login-section">
+        <div class="login-container">
+            <h2 class="mb-4">Login</h2>
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label for="username"></label><input type="text" id="username" class="form-control" placeholder="Username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password"></label><input type="password" id="password" class="form-control" placeholder="Password" required>
+                </div>
+                <div class="mb-3">
+                    <label for="userRole"></label><select id="userRole" class="form-select">
+                        <option value="patient">Patient</option>
+                        <option value="doctor">Doctor</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Login</button>
+            </form>
+        </div>
+
+        <script>
+            gsap.from(".login-container", { opacity: 0, y: -50, duration: 1 });
+
+            document.getElementById("loginForm").addEventListener("submit", async function(event) {
+                event.preventDefault();
+
+                const username = document.getElementById("username").value;
+                const password = document.getElementById("password").value;
+                const role = document.getElementById("userRole").value;
+
+                const response = await fetch("/login", {
+                    method: "POST",
+                    credentials: "include",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password, role })
+                });
+
+                if (response.redirected) {
+                    window.location.href = response.url;  // Handle redirection
+                } else {
+                    const data = await response.json();
+                    alert("Login failed: " + data.msg);
+                }
+            });
+
+        </script>
+    </section>
+{% endblock %}
+
+
+

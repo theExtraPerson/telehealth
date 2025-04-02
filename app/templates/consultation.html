@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <<div class="container mt-5">
+        <h2 class="text-center mb-4">Start Video Consultation</h2>
+        <form id="videoConsultationForm">
+            <div class="mb-3">
+                <label for="doctorId" class="form-label">Enter Doctor ID</label>
+                <input type="text" class="form-control" id="doctorId" name="doctorId" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Start Consultation</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            gsap.from("#videoConsultationForm", { duration: 1, opacity: 0, y: 50, ease: "power3.out" });
+        });
+
+        document.getElementById("videoConsultationForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const doctorId = document.getElementById("doctorId").value;
+
+            fetch("/doctor/teleconference", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include",
+                body: JSON.stringify({ doctor_id: doctorId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.msg);
+            })
+            .catch(error => console.error("Error:", error));
+        });
+    </script>
+{% endblock %}

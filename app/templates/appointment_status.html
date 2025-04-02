@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Dear {{ user.username }}</h2>
+    <p>Your appointment with {{ doctor.name }} at {{ appointment.appointment_date }} is now {{ appointments.status }}</p>
+    <p>You will be updated soon.</p>
+{% endblock %}

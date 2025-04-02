@@ -1,13 +1,14 @@
-#navbar {
-    background-color: #333;
-}
-#navbar a {
-    color: #fff;
-    text-decoration: none;
-}
-.navbar-brand {
-    font-size: 30px;
-}
+/*#navbar {*/
+/*    background-color: #333;*/
+
+/*}*/
+/*#navbar a {*/
+/*    color: #fff;*/
+/*    text-decoration: none;*/
+/*}*/
+/*.navbar-brand {*/
+/*    font-size: 30px;*/
+/*}*/
 .kmc-logo {
     width: 100px;
     height: 100px;
@@ -37,3 +38,130 @@
 .card:hover {
     transform: scale(1.05);
 }
+
+/* BASE HTML */
+body, html {
+            top: 0;
+            padding: 0;
+}
+.navbar {
+    background-color: forestgreen;
+    box-shadow: 0 5px 12px darkred;
+    padding: 10px 0;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    position: fixed;
+    width: 100%;
+    display: flex;
+    height: 12vh;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    color: #3498db;
+    font-size: large;
+}
+
+.brand-highlight {
+    color: darkgreen;
+}
+
+.navbar-brand span {
+    color: darkgreen;
+}
+
+.nav-link {
+    font-weight: 300;
+    margin: 0 5px;
+    position: relative;
+    transition: all 0.3s ease;
+    color: #2c3e50;
+    font-size: 15px;
+    padding: 5px 10px !important;
+}
+
+.nav-link:after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: darkgreen;
+    transition: width 0.3s ease;
+}
+
+.navbar .btn-primary {
+    padding: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 15px;
+    margin-left: 10px;
+}
+
+.navbar .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.nav-link:hover::after,
+.nav-link:active:after {
+    width: 100%;
+}
+
+.nav-link.active:after {
+    width: 100%;
+}
+
+.navbar-toggler {
+    border: none;
+    outline: none;
+}
+nav .container img {
+    height: 40px;
+    width: 40px;
+}
+
+/*hero page*/
+
+.hero-banner {
+    position: relative;
+    text-align: center;
+    color: white;
+    width: 100%;
+    height: 70vh;
+}
+
+.hero-image {
+    width: 100%;
+    height: auto;
+}
+
+.hero-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/*login page*/
+
+.login-section {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.login-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.index-decor {
+    padding-top: 100px;
+}
+

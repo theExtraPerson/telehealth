@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="container mt-5 py-xl-5">
+        <h2 class="text-center mb-4">Request Prescription Refill</h2>
+        <form id="prescriptionForm" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="description" class="form-label">Describe Your Medication</label>
+                <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="medicalForm" class="form-label">Upload Medical Form (optional)</label>
+                <input type="file" class="form-control" id="medicalForm" name="medicalForm" accept=".pdf,.doc,.docx">
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Describe Current Symptoms</label>
+                <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="previousPrescriptions" class="form-label">Upload Previous Prescriptions</label>
+                <input type="file" class="form-control" id="previousPrescriptions" name="previousPrescriptions" accept=".pdf,.jpg,.png" multiple required>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Request</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            gsap.from("#prescriptionForm", { duration: 1, opacity: 0, y: 50, ease: "power3.out" });
+        });
+    </script>
+{% endblock %}

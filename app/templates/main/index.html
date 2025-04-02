@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="container-fluid index-decor text-center py-xxl-5">
+    <div>
+        <h1>Convenient, Healthy Living</h1>
+        <h3>At KMC - Hospital, every second of your life matters. Why waste it on a long, tiresome journey?</h3>
+        <h5>Join us today and enjoy quality healthcare services wherever, whenever.</h5>
+
+        <button class="btn btn-primary m-2">
+            <a href="{{ url_for('doctor_dashboard.dashboard') }}" class="text-white text-decoration-none">I am a Doctor</a>
+        </button>
+        <button class="btn btn-primary m-2">
+            <a href="{{ url_for('user_dashboard.dashboard') }}" class="text-white text-decoration-none">I am a Patient</a>
+        </button>
+    </div>
+</section>
+
+<section class="container my-5">
+    <h2 class="text-center mb-4">Our Services</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card service-card shadow-lg text-center p-4">
+                <h4>Book an Appointment</h4>
+                <p>Schedule an appointment with our expert doctors at your convenience.</p>
+                <button class="btn btn-primary m-2"  onclick="location.href='{{ url_for('user_dashboard.book_appointment') }}'">Book Appointment</button>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card service-card shadow-lg text-center p-4" onclick="location.href='{{ url_for('user_dashboard.prescription_refill') }}'">
+                <h4>Prescription Refill</h4>
+                <p>Get your prescriptions refilled easily and have them delivered to your location.</p>
+                <button class="btn btn-primary m-2"  onclick="location.href='{{ url_for('user_dashboard.prescription_refill') }}'">Request a Refill</button>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card service-card shadow-lg text-center p-4" onclick="location.href='{{ url_for('doctor_dashboard.start_teleconference') }}'">
+                <h4>Consult a Doctor</h4>
+                <p>Receive professional medical advice from our qualified doctors anytime, anywhere.</p>
+                <button class="btn btn-primary m-2"  onclick="location.href='{{ url_for('doctor_dashboard.start_teleconference') }}'">Book Appointment</button>
+            </div>
+        </div>
+{#        <div class="col-md-4">#}
+{#            <div class="card service-card shadow-lg text-center p-4" onclick="location.href='{{ url_for('doctor_dashboard.start_teleconference') }}'">#}
+{#                <h4>Medical Collaboration</h4>#}
+{#                <p>Medical personnel, here is your chance to connect and collaborate with fellow doctors, and specialists.</p>#}
+{#                <button class="btn btn-primary m-2"  onclick="location.href='{{ url_for('doctor_dashboard.collaborate', doctor_id=doctor_id) }}'">Collaborate</button>#}
+{#            </div>#}
+{#        </div>#}
+    </div>
+</section>
+
+<section class="container my-5 text-center">
+    <h2>Why Choose Us?</h2>
+    <p>We prioritize your health with our top-tier medical expertise, seamless digital solutions, and patient-centered care.</p>
+    <ul class="list-unstyled">
+        <li>✔ 24/7 Availability</li>
+        <li>✔ Experienced & Certified Doctors</li>
+        <li>✔ Secure & Confidential Consultations</li>
+        <li>✔ Fast & Reliable Services</li>
+    </ul>
+</section>
+
+<section class="container my-5 text-center">
+    <h2>Get in Touch</h2>
+    <p>Need help? Reach out to us via email or WhatsApp.</p>
+    <button class="btn btn-success m-2">
+        <a href="mailto:support@kmchospital.com" class="text-white text-decoration-none">Email Us</a>
+    </button>
+    <button class="btn btn-success m-2">
+        <a href="https://wa.me/yourwhatsapplink" class="text-white text-decoration-none">Chat on WhatsApp</a>
+    </button>
+</section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        gsap.from(".service-card", { duration: 1, opacity: 0, y: 50, stagger: 0.3, ease: "power2.out" });
+    });
+</script>
+{% endblock %}

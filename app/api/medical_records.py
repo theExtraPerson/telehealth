@@ -1,11 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from flask import Flask, render_template
+
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import Session
 from typing import List
-from app import schemas, models, crud
-from ..dependencies import get_current_user
+
+from sqlalchemy.sql import crud
+
+from app import schemas, models
+from app.routes.auth import get_current_user
 from app.models.user import User
+from app.utils.helpers import get_db
 
 db = SQLAlchemy()   
 

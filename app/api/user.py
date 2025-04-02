@@ -1,9 +1,10 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
-from typing import List
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+
+# from app.routes.auth import get_user, get_password_hash, authenticate_user
 
 # Secret key to encode and decode JWT tokens
 SECRET_KEY = "your_secret_key"
@@ -78,7 +79,7 @@ def create_access_token(data: dict):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+async def get_current_user(token: str = Depends(oauth2_scheme), token_data=None):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -89,7 +90,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
-        token_data = TokenData(username=username)
+        # token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
     user = get_user(fake_users_db, username=token_data.username)

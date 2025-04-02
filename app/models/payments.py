@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from app import db
 
 class Payment(db.Model):
@@ -11,7 +11,7 @@ class Payment(db.Model):
     status = db.Column(db.String(20), nullable=False, default="pending")  # Pending, Completed, Failed
     payment_method = db.Column(db.String(50), nullable=False)  # e.g., Credit Card, PayPal, Mobile Money
     transaction_id = db.Column(db.String(100), unique=True, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
 
     # Relationships
     user = db.relationship('User', backref='payments', lazy=True)

@@ -1,32 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="hero-banner">
-    <img src="{{ url_for('static', filename='images/hero.jpg') }}" alt="Hero Image" class="hero-image">
-    <div class="hero-text">
-        <h1>Welcome to Our Hospital</h1>
-        <p>Your health is our priority. We provide top-notch medical services to ensure your well-being.</p>
-        <a href="{{ url_for('book_appointment') }}" class="btn btn-primary">Book an Appointment</a>
+    <div class="hero-banner">
+        <img src="{{ url_for('static', filename='images/hero.jpg') }}" alt="Hero Image" class="hero-image">
+        <div class="hero-text">
+            <h1>Welcome to Our Hospital</h1>
+            <p>Your health is our priority. We provide top-notch medical services to ensure your well-being.</p>
+            <a href="{{ url_for('user_dashboard.book_appointment') }}" class="btn btn-primary">Book an Appointment</a>
+        </div>
     </div>
-</div>
 
-<style>
-.hero-banner {
-    position: relative;
-    text-align: center;
-    color: white;
-}
-
-.hero-image {
-    width: 100%;
-    height: auto;
-}
-
-.hero-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-</style>
 {% endblock %}

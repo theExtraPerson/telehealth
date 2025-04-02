@@ -27,7 +27,7 @@ class AuthService:
         if expires_delta:
             expire = datetime.datetime.now(timezone.utc) + expires_delta
         else:
-            expire = datetime.datetime.utcnow() + datetime.timedelta(minutes=15)
+            expire = datetime.datetime.now(timezone.utc) + datetime.timedelta(minutes=15)
         to_encode.update({"exp": expire})
         encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm="HS256")
         return encoded_jwt
@@ -36,7 +36,7 @@ class AuthService:
     def decode_access_token(token: str) -> Any | None:
         try:
             decoded_jwt = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-            return decoded_jwt if decoded_jwt["exp"] >= datetime.datetime.utcnow().timestamp() else None
+            return decoded_jwt if decoded_jwt["exp"] >= datetime.datetime.now(timezone.utc).timestamp() else None
         except jwt.ExpiredSignatureError:
             return None
         except jwt.InvalidTokenError:
