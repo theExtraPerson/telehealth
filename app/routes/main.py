@@ -25,9 +25,9 @@ def about():
 def contact():
     return render_template("main/contact.html")
 
-@main.route("/login", methods=['GET', 'POST'])
-def login():
-    return render_template("main/login.html")
+# @main.route("/login", methods=['GET', 'POST'])
+# def login():
+#     return render_template("main/login.html")
 
 
 

@@ -1,9 +1,12 @@
 import logging
 from logging.config import fileConfig
 
+from alembic import context
 from flask import current_app
 
-from alembic import context
+from app import db
+
+target_metadata = db.metadata
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -83,7 +86,7 @@ def run_migrations_online():
     # this callback is used to prevent an auto-migration from being generated
     # when there are no changes to the schema
     # reference: http://alembic.zzzcomputing.com/en/latest/cookbook.html
-    def process_revision_directives(context, revision, directives):
+    def process_revision_directives(directives):
         if getattr(config.cmd_opts, 'autogenerate', False):
             script = directives[0]
             if script.upgrade_ops.is_empty():

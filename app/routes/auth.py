@@ -1,71 +1,118 @@
-from flask import Blueprint, request, jsonify, url_for, make_response, redirect
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, set_access_cookies, unset_jwt_cookies
+from flask import Blueprint, request, jsonify, url_for, redirect, render_template
+from flask_login import login_required, logout_user, login_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import timedelta
+
 from app import db
 from app.models.user import User
+from ..forms import RegistrationForm, LoginForm
 
-auth = Blueprint("auth", __name__)
+auth = Blueprint("auth", __name__, template_folder="../../templates/auth")
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-@auth.route('/register', methods=['POST'])
+@auth.route('/register', methods=['GET', 'POST'])
 def register():
-    data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
-    email = data.get('email')
+    form = RegistrationForm()
 
-    if User.query.filter_by(username=username).first():
-        return jsonify({'message': 'User already exists'}), 400
+    if request.method == 'GET':
+        return render_template('auth/register.html', form=form)
 
-    hashed_password = generate_password_hash(password)
-    new_user = User()
-    db.session.add(new_user)
-    db.session.commit()
+    # Handle AJAX form submission
+    if request.method == 'POST' and form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        email = form.email.data
+        role = form.role.data
 
-    return jsonify({'message': 'User registered successfully'}), 201
+        if User.query.filter_by(username=username).first():
+            return jsonify({
+                'success': False,
+                'errors': {'username': 'User already exists'}
+            }), 400
 
-@auth.route('/login', methods=['POST'])
+        hashed_password = generate_password_hash(password)
+        new_user = User(
+            username=username,
+            email=email,
+            password_hash=hashed_password,
+            role=role
+        )
+        db.session.add(new_user)
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'message': 'Registration successful!',
+            'redirect': url_for('auth.login')
+        })
+
+    # Form validation failed
+    return jsonify({
+        'success': False,
+        'errors': form.errors
+    }), 400
+
+
+@auth.route('/login', methods=['GET', 'POST'])
 def login():
-    data = request.get_json()
-    username = data.get("username")
-    password = data.get("password")
-    role = data.get("role")
+    form = LoginForm()
 
-    user = User.query.filter_by(username=username, role=role).first()
+    if request.method == 'GET':
+        # If user is already logged in, redirect to appropriate dashboard
+        if current_user.is_authenticated:
+            return redirect_to_dashboard(current_user.role)
+        return render_template('auth/login.html', form=form)
 
-    if not user or not check_password_hash(user.password, password):
-        return jsonify({"msg": "Invalid username or password"}), 401
+    # Handle AJAX form submission
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        role = form.role.data
 
-    access_token = create_access_token(
-        identity={"id": user.id, "role": user.role},
-        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+        user = User.query.filter_by(username=username, role=role).first()
 
-    response = jsonify({"msg": "Login successful"})
-    set_access_cookies(response, access_token)
+        if user and check_password_hash(user.password_hash, password):
+            if user.role == form.role.data:
+                login_user(user)
+                return jsonify({
+                    'success': True,
+                    'message': 'Login successful!',
+                    'redirect': get_dashboard_url(user.role)
+                })
 
-    if role == "doctor":
-        return redirect(url_for("doctor_dashboard.dashboard"), code=302)
-    elif role == "admin":
-        return redirect(url_for('admin_panel.dashboard'), code=302)
-    else:
-        return redirect(url_for('user_dashboard.dashboard'), code=302)
+        return jsonify({
+            'success': False,
+            'errors': {'form': 'Invalid credentials'}
+        }), 401
+
+    # Form validation failed
+    return jsonify({
+        'success': False,
+        'errors': form.errors
+    }), 400
 
 
 @auth.route('/logout', methods=['POST'])
-@jwt_required()
+@login_required
 def logout():
-    response = jsonify({"msg": "Logged out successfully"})
-    unset_jwt_cookies(response)  # Remove the JWT from cookies
-    return response, 200
-
-@auth.route('/protected', methods=['GET'])
-@jwt_required()
-def protected():
-    current_user = get_jwt_identity()
-    return jsonify(logged_in_as=current_user), 200
+    logout_user()
+    return jsonify({
+        'success': True,
+        'message': 'Logged out successfully',
+        'redirect': url_for('auth.login')
+    })
 
 
-def get_current_user():
-    return None
+# Helper functions
+def get_dashboard_url(role):
+    """Return the appropriate dashboard URL based on role"""
+    role_dashboards = {
+        'admin': 'admin.dashboard',
+        'doctor': 'doctor_dashboard.dashboard',
+        'patient': 'user_dashboard.dashboard'
+    }
+    return url_for(role_dashboards.get(role, 'auth.login'))
+
+
+def redirect_to_dashboard(role):
+    """Redirect to the appropriate dashboard based on role"""
+    return redirect(get_dashboard_url(role))

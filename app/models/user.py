@@ -1,4 +1,5 @@
 from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db
 
@@ -12,11 +13,23 @@ class User(db.Model, UserMixin):
     is_active = db.Column(db.Boolean, default=True)
     is_doctor = db.Column(db.Boolean, default=False)
     is_admin = db.Column(db.Boolean, default=False)
+    role = db.Column(db.String(20), nullable=False, default='patient')
 
     user_type = db.Column(db.String(50))
 
     def __repr__(self):
         return f"<User(username='{self.username}', email='{self.email}')>"
+
+    @property
+    def is_active(self):
+        return True
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
 
     __mapper_args__ = {
         'polymorphic_identity': 'user',
@@ -53,7 +66,7 @@ class Patient(User):
     appointments = db.relationship("Appointment", back_populates="patient", cascade="all, delete-orphan")
 
     def __repr__(self):
-        return f"<Patient(username='{self.username}', age='{self.age}')>"
+        return f"<Patient(username='{self.username}', age='{self.age}', password='{self.password}', email='{self.email}')>"
 
     __mapper_args__ = {
         'polymorphic_identity': 'patient',

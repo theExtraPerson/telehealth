@@ -16,3 +16,12 @@ class Appointment(db.Model):
 
     def __repr__(self):
         return f"<Appointment(date'{self.appointment_date}', description='{self.description}')>'"
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'doctor_id': self.id,
+            'patient_id': self.patient_id,
+            'appointment_date': self.appointment_date.isoformat(),
+            'description': self.description
+        }

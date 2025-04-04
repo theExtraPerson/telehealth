@@ -6,6 +6,10 @@ from twilio.rest import Client
 import hashlib
 import uuid
 from datetime import datetime
+from flask_login import current_user
+from functools import wraps
+from flask import redirect, url_for, flash
+
 
 # File Handling Helpers
 def read_file(file_path):
@@ -65,6 +69,16 @@ def generate_unique_id():
 def get_current_timestamp():
     return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
+def role_required(role):
+    def wrapper(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            if current_user.role != role:
+                flash("Unauthorized access", "danger")
+                return redirect(url_for("auth.login"))
+            return f(*args, **kwargs)
+        return decorated_function
+    return wrapper
 
 def get_db():
     return None

@@ -8,10 +8,10 @@
         <h5>Join us today and enjoy quality healthcare services wherever, whenever.</h5>
 
         <button class="btn btn-primary m-2">
-            <a href="{{ url_for('doctor_dashboard.dashboard') }}" class="text-white text-decoration-none">I am a Doctor</a>
+            <a href="{{ url_for('auth.login') }}" class="text-white text-decoration-none">Login</a>
         </button>
         <button class="btn btn-primary m-2">
-            <a href="{{ url_for('user_dashboard.dashboard') }}" class="text-white text-decoration-none">I am a Patient</a>
+            <a href="{{ url_for('auth.register') }}" class="text-white text-decoration-none">Register</a>
         </button>
     </div>
 </section>
@@ -40,13 +40,15 @@
                 <button class="btn btn-primary m-2"  onclick="location.href='{{ url_for('doctor_dashboard.start_teleconference') }}'">Book Appointment</button>
             </div>
         </div>
-{#        <div class="col-md-4">#}
+        <div class="col-md-4">
 {#            <div class="card service-card shadow-lg text-center p-4" onclick="location.href='{{ url_for('doctor_dashboard.start_teleconference') }}'">#}
 {#                <h4>Medical Collaboration</h4>#}
 {#                <p>Medical personnel, here is your chance to connect and collaborate with fellow doctors, and specialists.</p>#}
+{#                {% if doctor_id %}#}
 {#                <button class="btn btn-primary m-2"  onclick="location.href='{{ url_for('doctor_dashboard.collaborate', doctor_id=doctor_id) }}'">Collaborate</button>#}
+{#                {% endif %}#}
 {#            </div>#}
-{#        </div>#}
+        </div>
     </div>
 </section>
 

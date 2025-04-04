@@ -17,8 +17,10 @@ csrf = CSRFProtect()
 db = SQLAlchemy()
 login_manager = LoginManager()
 migrate = Migrate()
-jwt = JWTManager()
+# jwt = JWTManager()
 
+login_manager.login_view = 'auth.login'
+login_manager.login_message = "Please login to access this page."
 
 def create_app():
     app = Flask(__name__)
@@ -28,7 +30,7 @@ def create_app():
     db.init_app(app)
     login_manager.init_app(app)
     migrate.init_app(app)
-    jwt.init_app(app)
+    # jwt.init_app(app)
     csrf.init_app(app)
 
     from app.api import api
@@ -55,8 +57,11 @@ def create_app():
     from app.routes.doctor_dashboard import doctor_dashboard
     app.register_blueprint(doctor_dashboard, url_prefix='/doctor')
 
-    from app.routes.admin import admin
-    app.register_blueprint(admin, url_prefix='/admin')
+    from app.routes.admin import admin_bp
+    app.register_blueprint(admin_bp, url_prefix='/admin')
+
+    from app.routes.auth import auth
+    app.register_blueprint(auth, url_prefix='/auth')
 
     from app.routes.main import main
     app.register_blueprint(main)
@@ -79,8 +84,20 @@ def create_app():
         from app.models.user import User
         return User.query.get(int(user_id))
 
-    login_manager.login_view = "auth_login"
-    login_manager.login_message = "Please login to access this page."
+
+
+    @app.shell_context_processor
+    def make_shell_context():
+        return {
+            "db": db,
+            "User": User,
+            "Doctor": Doctor,
+            "Patient": Patient,
+            "Admin": Admin,
+            "Appointment": Appointment,
+            "Prescription": Prescription,
+            "Payment": Payment,
+        }
 
     return app
 

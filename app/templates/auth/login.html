@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <section class="login-section">
+        <div class="login-container">
+            <h2 class="mb-4">Login</h2>
+            <form id="loginForm" method="POST" action="{{ url_for('auth.login') }}">
+                {{ form.hidden_tag() }}  <!-- CSRF token included here -->
+
+                <div class="mb-3">
+                    {{ form.username.label(class="form-label") }}
+                    {{ form.username(class="form-control", placeholder="Username") }}
+                    <div class="invalid-feedback" id="username-error"></div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form.password.label(class="form-label") }}
+                    {{ form.password(class="form-control", placeholder="Password") }}
+                    <div class="invalid-feedback" id="password-error"></div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form.role.label(class="form-label") }}
+                    {{ form.role(class="form-select") }}
+                    <div class="invalid-feedback" id="role-error"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Login</button>
+            </form>
+        </div>
+
+        <script>
+            // Animation on load
+            gsap.from(".login-container", { opacity: 0, y: -50, duration: 1 });
+
+            document.getElementById("loginForm").addEventListener("submit", async function(event) {
+                event.preventDefault();
+
+                // Clear previous errors
+                document.querySelectorAll('.is-invalid').forEach(el => {
+                    el.classList.remove('is-invalid');
+                });
+
+                // Get form data including CSRF token
+                const formData = new FormData(this);
+                const formObject = Object.fromEntries(formData.entries());
+
+                try {
+                    const response = await fetch("{{ url_for('auth.login') }}", {
+                        method: "POST",
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'  // Identify as AJAX request
+                        },
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Successful login - redirect without page reload
+                        window.location.href = data.redirect;
+                    } else {
+                        // Handle form errors
+                        if (data.errors) {
+                            for (const [field, message] of Object.entries(data.errors)) {
+                                const input = document.querySelector(`[name="${field}"]`);
+                                const errorElement = document.getElementById(`${field}-error`);
+
+                                if (input) {
+                                    input.classList.add('is-invalid');
+                                }
+                                if (errorElement) {
+                                    errorElement.textContent = message;
+                                }
+                            }
+                        }
+
+                        // Show general error if no field-specific errors
+                        if (!data.errors || Object.keys(data.errors).length === 0) {
+                            alert(data.message || "Login failed. Please try again.");
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error:", error);
+                    alert("An error occurred. Please try again.");
+                }
+            });
+        </script>
+    </section>
+{% endblock %}
