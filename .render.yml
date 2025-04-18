@@ -1,7 +1,10 @@
 services:
   - type: web
     name: telehealth-app
-    env: python
+    env: docker
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
     buildCommand: "pip install -r requirements.txt"
     startCommand: "gunicorn -c gunicorn_conf.py run:app"
     envVars:
