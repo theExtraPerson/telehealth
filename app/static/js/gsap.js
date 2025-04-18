@@ -12,6 +12,39 @@ gsap.from(".gsap-logo", {
     delay: 0.5
 });
 
+// GSAP animation for mobile menu description
+const mobileNav = document.querySelector("#mobileNav");
+
+const observer = new MutationObserver(() => {
+    if (mobileNav.classList.contains("show")) {
+        gsap.fromTo(
+            ".mobile-menu",
+            { height: 0, opacity: 0},
+            { height: "auto", opacity: 1, duration: 0.4, ease: "power2.out"}
+        );
+    }
+});
+
+observer.observe(mobileNav, {attributes: true})
+
+gsap.from(".mobile-menu", {
+  y: -20,
+  opacity: 0,
+  duration: 0.4,
+  ease: "power2.out"
+});
+
+//animate the glass desktop nav into view
+document.addEventListener("DOMContentLoaded", () => {
+    gsap.from(".desktop-glass-nav", {
+        y: -20,
+        opacity: 0,
+        duration: 0.6,
+        ease: "power3.out"
+    })
+})
+
+// Some cards GSAP
 
 document.addEventListener("DOMContentLoaded", function() {
     gsap.from(".card", { duration: 1, opacity: 0, y: 50, stagger: 0.3 });

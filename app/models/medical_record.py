@@ -1,18 +1,17 @@
 from datetime import datetime, timezone
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from app import db
 
 class MedicalRecord(db.Model):
     __tablename__ = 'medical_records'
 
-    id = Column(Integer, primary_key=True, index=True)
-    patient_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    date_of_birth = Column(String, nullable=False)
-    description = Column(String, nullable=False)
-    doctor_name = Column(String, nullable=False)
-    doctor_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    uploaded_at = Column(DateTime, default=datetime.now(timezone.utc))
+    id = db.Column(db.Integer, primary_key=True, index=True)
+    patient_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    date_of_visit = db.Column(db.String, nullable=False)
+    description = db.Column(db.String, nullable=False)
+    doctor_name = db.Column(db.String, nullable=False)
+    doctor_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    uploaded_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
 
     patient = db.relationship("User", foreign_keys=[patient_id], back_populates="medical_records_as_patient")
     doctor = db.relationship("User", foreign_keys=[doctor_id], back_populates="medical_records_as_doctor")

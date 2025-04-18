@@ -1,4 +1,5 @@
 from flask_login import UserMixin
+from pydantic import json
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db
@@ -83,7 +84,7 @@ class Doctor(User):
         """Set available days for the doctor. Days should be a list of strings."""
         self.available_days = json.dumps(days)
 
-    def get_available_days():
+    def get_available_days(self):
         """Get available days for the doctor. Returns a list of strings."""
         return json.loads(self.available_days)
                            

@@ -128,7 +128,7 @@
                                 {% for record in medical_records %}
                                 <li class="list-group-item">
                                     Visit: {{ record.description }}
-                                    <small class="text-muted">- {{ record.date.strftime('%b %d, %Y') }}</small>
+                                    <small class="text-muted">- {{ record.date.utctime('%b %d, %Y') }}</small>
                                     <a href="{{ url_for('view_medical_record', record_id=record.id) }}" class="btn btn-link btn-sm">View PDF</a>
                                 </li>
                                 {% else %}

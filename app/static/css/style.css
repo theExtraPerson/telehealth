@@ -5,23 +5,53 @@
 
 body, html {
     font-family: 'Poppins', sans-serif;
-    background-color: #69cc41;
+    background-color: #041349;
     scroll-behavior: smooth;
     color: #fff;
+    padding-top: 70px;
 }
-.kmc-logo {
-    width: 100px;
-    height: 100px;
-    background-color: #333;
-    border-radius: 50%;
+
+/* Make the header sticky and minimize height */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 1030; /* keeps it above content but below modals if any */
+  background-color: #198754; /* Bootstrap green */
+  min-height: 60px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* optional for elevation */
+}
+
+/* Ensure the navbar doesn’t add unnecessary padding */
+.navbar {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  /*height: 40vh;*/
+}
+
+.navbar-brand {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
-.kmc-logo img {
-    width: 100%;
-    height: 100%;
+.navbar-brand img {
+    width: 40px;
+    height: 40px;
+    border-radius: 20%;
+}
+.mobile-menu {
+    background: #0f5132;
+}
+
+.mobile-menu a {
+    color: #fff;
+    padding: 0.75rem 1rem;
+    display: block;
+    text-decoration: none;
+}
+
+.mobile-menu a:hover {
+    background-color: #146c46;
 }
 
 /*admin dashboard*/
@@ -40,10 +70,7 @@ body, html {
 }
 
 /* BASE HTML */
-body, html {
-            top: 0;
-            padding: 0;
-}
+
 .navbar {
     background-color: forestgreen;
     box-shadow: 0 5px 12px darkred;
@@ -121,6 +148,26 @@ nav .container img {
     height: 40px;
     width: 40px;
 }
+/* in your style.css or inside a <style>…</style> */
+
+.desktop-glass-nav {
+      position: absolute;
+      top: 60px;               /* match green navbar height */
+      left: 0; right: 0;
+      margin: 0 auto;
+      max-width: 800px;        /* optional limit width */
+      padding: 0.5rem 1rem;
+
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 0.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+
+      z-index: 1020;           /* just below navbar (1030) */
+}
+
+
 
 /*hero page*/
 
@@ -142,6 +189,7 @@ nav .container img {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    /*background-image: url("../images/hero.jpg");*/
 }
 
 /*login page*/
@@ -278,6 +326,19 @@ h2 {
     }
 }
 
+/* base navbar */
+@media (min-width: 992px) {
+    .mobile-menu {
+        display: none !important;
+    }
+}
+
+/*body*/
+@media (max-width: 768px) {
+  body {
+    padding-top: 140px; /* if mobile menu expands below */
+  }
+}
 
 /*sidebar*/
 @media (max-width: 768px) {

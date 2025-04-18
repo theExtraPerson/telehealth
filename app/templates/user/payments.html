@@ -2,46 +2,91 @@
 {% block title %}Payments & Billing{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h3 class="gsap-animate">Payments & Billing</h3>
+<div class="container py-4">
+    <h3 class="gsap-animate mb-4">Payments & Billing</h3>
 
-    <div class="card gsap-animate mb-4">
+    <!-- Current Services Summary -->
+    <div class="card gsap-animate shadow-sm mb-5">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <span>Current Consultation</span>
+            <span class="badge bg-light text-dark">Unpaid</span>
+        </div>
         <div class="card-body">
-            {% for item in services %}
-                <p>{{ item.name }}: ${{ item.price }}</p>
-            {% endfor %}
-            <p><strong>Total: ${{ total }}</strong></p>
-            <a href="{{ url_for('user_dashboard.make_payment') }}" class="btn btn-success">Pay Now</a>
+            {% if last_payment and last_payment.status == 'Pending' %}
+                <ul class="list-group list-group-flush mb-3">
+                    {% set total = 0 %}
+                    {% for doctor in last_payment.doctors %}
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>{{ doctor.name }} ({{ doctor.specialty.name }})</span>
+                            <span>${{ doctor.specialty.price }}</span>
+                            {% set total = total + doctor.specialty.price %}
+                        </li>
+                    {% endfor %}
+                </ul>
+                <p class="fw-bold text-end">Total: ${{ total }}</p>
+                <div class="text-end">
+                    <a href="{{ url_for('user_dashboard.make_payment', payment_id=last_payment.id) }}" class="btn btn-success">
+                        Pay Now
+                    </a>
+                </div>
+            {% else %}
+                <p class="text-muted">No unpaid consultations at the moment.</p>
+            {% endif %}
         </div>
     </div>
 
-    <h4 class="mt-4 gsap-animate">Payment History</h4>
-    <table class="table gsap-animate">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Service</th>
-                <th>Amount</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for payment in payment_history %}
-            <tr>
-                <td>{{ payment.date.utctime('%B %d, %Y') }}</td>
-                <td>{{ payment.service }}</td>
-                <td>${{ payment.amount }}</td>
-                <td>
-                    {% if payment.status == 'Paid' %}
-                        <span class="badge bg-success">Paid</span>
-                    {% else %}
-                        <span class="badge bg-warning text-dark">{{ payment.status }}</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <!-- Payment History Table -->
+    <div class="card gsap-animate shadow-sm">
+        <div class="card-header bg-secondary text-white">
+            Payment History
+        </div>
+        <div class="card-body p-0">
+            {% if payments %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Doctor</th>
+                            <th>Specialty</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in payments %}
+                            <tr>
+                                <td>{{ payment.date.strftime('%b %d, %Y') }}</td>
+                                <td>{{ payment.doctor.name }}</td>
+                                <td>{{ payment.doctor.specialty.name }}</td>
+                                <td>${{ payment.amount }}</td>
+                                <td>
+                                    {% if payment.status == 'Paid' %}
+                                        <span class="badge bg-success">Paid</span>
+                                    {% else %}
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if payment.status == 'Pending' %}
+                                        <a href="{{ url_for('user_dashboard.make_payment', payment_id=payment.id) }}"
+                                           class="btn btn-sm btn-outline-primary">
+                                            Pay Now
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+                <div class="p-3">
+                    <p class="text-muted mb-0">No previous payments found.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 </div>
 {% endblock %}
-

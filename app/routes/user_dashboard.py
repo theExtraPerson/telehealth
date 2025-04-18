@@ -5,13 +5,14 @@ from flask import (
 )
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
+from flask_wtf.csrf import generate_csrf
 from app import db
 from app.forms import AppointmentForm, ProfileForm
 from app.models import appointment
 from app.models.appointment import Appointment
 from app.models.payments import Payment
 from app.models.prescription import Prescription
-from app.models.user import Patient, Doctor
+from app.models.user import Patient, Doctor, User
 from app.models.message import Message
 from app.services.medical_records_service import MedicalRecordsService
 
@@ -109,7 +110,7 @@ def manage_appointments():
 @login_required
 def search_doctors():
     query = request.args.get('q', '')
-    doctors = Doctor.query.filter(Doctor.name.ilike(f'%{query}%')).all()
+    doctors = Doctor.query.filter(User.username.ilike(f'%{query}%')).all()
 
     if request.accept_mimetypes.best == 'application/json':
         return jsonify([{'id': d.id, 'name': d.name, 'speciality': d.speciality} for d in doctors])
@@ -220,13 +221,13 @@ def upload_record():
     # Metadata from form
     description  = request.form.get('description', '')
     doctor_name  = request.form.get('doctor_name', '')
-    date_of_birth = request.form.get('date_of_birth')
+    date_of_visit = request.form.get('date_of_visit')
 
     service = _get_service()
     service.create_medical_record_with_file(
         description=description,
         doctor_name=doctor_name,
-        date_of_birth=date_of_birth,
+        date_of_visit=date_of_visit,
         file_path=filepath,
         user_id=current_user.id
     )
@@ -303,7 +304,7 @@ def invoice(payment_id):
 @user_dashboard.route('/notifications')
 @login_required
 def notifications():
-    notifications = Message.query.filter_by(user_id=current_user.id).order_by(Notification.timestamp.desc()).all()
+    notifications = Message.query.filter_by(user_id=current_user.id).order_by(Message.timestamp.desc()).all()
     unread_count = sum(1 for n in notifications if not n.seen)
 
     return render_template(

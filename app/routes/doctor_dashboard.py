@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, jsonify, request, redirect, url_for
 
+from app import db
 from app.forms import DoctorProfileForm
 from app.models.appointment import Appointment
 from app.models.prescription import Prescription
@@ -31,10 +32,11 @@ def dashboard():
 @doctor_dashboard.route('/doctor/profile/edit', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
+    from app import db
     doctor = current_user
     form = DoctorProfileForm(obj=doctor)
 
-    if request.method == 'POST':
+    if request.method == 'POST' and form.validate_on_submit():
         doctor.name = request.form.get('name')
         doctor.email = request.form.get('email')
         doctor.bio = request.form.get('bio')
@@ -55,7 +57,7 @@ def edit_profile():
         import json
         doctor.schedule = json.dumps(schedule)
 
-        doctor.save()
+        db.session.commit()
         return redirect(url_for('doctor_dashboard.dashboard'))
 
     # Load schedule for display

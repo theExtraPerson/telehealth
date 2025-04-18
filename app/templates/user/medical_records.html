@@ -6,15 +6,41 @@
 
     <!-- Upload Medical Record -->
     <div class="card p-4 mb-4">
-        <h4 class="card-title">Upload Medical Record</h4>
-        <form method="POST" enctype="multipart/form-data" action="/upload">
-            <div class="mb-3">
-                <label for="fileUpload" class="form-label">Choose File</label>
-                <input type="file" class="form-control" id="fileUpload" name="file">
-            </div>
-            <button type="submit" class="btn btn-custom w-100">Upload</button>
-        </form>
-    </div>
+    <h4 class="card-title">Upload Medical Record</h4>
+    <form method="POST" enctype="multipart/form-data" action="/upload">
+        <!-- File Upload -->
+        <div class="mb-3">
+            <label for="fileUpload" class="form-label">Medical Record File</label>
+            <input type="file" class="form-control" id="fileUpload" name="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" required>
+            <div class="form-text">Accepted formats: PDF, JPG, PNG, DOC (Max 10MB)</div>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <input type="text" class="form-control" id="description" name="description" required>
+        </div>
+
+        <!-- Doctor's Name -->
+        <div class="mb-3">
+            <label for="doctor_name" class="form-label">Doctor's Name</label>
+            <input type="text" class="form-control" id="doctor_name" name="doctor_name">
+        </div>
+
+        <!-- Date of Birth -->
+        <div class="mb-3">
+            <label for="date_of_birth" class="form-label">Date of Visit</label>
+            <label for="date_of_visit"></label><input type="date" class="form-control" id="date_of_visit" name="date_of_visit">
+        </div>
+
+        <!-- CSRF Protection (if using Flask-WTF) -->
+        {% if csrf_token %}
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}"/>
+        {% endif %}
+
+        <button type="submit" class="btn btn-custom w-100">Upload Record</button>
+    </form>
+</div>
 
     <!-- Accordion for Medical Records -->
     <div class="accordion" id="recordsAccordion">
@@ -23,14 +49,14 @@
             <h2 class="accordion-header" id="heading{{ record.id }}">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                     data-bs-target="#collapse{{ record.id }}" aria-expanded="false" aria-controls="collapse{{ record.id }}">
-                    {{ record.name }} - {{ record.uploaded_at.strftime('%Y-%m-%d') }}
+                    {{ record.name }} - {{ record.uploaded_at.utctime('%Y-%m-%d') }}
                 </button>
             </h2>
             <div id="collapse{{ record.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ record.id }}"
                 data-bs-parent="#recordsAccordion">
                 <div class="accordion-body">
                     <p><strong>Record Name:</strong> {{ record.name }}</p>
-                    <p><strong>Uploaded:</strong> {{ record.uploaded_at.strftime('%B %d, %Y') }}</p>
+                    <p><strong>Uploaded:</strong> {{ record.uploaded_at.utctime('%B %d, %Y') }}</p>
                     <p><strong>Description:</strong> {{ record.description or 'No description available.' }}</p>
 
                     <div class="d-grid gap-2 mt-3">
@@ -47,7 +73,9 @@
                         <!-- Grant Access -->
                         <form method="POST" action="/grant-access" class="mt-2">
                             <input type="hidden" name="record_id" value="{{ record.id }}">
-                            <input type="text" name="doctor_id" placeholder="Doctor ID" class="form-control mb-2" required>
+                            <label>
+                                <input type="text" name="doctor_id" placeholder="Doctor ID" class="form-control mb-2" required>
+                            </label>
                             <button type="submit" class="btn btn-outline-warning w-100">Grant Access</button>
                         </form>
                     </div>
