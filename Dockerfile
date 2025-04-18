@@ -1,7 +1,7 @@
 FROM python:3.11-slim
 
 # Install OS-level build dependencies
-RUN apt-get update && apt-get install -y --no-istall-recommends \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     gcc \
     libffi-dev \
