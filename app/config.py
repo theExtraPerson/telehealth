@@ -10,6 +10,7 @@ class Config:
     JWT_COOKIE_SECURE = False  # Set to True in production (for HTTPS connections)
     JWT_ACCESS_COOKIE_PATH = '/'
     JWT_REFRESH_COOKIE_PATH = '/token/refresh'
+    WTF_CSRF_SECRET_KEY = os.environ.get('WTF_CSRF_SECRET_KEY')
     env_file = ".env"
     case_sensitive = True
 
