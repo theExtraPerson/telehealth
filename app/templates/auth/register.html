@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container py-5">
+<div class="container">
   <div class="row justify-content-center">
     <div class="col-lg-6">
-      <div class="card shadow-lg p-4 rounded-4" id="registerCard">
+      <div class="glass-card" id="registerCard">
         <h2 class="text-center mb-4">Create an Account</h2>
 
         <form id="registerForm" method="POST" action="{{ url_for('auth.register') }}">
@@ -29,10 +29,10 @@
             {{ form.phone(class="form-control", placeholder="Phone Number") }}
           </div>
 
-          <div class="mb-3">
-            {{ form.dob.label(class="form-label") }}
-            {{ form.dob(class="form-control") }}
-          </div>
+{#          <div class="mb-3">#}
+{#            {{ form.dob.label(class="form-label") }}#}
+{#            {{ form.dob(class="form-control") }}#}
+{#          </div>#}
 
           <div class="mb-3">
             {{ form.gender.label(class="form-label") }}
@@ -98,6 +98,22 @@
   </div>
 </div>
 
+<!-- Failure Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content border-danger">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="errorModalLabel">Registration Failed</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="errorMessage">
+        Something went wrong. Please check the fields and try again.
+      </div>
+    </div>
+  </div>
+</div>
+
+
 {% endblock %}
 
 {% block scripts %}
@@ -130,18 +146,19 @@
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          // Set the success message
-          document.getElementById('successMessage').textContent = data.message;
+            // Set the success message
+            document.getElementById('successMessage').textContent = data.message;
 
-          // Show the modal
-          const successModal = new bootstrap.Modal(document.getElementById('successModal'));
-          successModal.show();
-
-          // Add event listener for when modal is hidden
-          document.getElementById('successModal').addEventListener('hidden.bs.modal', function() {
-            // Redirect to login page
-            window.location.href = data.redirect;
-          });
+            // Show the modal
+            const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+            successModal.show();
+            document.getElementById('successModal').addEventListener('hidden.bs,modal', function () {
+                window.location.href = data.redirect;
+            });
+        } else {
+            const errorModal = new bootsrap.Modal(document.getElementById('errorModal'));
+            document.getElementById('errorMessage').textContent = data.message || "Please cross check your inputs and try again later.";
+            errorModal.show
         }
       })
       .catch(error => {

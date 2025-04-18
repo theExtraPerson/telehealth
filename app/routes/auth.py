@@ -76,12 +76,13 @@ def login():
         if user and check_password_hash(user.password_hash, password):
             if user.role == form.role.data:
                 login_user(user)
+                flash('Login successful!', 'success')
                 return jsonify({
                     'success': True,
                     'message': 'Login successful!',
                     'redirect': get_dashboard_url(user.role)
                 })
-
+        flash('Login failed!, Please try again later.', 'warning')
         return jsonify({
             'success': False,
             'errors': {'form': 'Invalid credentials'}

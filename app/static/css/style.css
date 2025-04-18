@@ -8,7 +8,9 @@ body, html {
     background-color: #041349;
     scroll-behavior: smooth;
     color: #fff;
-    padding-top: 70px;
+    padding-top: 15px;
+    height: 100vh;
+    font-weight: 400;
 }
 
 /* Make the header sticky and minimize height */
@@ -16,7 +18,7 @@ header {
   position: sticky;
   top: 0;
   z-index: 1030; /* keeps it above content but below modals if any */
-  background-color: #198754; /* Bootstrap green */
+  /*background-color: #198754; !* Bootstrap green *!*/
   min-height: 60px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* optional for elevation */
 }
@@ -56,8 +58,16 @@ header {
 
 /*admin dashboard*/
 
-.container {
-    margin-top: 20px;
+.container-fluid {
+    top: 0;
+    margin-top: 0;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.row.g-4 {
+    margin-left: 0;
+    margin-right: 0;
 }
 
 .card {
@@ -151,20 +161,21 @@ nav .container img {
 /* in your style.css or inside a <style>…</style> */
 
 .desktop-glass-nav {
-      position: absolute;
-      top: 40px;               /* match green navbar height */
-      left: 0; right: 0;
-      margin: 0 auto;
-      max-width: 800px;        /* optional limit width */
-      padding: 0.5rem 1rem;
+    position: fixed;
+    top: 5rem;               /* match green navbar height */
+    left: 0; right: 0;
+    margin: 0 auto;
+    max-width: 800px;        /* optional limit width */
+    padding: 0.5rem 1rem;
 
-      background: rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-radius: 0.5rem;
-      border: 1px solid rgba(255, 255, 255, 0.3);
 
-      z-index: 1020;           /* just below navbar (1030) */
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+
+    z-index: 1020;           /* just below navbar (1030) */
 }
 
 
@@ -195,25 +206,117 @@ nav .container img {
 /*login page*/
 
 .login-section {
-    /*background: linear-gradient(135deg, #667eea, #764ba2);*/
+    top: 0;
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 2rem;
+    overflow: hidden;
 }
 .login-container {
-    background: white;
+    background: rgb(255, 255, 255, 0.15);
     padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 2rem;
+    box-shadow: 0 4px 25px rgb(255, 255, 255, 0.2);
     text-align: center;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: none;
+
+    width: 65%;
+    max-width: 100%;
+    color: #fff;
+    transition: all .3s ease-in-out;
+
+}
+
+.form-control:focus {
+    border-color: #1d4a0b;
+    box-shadow: 0 0 0 0.25rem rgb(105, 204, 65);
 }
 
 .index-decor {
     padding-top: 100px;
 }
 
-/* doctor dashboard */
+/* Register Template*/
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2rem;
+    padding: 2rem;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    /*border: 1px solid rgb(201, 207, 200);*/
+    border: none;
+    box-shadow: 0 4px 25px rgb(255, 255, 255, 0.25);
+    color: #fff;
+    font-weight: lighter;
+    transition: all 0.3s ease-in-out;
+}
+
+.glass-card h2,
+.glass-card label,
+.glass-card p,
+.glass-card input,
+.glass-card select,
+.glass-card textarea {
+    color: #fff;
+}
+
+  .glass-card input::placeholder {
+    color: #e0e0e0;
+  }
+
+  .glass-card .form-control,
+  .glass-card .form-select,
+  .glass-card textarea {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 20px;
+    color: #010823;
+  }
+
+.glass-card .form-control:focus,
+.glass-card .form-select:focus,
+.glass-card textarea:focus {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border: 1px solid #ffffff66;
+    box-shadow: none;
+}
+
+.glass-card .btn-primary {
+    background-color: rgba(255, 255, 255, 0.3);
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.glass-card .btn-primary:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+    color: #000;
+}
+
+@media (max-width: 768px) {
+    .glass-card {
+      padding: 1.5rem;
+      margin: 1rem;
+    }
+}
+
+.modal-content {
+    border-radius: 1rem;
+  }
+
+.modal-body p {
+    font-weight: 500;
+    color: #333;
+  }
+
 
 /* GENERAL PAGE STYLING */
 /*body {*/
@@ -242,6 +345,32 @@ h2 {
 
 .card-profile img {
     border: 3px solid #0d6efd;
+}
+
+.sidebar {
+    min-height: 100vh;
+    position: sticky;
+    top: 0;
+    border-right: 1px solid #df1212;
+
+}
+
+.sidebar img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+    object-fit: cover;
+}
+
+.sidebar .nav-link {
+    font-weight: 500;
+    transition: background-color .2s ease;
+}
+
+.sidebar .nav-link:hover {
+    background-color: #e9ecef;
+    border-radius: 15px;
 }
 
 /* SIDEBAR LINKS */
@@ -343,8 +472,9 @@ h2 {
 /*sidebar*/
 @media (max-width: 768px) {
     .sidebar {
-        padding-top: 2rem;
         text-align: left;
+        min-height: auto;
+        padding: 1rem;
     }
 
     .sidebar img {
@@ -357,11 +487,20 @@ h2 {
         padding-left: 1rem;
         padding-right: 1rem;
     }
+    .row.g-4 > [class^="col-"] {
+        margin-bottom: 1rem;
+    }
+
 }
+
 
 @media (max-width: 576px) {
     .sidebar {
         text-align: center;
+    }
+    .login-container {
+        padding: 1.5rem;
+        border-radius: 1rem;
     }
 }
 
