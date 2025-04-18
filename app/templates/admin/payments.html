@@ -1,0 +1,121 @@
+{% extends "admin/base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Payments Dashboard</h2>
+
+    <!-- Metrics Summary -->
+    <div class="row text-white">
+        <div class="col-md-3 mb-4">
+            <div class="card bg-primary shadow">
+                <div class="card-body">
+                    <h6>Total Payments</h6>
+                    <h3>${{ total_amount }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card bg-success shadow">
+                <div class="card-body">
+                    <h6>Successful</h6>
+                    <h3>{{ success_count }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card bg-warning shadow">
+                <div class="card-body">
+                    <h6>Pending</h6>
+                    <h3>{{ pending_count }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card bg-danger shadow">
+                <div class="card-body">
+                    <h6>Failed</h6>
+                    <h3>{{ failed_count }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js Billing Overview -->
+    <div class="card mb-5 shadow">
+        <div class="card-body">
+            <h5>Monthly Payment Volume</h5>
+            <canvas id="paymentChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Table of Payments -->
+    <div class="card shadow">
+        <div class="card-body">
+            <h5>All Transactions</h5>
+            <input type="text" class="form-control mb-3" placeholder="Search by user, reference..." id="searchInput">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered" id="paymentsTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>User</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Method</th>
+                            <th>Date</th>
+                            <th>Reference</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in payments %}
+                        <tr>
+                            <td>{{ payment.id }}</td>
+                            <td>{{ payment.user.full_name }}</td>
+                            <td>${{ payment.amount }}</td>
+                            <td><span class="badge bg-{{ 'success' if payment.status == 'success' else 'warning' if payment.status == 'pending' else 'danger' }}">{{ payment.status }}</span></td>
+                            <td>{{ payment.method }}</td>
+                            <td>{{ payment.date.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ payment.reference }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-danger">Refund</button>
+                                <button class="btn btn-sm btn-outline-primary">View</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js for Payment Analytics -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('paymentChart').getContext('2d');
+    const paymentChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ months | safe }},
+            datasets: [{
+                label: 'Monthly Revenue',
+                data: {{ monthly_data | safe }},
+                backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                borderColor: '#007bff',
+                borderWidth: 2,
+                tension: 0.4
+            }]
+        }
+    });
+
+    // Search payments table
+    document.getElementById("searchInput").addEventListener("keyup", function () {
+        const filter = this.value.toLowerCase();
+        const rows = document.querySelectorAll("#paymentsTable tbody tr");
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(filter) ? "" : "none";
+        });
+    });
+</script>
+{% endblock %}

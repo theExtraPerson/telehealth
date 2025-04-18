@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5 py-xl-5">
+    <h2 class="text-center mb-4">Doctor Dashboard</h2>
+    <div class="row">
+        <!-- Left Sidebar with Navigation -->
+        <div class="col-md-3">
+            <!-- Doctor Profile Section -->
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <img src="{{ current_user.profile_image or url_for('static', filename='images/default_profile.png') }}"
+                         alt="Profile Image" class="rounded-circle mb-2" style="width: 100px; height: 100px;">
+                    <h5 class="card-title">{{ current_user.name or current_user.username }}</h5>
+                    <a href="{{ url_for('doctor_dashboard.edit_profile') }}" class="btn btn-sm btn-primary">Edit Profile</a>
+                </div>
+            </div>
+            <!-- Sidebar Navigation Links -->
+            <div class="list-group mb-4">
+                <a href="{{ url_for('doctor_dashboard.dashboard') }}" class="list-group-item list-group-item-action" id="dashboardLink">
+                    <i class="bi bi-speedometer2"></i> Dashboard Home
+                </a>
+                <a href="{{ url_for('doctor_dashboard.manage_appointments') }}" class="list-group-item list-group-item-action" id="appointmentsLink">
+                    <i class="bi bi-calendar-check"></i> Manage Appointments
+                </a>
+                <a href="{{ url_for('doctor_dashboard.start_teleconference') }}" class="list-group-item list-group-item-action" id="teleconferenceLink">
+                    <i class="bi bi-camera-video"></i> Teleconference
+                </a>
+                <a href="{{ url_for('doctor_dashboard.collaborate', doctor_id=doctor.id) }}" class="list-group-item list-group-item-action" id="collaborationLink">
+                    <i class="bi bi-people"></i> Collaborate with Doctors
+                </a>
+                <a href="{{ url_for('doctor_dashboard.manage_prescriptions') }}" class="list-group-item list-group-item-action" id="prescriptionsLink">
+                    <i class="bi bi-file-earmark-medical"></i> Manage Prescriptions
+                </a>
+                <a href="{{ url_for('doctor_dashboard.view_medical_records') }}" class="list-group-item list-group-item-action" id="medicalRecordsLink">
+                    <i class="bi bi-file-earmark-text"></i> View Medical Records
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <!-- Main Content Area -->
+        <div class="col-md-9">
+            <div class="dashboard-grid">
+                <!-- Appointments Card -->
+                <div id="appointments" class="card">
+                    <div class="card-header bg-primary text-white">
+                        <i class="bi bi-calendar-check"></i> Appointments
+                    </div>
+                    <div class="card-body">
+                        <h6>Upcoming Appointments</h6>
+                        <ul class="list-group">
+                            {% for appointment in appointments %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ appointment.patient_name }} - <span>{{ appointment.date.strftime('%I:%M %p, %b %d') }}</span>
+                                <div>
+                                    <a href="{{ url_for('appointment_details', appointment_id=appointment.id) }}"
+                                       class="btn btn-sm btn-secondary" title="View Details">
+                                       <i class="bi bi-info-circle"></i>
+                                    </a>
+                                    <a href="{{ url_for('appointment_reschedule', appointment_id=appointment.id) }}"
+                                       class="btn btn-sm btn-warning" title="Reschedule">
+                                       <i class="bi bi-calendar"></i>
+                                    </a>
+                                </div>
+                            </li>
+                            {% else %}
+                            <li class="list-group-item">No upcoming appointments.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Prescriptions Card -->
+                <div id="prescriptions" class="card">
+                    <div class="card-header bg-success text-white">
+                        <i class="bi bi-file-earmark-medical"></i> Prescriptions
+                    </div>
+                    <div class="card-body">
+                        <h6>Recent Prescriptions</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Patient</th>
+                                        <th>Medicine</th>
+                                        <th>Dosage</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for prescription in prescriptions %}
+                                    <tr>
+                                        <td>{{ prescription.patient_name }}</td>
+                                        <td>{{ prescription.medicine_name }}</td>
+                                        <td>{{ prescription.dosage }}</td>
+                                        <td>
+                                            <a href="{{ url_for('edit_prescription', prescription_id=prescription.id) }}"
+                                               class="btn btn-sm btn-outline-info" title="Edit">
+                                               <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                            <a href="{{ url_for('print_prescription', prescription_id=prescription.id) }}"
+                                               class="btn btn-sm btn-outline-primary" title="Print">
+                                               <i class="bi bi-printer"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="4">No prescriptions found.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medical Records Card -->
+                <div id="medicalRecords" class="card">
+                    <div class="card-header bg-danger text-white">
+                        <i class="bi bi-file-earmark-text"></i> Medical Records
+                    </div>
+                    <div class="card-body">
+                        <h6>Recent Medical History</h6>
+                        <div style="max-height: 200px; overflow-y: auto;">
+                            <ul class="list-group">
+                                {% for record in medical_records %}
+                                <li class="list-group-item">
+                                    Visit: {{ record.description }}
+                                    <small class="text-muted">- {{ record.date.strftime('%b %d, %Y') }}</small>
+                                    <a href="{{ url_for('view_medical_record', record_id=record.id) }}" class="btn btn-link btn-sm">View PDF</a>
+                                </li>
+                                {% else %}
+                                <li class="list-group-item">No medical records found.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Teleconference Card -->
+                <div id="teleconference" class="card">
+                    <div class="card-header bg-info text-white">
+                        <i class="bi bi-camera-video"></i> Teleconference
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-primary btn-block mb-2" id="startCall" title="Start a new call">
+                          <i class="bi bi-camera-video"></i> Start Call
+                        </button>
+                        <!-- Additional dynamic teleconference data can be rendered here -->
+                        <div class="alert alert-light" role="alert">
+                          <strong>Active Session:</strong> Waiting room ({{ active_patients_count or 0 }} patients)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Collaboration Card -->
+                <div id="collaboration" class="card">
+                    <div class="card-header bg-warning text-dark">
+                        <i class="bi bi-people"></i> Collaboration
+                    </div>
+                    <div class="card-body">
+                        <label for="searchDoctors" class="font-weight-bold">Search for Doctors:</label>
+                        <input type="text" class="form-control mb-3" id="searchDoctors" placeholder="Enter name or specialty">
+                        <ul class="list-group">
+                            {% for doctor in doctors %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ doctor.name }} ({{ doctor.specialty }})
+                                <a href="{{ url_for('send_collaboration_invite', doctor_id=doctor.id) }}" class="btn btn-sm btn-outline-primary" title="Send Invite">
+                                    <i class="bi bi-person-plus"></i>
+                                </a>
+                            </li>
+                            {% else %}
+                            <li class="list-group-item">No doctors available.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div><!-- End of dashboard grid -->
+        </div>
+    </div>
+</div>
+
+<!-- GSAP Animations -->
+<script>
+    gsap.from(".doc-card", { opacity: 0, y: 50, duration: 0.8, stagger: 0.2 });
+    gsap.from(".list-group-item", { opacity: 0, x: -50, duration: 0.8, stagger: 0.1 });
+
+    // Smooth Scroll for Sidebar Navigation
+    document.querySelectorAll(".list-group-item").forEach(item => {
+        item.addEventListener("click", function(e) {
+            // prevent default if href is an anchor reference
+            e.preventDefault();
+            const target = document.querySelector(e.currentTarget.getAttribute("href"));
+            if (target) {
+                window.scrollTo({ top: target.offsetTop - 60, behavior: "smooth" });
+            }
+        });
+    });
+</script>
+{% endblock %}

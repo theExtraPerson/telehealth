@@ -1,5 +1,220 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <p>this is the contact us page</p>
+    <main>
+        <!-- Page Header -->
+        <section class="page-header">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <h1 class="animate__animated animate__fadeIn">Contact Us</h1>
+{#                        <nav aria-label="breadcrumb">#}
+{#                            <ol class="breadcrumb justify-content-center">#}
+{#                                <li class="breadcrumb-item"><a href="../index.html">Home</a></li>#}
+{#                                <li class="breadcrumb-item active" aria-current="page">Contact</li>#}
+{#                            </ol>#}
+{#                        </nav>#}
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hospital Introduction Section -->
+        <section class="hospital-intro py-5">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 mb-4 mb-lg-0">
+                        <div class="intro-content animate__animated animate__fadeInLeft">
+                            <h2>Welcome to Konge Medical City - Hospital</h2>
+                            <p class="lead">Healthy Living</p>
+                            <p>At KMC - Hospital, we are dedicated to providing efficient and affordable healthcare services to all our patients. Our state-of-the-art facilities and professional medical team ensure that you receive the best care possible.</p>
+                            <p>We believe in a patient-centered approach to healthcare, focusing on your individual needs and concerns. </p>
+                            <p>We believe in the best we can possibly be in providing comprehensive care that addresses both your physical and emotional well-being.</p>
+                            <p>We believe in <span class="lead">A dream with direction</span></p>
+                            <div class="contact-highlights mt-4">
+                                <div class="highlight-item">
+                                    <i class="fas fa-phone-alt"></i>
+                                    <div>
+                                        <h5>Emergency Hotline</h5>
+                                        <p><a href="tel:+256751309937">+256 751 309 937</a></p>
+                                    </div>
+                                </div>
+                                <div class="highlight-item">
+                                    <i class="fas fa-envelope"></i>
+                                    <div>
+                                        <h5>Email Us</h5>
+                                        <p><a href="mailto:kongemcityhospital@gmail.com">kongemcityhospital@gmail.com</a></p>
+                                    </div>
+                                </div>
+                                <div class="highlight-item">
+                                    <i class="fas fa-clock"></i>
+                                    <div>
+                                        <h5>Working Hours</h5>
+                                        <p>24/7 Emergency Services</p>
+                                        <p>Mon-Fri: 8:00 AM - 8:00 PM</p>
+                                        <p>Sat-Sun: 9:00 AM - 5:00 PM</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="intro-image animate__animated animate__fadeInRight">
+                            <img src="../assets/images/hospital.jpg" alt="KMC - Hospital Building" class="img-fluid rounded shadow">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Form and Map Section -->
+        <section class="contact-section py-5 bg-light" id="contact">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6 mb-4 mb-lg-0">
+                        <div class="contact-form-container animate__animated animate__fadeInUp">
+                            <h3>Get in Touch</h3>
+                            <p>Have questions or need more information? Fill out the form below and we'll get back to you as soon as possible.</p>
+                            <form id="contactForm" class="contact-form">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="name" class="form-label">Full Name</label>
+                                        <input type="text" class="form-control" id="name" placeholder="Your Name" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="email" class="form-label">Email Address</label>
+                                        <input type="email" class="form-control" id="email" placeholder="Your Email" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">Phone Number</label>
+                                    <input type="tel" class="form-control" id="phone" placeholder="Your Phone Number">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="subject" class="form-label">Subject</label>
+                                    <input type="text" class="form-control" id="subject" placeholder="Subject">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="message" class="form-label">Message</label>
+                                    <textarea class="form-control" id="message" rows="5" placeholder="Your Message" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Send Message</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="map-container animate__animated animate__fadeInUp">
+                            <h3>Find Us</h3>
+                            <p>We are conveniently located in Konge, Along Buziga Road, Opposite Gaz Petrol Station, Kampala, Uganda.</p>
+                            <div class="map-wrapper">
+                                <!-- Replace the src with your actual Google Maps embed code -->
+                                <iframe
+                                    src="https://www.google.com/maps/place/Konge+Medical+City+-+hospital/@0.2766563,32.6013719,17z/data=!3m1!4b1!4m6!3m5!1s0x177dbdeb0f3f8d31:0x3457f6b0bff4bcb0!8m2!3d0.2766509!4d32.6039468!16s%2Fg%2F11qnk8d7tb?entry=ttu&g_ep=EgoyMDI1MDQxMy4wIKXMDSoASAFQAw%3D%3D"
+                                    width="100%"
+                                    height="400"
+                                    style="border:0;"
+                                    allowfullscreen=""
+                                    loading="lazy"
+                                    title="Kampala International Medical Centre Location">
+                                </iframe>
+                            </div>
+                            <div class="directions-link mt-3">
+                                <a href="https://www.google.com/maps/dir/0.2761633,32.5938274/7JG3%2BMH8+Konge+Medical+City+-+hospital,+Road,+Kampala/@0.2779362,32.5885593,15z/data=!3m1!4b1!4m9!4m8!1m1!4e1!1m5!1m1!1s0x177dbdeb0f3f8d31:0x3457f6b0bff4bcb0!2m2!1d32.6039469!2d0.2766508?entry=ttu&g_ep=EgoyMDI1MDQxMy4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener" class="btn btn-outline-primary">
+                                    <i class="fas fa-directions me-2"></i> Get Directions
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Appointment Booking Section -->
+        <section class="appointment-section py-5" id="appointment">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 text-center">
+                        <h2 class="animate__animated animate__fadeIn">Book an Appointment</h2>
+                        <p class="lead animate__animated animate__fadeIn animate__delay-1s">Schedule a visit with our healthcare professionals</p>
+                    </div>
+                </div>
+                <div class="row justify-content-center mt-4">
+                    <div class="col-lg-8">
+                        <div class="appointment-form-container animate__animated animate__fadeInUp animate__delay-1s">
+                            <form id="appointmentForm" class="appointment-form">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="appointmentName" class="form-label">Full Name</label>
+                                        <input type="text" class="form-control" id="appointmentName" placeholder="Your Name" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="appointmentEmail" class="form-label">Email Address</label>
+                                        <input type="email" class="form-control" id="appointmentEmail" placeholder="Your Email" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="appointmentPhone" class="form-label">Phone Number</label>
+                                        <input type="tel" class="form-control" id="appointmentPhone" placeholder="Your Phone Number" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="appointmentDate" class="form-label">Preferred Date</label>
+                                        <input type="date" class="form-control" id="appointmentDate" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="appointmentTime" class="form-label">Preferred Time</label>
+                                        <input type="time" class="form-control" id="appointmentTime" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="department" class="form-label">Department</label>
+                                        <select class="form-select" id="department" required>
+                                            <option value="" selected disabled>Select Department</option>
+                                            <option value="ENT">Ear, Nose and Throat Clinic</option>
+                                            <option value="antenatal">Antenatal Care</option>
+                                            <option value="laboratory">Laboratory and Diagnostics Services</option>
+                                            <option value="maternal">Maternal and Child Health</option>
+                                            <option value="surgery">Major and Minor Surgeries</option>
+                                            <option value="dermatology">Dermatology and Skin Care Clinic</option>
+                                            <option value="general">General Consultation</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="appointmentMessage" class="form-label">Additional Information</label>
+                                    <textarea class="form-control" id="appointmentMessage" rows="3" placeholder="Please provide any additional information about your condition"></textarea>
+                                </div>
+                                <div class="text-center mt-4">
+                                    <button type="submit" class="btn btn-primary btn-lg">Book Appointment</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action Section -->
+        <section class="cta-section py-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="cta-content text-center animate__animated animate__fadeIn">
+                            <h2>Need Urgent Medical Assistance?</h2>
+                            <p class="lead">Our emergency services are available 24/7. Don't hesitate to reach out.</p>
+                            <div class="cta-buttons">
+                                <a href="tel:+256777814835" class="btn btn-success btn-lg ambulance-btn">
+                                    <i class="fas fa-phone me-2"></i> Give us a Call
+                                </a>
+                                <a href="https://wa.me/+256762436435" class="btn btn-success btn-lg whatsapp-btn">
+                                    <i class="fab fa-whatsapp me-2"></i> WhatsApp Support
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 {% endblock %}

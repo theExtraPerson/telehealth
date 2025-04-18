@@ -1,8 +1,11 @@
 from flask_wtf import FlaskForm
 from wtforms import SelectField, DateTimeLocalField, TextAreaField, SubmitField
-from wtforms.fields.datetime import DateField
-from wtforms.fields.simple import StringField, PasswordField
-from wtforms.validators import DataRequired, Email
+from wtforms.fields.choices import SelectMultipleField
+from wtforms.fields.datetime import DateField, TimeField
+from wtforms.fields.numeric import IntegerField
+from wtforms.fields.simple import StringField, PasswordField, BooleanField, EmailField, TelField, FileField
+from wtforms.validators import DataRequired, Email, Optional
+from wtforms.widgets.core import CheckboxInput, ListWidget
 
 
 class AppointmentForm(FlaskForm):
@@ -18,7 +21,7 @@ class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired()])
-    role = SelectField('Role', choices=[('patient', 'Patient'), ('doctor', 'Doctor')], validators=[DataRequired()])
+    role = SelectField('Role', choices=[('patient', 'Patient'), ('doctor', 'Doctor'), ('admin', 'Admin')], validators=[DataRequired()])
     phone = StringField('Phone', validators=[DataRequired()])
     gender = SelectField('Gender', choices=[('male', 'Male'), ('female', 'Female'), ('other', 'Other')])
     dob = DateField('Date of Birth')
@@ -29,3 +32,56 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     role = SelectField('Role', choices=[('patient', 'Patient'), ('doctor', 'Doctor'), ('admin', 'Admin')], validators=[DataRequired()])
     submit = SubmitField('Login')
+
+class ProfileForm(FlaskForm):
+    name = StringField('Full Name', validators=[DataRequired()])
+    age = IntegerField('Age', validators=[Optional()])
+    gender = SelectField('Gender', choices=[
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+        ('Other', 'Other')
+    ])
+    photo = FileField('Profile Photo')
+    weight = IntegerField('Weight (kg)', validators=[Optional()])
+    height = IntegerField('Height (cm)', validators=[Optional()])
+    blood_type = StringField('Blood Type', validators=[Optional()])
+    allergies = TextAreaField('Allergies', validators=[Optional()])
+    medical_conditions = TextAreaField('Medical Conditions', validators=[Optional()])
+    submit = SubmitField('Save Changes')
+
+class DoctorProfileForm(FlaskForm):
+    # Personal Information
+    full_name = StringField('Full Name', validators=[DataRequired()])
+    gender = StringField('Gender')
+    date_of_birth = DateField('Date of Birth', format='%Y-%m-%d')
+    languages_spoken = StringField('Languages Spoken')
+    photo = FileField('Profile Photo')
+
+    # Contact Information
+    phone = TelField('Phone Number')
+    email = EmailField('Email', validators=[Email()])
+
+    # Professional Information
+    license_number = StringField('License Number')
+    medical_license = StringField('Medical License ID')
+    specialty = StringField('Specialty')
+    conditions_treated = TextAreaField('Conditions Treated')
+
+    # Availability
+    is_available = BooleanField('Currently Available for Consultation')
+    available_days = SelectMultipleField('Available Days', choices=[
+        ('Monday', 'Monday'), ('Tuesday', 'Tuesday'), ('Wednesday', 'Wednesday'),
+        ('Thursday', 'Thursday'), ('Friday', 'Friday'),
+        ('Saturday', 'Saturday'), ('Sunday', 'Sunday')
+    ], option_widget=CheckboxInput(), widget=ListWidget(prefix_label=False))
+    whatsapp = BooleanField('Available on WhatsApp')
+    phone_call = BooleanField('Available for Phone Call')
+    video_call = BooleanField('Available for Video Call')
+
+    # Weekly Schedule (simplified)
+    monday_start = TimeField('Monday Start')
+    monday_end = TimeField('Monday End')
+    # Repeat for other days...
+
+    bio = TextAreaField('Medical Bio / Experience')
+    submit = SubmitField('Save Changes')

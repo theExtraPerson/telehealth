@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, abort
 from app.models.prescription import Prescription
 from app import db  # or however you import your SQLAlchemy instance
-from app.schemas.prescription_schema import prescription_schema, prescriptions_schema
+from app.schemas.prescription_schema import prescription_schema
 
 prescriptions_api = Blueprint('prescriptions_api', __name__)
 

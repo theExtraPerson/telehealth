@@ -52,6 +52,7 @@ def register():
     }), 400
 
 
+
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -116,3 +117,4 @@ def get_dashboard_url(role):
 def redirect_to_dashboard(role):
     """Redirect to the appropriate dashboard based on role"""
     return redirect(get_dashboard_url(role))
+

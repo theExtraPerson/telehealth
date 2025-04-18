@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="card p-4">
+        <h2 class="mb-4 text-center">Doctor Profile & Availability</h2>
+
+        <form method="POST" action="{{ url_for('doctor_dashboard.edit_profile') }}" enctype="multipart/form-data">
+          {{ form.hidden_tag() }}
+
+          <h5 class="mb-3">Basic Information</h5>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              {{ form.full_name.label(class="form-label") }}
+              {{ form.full_name(class="form-control") }}
+            </div>
+            <div class="col-md-3">
+              {{ form.gender.label(class="form-label") }}
+              {{ form.gender(class="form-control") }}
+            </div>
+            <div class="col-md-3">
+              {{ form.date_of_birth.label(class="form-label") }}
+              {{ form.date_of_birth(class="form-control") }}
+            </div>
+          </div>
+          <div class="mb-3">
+            {{ form.languages_spoken.label(class="form-label") }}
+            {{ form.languages_spoken(class="form-control") }}
+          </div>
+          <div class="mb-3">
+            {{ form.photo.label(class="form-label") }}
+            {{ form.photo(class="form-control") }}
+          </div>
+
+          <h5 class="mb-3">Contact Information</h5>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              {{ form.phone.label(class="form-label") }}
+              {{ form.phone(class="form-control") }}
+            </div>
+            <div class="col-md-6">
+              {{ form.email.label(class="form-label") }}
+              {{ form.email(class="form-control", readonly=True) }}
+            </div>
+          </div>
+
+          <h5 class="mb-3">Professional Details</h5>
+          <div class="row mb-3">
+            <div class="col-md-4">
+              {{ form.license_number.label(class="form-label") }}
+              {{ form.license_number(class="form-control") }}
+            </div>
+            <div class="col-md-4">
+              {{ form.medical_license.label(class="form-label") }}
+              {{ form.medical_license(class="form-control") }}
+            </div>
+            <div class="col-md-4">
+              {{ form.specialty.label(class="form-label") }}
+              {{ form.specialty(class="form-control") }}
+            </div>
+          </div>
+          <div class="mb-3">
+            {{ form.conditions_treated.label(class="form-label") }}
+            {{ form.conditions_treated(class="form-control", rows="2") }}
+          </div>
+          <div class="mb-3">
+            {{ form.bio.label(class="form-label") }}
+            {{ form.bio(class="form-control", rows="3") }}
+          </div>
+
+          <h5 class="mb-3">Availability</h5>
+          <div class="form-check form-switch mb-3">
+            {{ form.is_available(class="form-check-input") }}
+            {{ form.is_available.label(class="form-check-label") }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Available Days</label><br>
+            {% for subfield in form.available_days %}
+              <div class="form-check form-check-inline">
+                {{ subfield(class="form-check-input") }}
+                {{ subfield.label(class="form-check-label") }}
+              </div>
+            {% endfor %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Communication Platforms</label><br>
+            <div class="form-check form-check-inline">{{ form.whatsapp(class="form-check-input") }} {{ form.whatsapp.label(class="form-check-label") }}</div>
+            <div class="form-check form-check-inline">{{ form.phone_call(class="form-check-input") }} {{ form.phone_call.label(class="form-check-label") }}</div>
+            <div class="form-check form-check-inline">{{ form.video_call(class="form-check-input") }} {{ form.video_call.label(class="form-check-label") }}</div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-6">{{ form.monday_start.label(class="form-label") }}{{ form.monday_start(class="form-control") }}</div>
+            <div class="col-md-6">{{ form.monday_end.label(class="form-label") }}{{ form.monday_end(class="form-control") }}</div>
+          </div>
+
+          <div class="text-end mt-4">
+            <button type="submit" class="btn btn-primary px-4 py-2">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+<script>
+  gsap.from(".card", {
+    opacity: 0,
+    y: 50,
+    duration: 1,
+    ease: "power2.out"
+  });
+</script>
+{% endblock %}

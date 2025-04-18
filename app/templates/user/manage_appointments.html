@@ -1,5 +1,83 @@
-<h1>here we shall set up a page for managing appointments</h1>
-<p>it shall include all previous appointments</p>
-<p>it might include suggested appointments</p>
-<p>the page shall include a ranker to rate, tip and comment on completed appointments</p>
-<p>users can book, attend, delete and reschedule appointments</p>
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5 py-xl-5" id="appointments">
+  <h2 class="text-primary mb-4">Manage Your Appointments</h2>
+
+  <!-- Upcoming & Past Appointments -->
+  <div class="accordion" id="appointmentsAccordion">
+    {% for appointment in appointments %}
+      <div class="accordion-item mb-3">
+        <h2 class="accordion-header" id="heading{{ loop.index }}">
+          <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ loop.index }}">
+            {{ appointment.appointment_date.utctime('%B %d, %Y') }} with Dr. {{ appointment.doctor.name }}
+          </button>
+        </h2>
+        <div id="collapse{{ loop.index }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#appointmentsAccordion">
+          <div class="accordion-body">
+            <p><strong>Description:</strong> {{ appointment.description }}</p>
+            <p><strong>Status:</strong> {{ appointment.status or 'Scheduled' }}</p>
+
+            <!-- Appointment Actions -->
+            <div class="d-flex flex-wrap gap-2 mt-3">
+              <a href="#" class="btn btn-outline-success btn-sm">Attend</a>
+              <a href="#" class="btn btn-outline-warning btn-sm">Reschedule</a>
+              <a href="#" class="btn btn-outline-danger btn-sm">Cancel</a>
+            </div>
+
+            {% if appointment.status == 'Completed' %}
+            <!-- Rating, Tip & Comment -->
+            <form class="mt-4">
+              <div class="mb-2">
+                <label for="rating{{ loop.index }}" class="form-label">Rate this Appointment</label>
+                <select id="rating{{ loop.index }}" name="rating" class="form-select">
+                  <option value="5">★★★★★ - Excellent</option>
+                  <option value="4">★★★★☆ - Good</option>
+                  <option value="3">★★★☆☆ - Average</option>
+                  <option value="2">★★☆☆☆ - Poor</option>
+                  <option value="1">★☆☆☆☆ - Terrible</option>
+                </select>
+              </div>
+              <div class="mb-2">
+                <label for="tip{{ loop.index }}" class="form-label">Tip (optional)</label>
+                <input type="number" min="0" class="form-control" id="tip{{ loop.index }}" name="tip" placeholder="Amount in USD">
+              </div>
+              <div class="mb-3">
+                <label for="comment{{ loop.index }}" class="form-label">Comment</label>
+                <textarea name="comment" id="comment{{ loop.index }}" class="form-control" rows="2" placeholder="Share your experience..."></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">Submit Feedback</button>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <p class="text-muted">You have no appointments yet.</p>
+    {% endfor %}
+  </div>
+
+  <!-- Suggested Appointments -->
+  <div class="mt-5">
+    <h4 class="mb-3 text-secondary">Suggested Appointments</h4>
+    <div class="row">
+      {% for doctor in suggested_doctors %}
+      <div class="col-md-4">
+        <div class="card shadow-sm mb-3">
+          <div class="card-body">
+            <h5 class="card-title">Dr. {{ doctor.name }}</h5>
+            <p class="card-text text-muted">{{ doctor.speciality }}</p>
+            <a href="{{ url_for('user_dashboard.book_appointment') }}" class="btn btn-outline-primary btn-sm">Book Appointment</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- GSAP Animations -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script>
+
+</script>
+{% endblock %}

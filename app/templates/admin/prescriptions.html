@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5 py-xl-5">
+  <h2 class="mb-4">Manage Prescriptions</h2>
+
+  <!-- Create Prescription Form -->
+  <div class="card mb-4 glass-card">
+    <div class="card-body">
+      <h5 class="card-title">Add New Prescription</h5>
+      <form id="createForm">
+        <div class="row">
+          <div class="col-md-4 mb-3">
+              <label>
+                  <input type="text" class="form-control" name="patient_name" placeholder="Patient Name" required>
+              </label>
+          </div>
+          <div class="col-md-4 mb-3">
+              <label>
+                  <input type="text" class="form-control" name="medicine" placeholder="Medicine" required>
+              </label>
+          </div>
+          <div class="col-md-4 mb-3">
+              <label>
+                  <input type="text" class="form-control" name="dosage" placeholder="Dosage" required>
+              </label>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Create Prescription</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Prescriptions Table -->
+  <div class="card glass-card">
+    <div class="card-body">
+      <h5 class="card-title">Prescriptions List</h5>
+      <table class="table table-hover" id="prescriptionsTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Patient</th>
+            <th>Medicine</th>
+            <th>Dosage</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="prescriptionBody">
+          <!-- JS Populated Rows -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const API_URL = "/api/prescriptions";
+
+  const fetchPrescriptions = async () => {
+    const res = await fetch(API_URL);
+    const data = await res.json();
+    const tbody = document.getElementById("prescriptionBody");
+    tbody.innerHTML = "";
+    data.forEach(p => {
+      tbody.innerHTML += `
+        <tr data-id="${p.id}">
+          <td>${p.id}</td>
+          <td>${p.patient_name}</td>
+          <td>${p.medicine}</td>
+          <td>${p.dosage}</td>
+          <td>
+            <button class="btn btn-sm btn-warning editBtn">Edit</button>
+            <button class="btn btn-sm btn-danger deleteBtn">Delete</button>
+          </td>
+        </tr>`;
+    });
+  };
+
+  document.getElementById("createForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = Object.fromEntries(new FormData(form));
+    await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData)
+    });
+    form.reset();
+    await fetchPrescriptions();
+  });
+
+  document.getElementById("prescriptionBody").addEventListener("click", async e => {
+    const row = e.target.closest("tr");
+    const id = row.dataset.id;
+
+    if (e.target.classList.contains("deleteBtn")) {
+      await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+      await fetchPrescriptions();
+    }
+
+    if (e.target.classList.contains("editBtn")) {
+      const name = prompt("Update patient name:", row.children[1].textContent);
+      const medicine = prompt("Update medicine:", row.children[2].textContent);
+      const dosage = prompt("Update dosage:", row.children[3].textContent);
+
+      if (name && medicine && dosage) {
+        await fetch(`${API_URL}/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ patient_name: name, medicine, dosage })
+        });
+        await fetchPrescriptions();
+      }
+    }
+  });
+
+  fetchPrescriptions();
+});
+</script>
+{% endblock %}

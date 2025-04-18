@@ -6,8 +6,9 @@ class Payment(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    doctor_id = db.Column(db.Integer, db.ForeignKey('doctors.id'), nullable=True)
     appointment_id = db.Column(db.Integer, db.ForeignKey('appointments.id'), nullable=True)
-    amount = db.Column(db.Float, nullable=False)
+    total_amount = db.Column(db.Float, nullable=False)
     status = db.Column(db.String(20), nullable=False, default="pending")  # Pending, Completed, Failed
     payment_method = db.Column(db.String(50), nullable=False)  # e.g., Credit Card, PayPal, Mobile Money
     transaction_id = db.Column(db.String(100), unique=True, nullable=False)

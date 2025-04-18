@@ -70,24 +70,57 @@
   </div>
 </div>
 
+     <!-- Success Popup Modal -->
+  <div class="modal" tabindex="-1" id="successModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Success</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p id="successMessage"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script>
-  // GSAP animation
-  gsap.from("#registerCard", {
-    y: 50,
-    opacity: 0,
-    duration: 1.2,
-    ease: "power3.out"
-  });
+  $(document).ready(function() {
+      // Handle the form submission using AJAX
+      $('#registrationForm').submit(function(e) {
+        e.preventDefault(); // Prevent the default form submission
 
-  // Password validation
-  document.getElementById('registerForm').addEventListener('submit', function (e) {
-    const pass = document.getElementById('password').value;
-    const confirm = document.getElementById('confirm_password').value;
-    if (pass !== confirm) {
-      e.preventDefault();
-      alert("Passwords do not match!");
-    }
-  });
+        $.ajax({
+          type: 'POST',
+          url: $(this).attr('action'),
+          data: $(this).serialize(),
+          success: function(response) {
+            if (response.success) {
+              // Show the success message in the modal
+              $('#successMessage').text(response.message);
+              $('#successModal').modal('show');
+
+              // Redirect to the login page after the modal closes
+              $('#successModal').on('hidden.bs.modal', function () {
+                window.location.href = response.redirect; // Redirect to the login page
+              });
+            }
+          },
+          error: function(xhr, status, error) {
+            // Handle form validation errors (optional)
+            const errors = xhr.responseJSON.errors;
+            alert('Error: ' + JSON.stringify(errors));
+          }
+        });
+      });
+    });
+
 </script>
 {% endblock %}

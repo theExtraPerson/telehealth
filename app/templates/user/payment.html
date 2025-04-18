@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Make Payment{% endblock %}
+{% block content %}
+<div class="container mt-5 gsap-animate">
+    <div class="card p-4">
+        <h4 class="text-primary mb-3">Complete Your Payment</h4>
+        <p><strong>Amount:</strong> ${{ total }}</p>
+        <form method="POST">
+            <button type="submit" class="btn btn-success">Pay with Card</button>
+            <button type="submit" class="btn btn-outline-primary ms-2">Pay with Mobile Money</button>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script>
+  gsap.from(".gsap-animate", { y: 50, opacity: 0, duration: 1.2, ease: "power4.out" });
+</script>
+{% endblock %}
+

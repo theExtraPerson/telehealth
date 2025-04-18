@@ -1,5 +1,132 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <p>this is the about page</p>
+
+    <style>
+
+        .section {
+            padding: 60px 0;
+        }
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .card {
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .bi {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #0d6efd;
+        }
+    </style>
+
+<div class="container text-center my-5 py-xl-5">
+    <h1 class="display-4 fw-bold">{{ hospital_name }}</h1>
+    <p class="lead">Compassionate care, advanced technology.</p>
+</div>
+
+<div class="container section" id="about">
+    <h2 class="section-title text-center">About the Hospital</h2>
+    <p class="text-center w-75 mx-auto">
+        {{ about_description }}
+    </p>
+</div>
+
+<div class="container section bg-light rounded" id="vision-mission">
+    <div class="row text-center">
+        <div class="col-md-6 text-dark">
+            <i class="bi bi-eye-fill"></i>
+            <h3 class="section-title">Our Vision</h3>
+            <p>{{ vision }}</p>
+        </div>
+        <div class="col-md-6 text-dark">
+            <i class="bi bi-bullseye"></i>
+            <h3 class="section-title">Our Mission</h3>
+            <p>{{ mission }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="container section" id="core-values">
+    <h2 class="section-title text-center">Core Values</h2>
+    <div class="row text-center">
+        {% for value in core_values %}
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm p-3 h-100">
+                <i class="bi
+                    {% if value.title == 'Compassion' %}bi-heart-fill
+                    {% elif value.title == 'Respect and Integrity' %}bi-shield-lock-fill
+                    {% elif value.title == 'Innovation and Excellence' %}bi-bulb-fill
+                    {% elif value.title == 'Accountability and Professionalism' %}bi-star-fill
+                    {% elif value.title == 'Teamwork and Patient Centric' %}bi-star-fill
+                    {% elif value.title == 'Empathy and Care' %}bi-balloon-heart-fill
+                    {% else %}bi-check-circle-fill{% endif %}
+                "></i>
+                <h5 class="card-title">{{ value.title }}</h5>
+                <p class="card-text">{{ value.description }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="container section rounded" id="services">
+    <h2 class="section-title text-center">Services We Offer</h2>
+    <div class="row text-center">
+        {% for service in services %}
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm p-3 h-100">
+                <i class="bi
+                    {% if service.title == 'Doctor Consultation' %}bi-capsule
+                    {% elif service.title == 'Laboratory Services' %}bi-heart-pulse
+                    {% elif service.title == 'Dental Care Services' %}bi-arrow-repeat
+                    {% elif service.title == 'Surgeries' %}bi-scissors
+                    {% elif service.title == 'ENT Clinic' %}bi-ear-fill
+                    {% elif service.title == 'Skin Care Clinic' %}bi-person-bounding-box
+                    {% elif service.title == 'Maternal & Child Health' %}bi-person-bounding-box
+                    {% elif service.title == 'Antenatal Care' %}bi-person-bounding-box
+                    {% else %}bi-activity{% endif %}
+                "></i>
+                <h5 class="card-title">{{ service.title }}</h5>
+                <p class="card-text">{{ service.description }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    gsap.from(".section-title", {
+        opacity: 0,
+        y: 50,
+        duration: 1,
+        stagger: 0.2,
+        scrollTrigger: {
+            trigger: ".section-title",
+            start: "top 90%"
+        }
+    });
+
+    gsap.utils.toArray(".card").forEach((card, i) => {
+        gsap.from(card, {
+            opacity: 0,
+            y: 50,
+            delay: i * 0.1,
+            scrollTrigger: {
+                trigger: card,
+                start: "top 90%",
+                toggleActions: "play none none none"
+            }
+        });
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
 {% endblock %}

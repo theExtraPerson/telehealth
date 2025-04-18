@@ -11,21 +11,31 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String, unique=True, nullable=False)
     password_hash = db.Column(db.String, nullable=False)
     is_active = db.Column(db.Boolean, default=True)
-    is_doctor = db.Column(db.Boolean, default=False)
+    is_doctor = db.Column(db.Boolean, default=0)
+    is_patient = db.Column(db.Boolean, default=1)
     is_admin = db.Column(db.Boolean, default=False)
     role = db.Column(db.String(20), nullable=False, default='patient')
 
     user_type = db.Column(db.String(50))
+    medical_records_as_patient = db.relationship(
+        "MedicalRecord",
+        foreign_keys="[MedicalRecord.patient_id]",
+        back_populates="patient"
+    )
+    medical_records_as_doctor = db.relationship(
+        "MedicalRecord",
+        foreign_keys="[MedicalRecord.doctor_id]",
+        back_populates="doctor"
+    )
 
     def __repr__(self):
         return f"<User(username='{self.username}', email='{self.email}')>"
 
     @property
-    def is_active(self):
-        return True
 
-    def set_password(self, password):
+    def set_password(self, password=password_hash):
         self.password_hash = generate_password_hash(password)
+        return f"<User(password='{self.password_hash}')>"
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -40,19 +50,51 @@ class Doctor(User):
     __tablename__ = 'doctors'
 
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
-    specialization = db.Column(db.String, nullable=False)
+
+    specialty_id = db.Column(db.String, db.ForeignKey('specialties.id'),nullable=False)
     license_number = db.Column(db.String, unique=True, nullable=False)
+    bio = db.Column(db.String, nullable=False)
+    schedule = db.Column(db.Text)
+    languages_spoken = db.Column(db.String(255))
+    gender = db.Column(db.String(10))
+    date_of_birth = db.Column(db.Date)
+    phone = db.Column(db.String(20))
+    medical_license = db.Column(db.String(100))
+    conditions_treated = db.Column(db.Text)
+    available_days = db.Column(db.String)  # Use JSON if using SQLite
+    photo = db.Column(db.String(200))  # Save filename or cloud path
+    whatsapp = db.Column(db.Boolean, default=False)
+    phone_call = db.Column(db.Boolean, default=False)
+    video_call = db.Column(db.Boolean, default=False)
 
     prescriptions = db.relationship("Prescription", back_populates="doctor")
     appointments = db.relationship("Appointment", back_populates="doctor")
+    specialty = db.relationship("Specialty", back_populates="doctors")
 
     def __repr__(self):
-        return f"<Doctor(username='{self.username}', specialization='{self.specialization}')>"
+        return f"<Doctor(username='{self.username}', specialty='{self.specialty}')>"
 
     __mapper_args__ = {
         'polymorphic_identity': 'doctor',
         # 'inherit_condition': (User.id == id)
     }
+
+    def set_available_days(self, days):
+        """Set available days for the doctor. Days should be a list of strings."""
+        self.available_days = json.dumps(days)
+
+    def get_available_days():
+        """Get available days for the doctor. Returns a list of strings."""
+        return json.loads(self.available_days)
+                           
+class Specialty(db.Model):
+    __tablename__ = 'specialties'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False, unique=True)
+    price = db.Column(db.Float, nullable=False)  # Price per consultation
+
+    doctors = db.relationship("Doctor", back_populates="specialty")
 
 class Patient(User):
     __tablename__ = 'patients'

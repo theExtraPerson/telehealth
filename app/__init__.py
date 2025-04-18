@@ -3,10 +3,10 @@ import os
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 from app.config import Config
 from flask_migrate import Migrate
-from flask_wtf.csrf import CSRFProtect
+from flask_wtf.csrf import CSRFProtect, generate_csrf
 
 import logging
 
@@ -98,6 +98,18 @@ def create_app():
             "Prescription": Prescription,
             "Payment": Payment,
         }
+
+    @app.context_processor
+    def inject_csrf_token():
+        return dict(csrf_token=generate_csrf())
+
+    @app.context_processor
+    def inject_notification_count():
+        from app.models.message import Message
+        if current_user.is_authenticated:
+            unread_count = Message.query.filter_by(user_id=current_user.id, seen=False).count()
+            return dict(unread_notifications_count=unread_count)
+        return {}
 
     return app
 

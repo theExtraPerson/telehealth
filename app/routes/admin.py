@@ -1,5 +1,6 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
+from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required
+from sqlalchemy import func
 
 from app import db
 from app.models.appointment import Appointment
@@ -49,8 +50,60 @@ def manage_prescriptions():
 # Manage Payments
 @admin_bp.route("/manage_payments")
 @login_required
-def manage_payments():
-    return render_template("admin/payments.html", payments=Payment.query.all())
+def manage_payments(calender=None):
+    payments = Payment.query.order_by(Payment.created_at.desc()).all()
+
+    #Summary metric
+    total_amount = db.session.query(func.sum(Payment.amount)).scalar() or 0
+    success_count = Payment.query.filter_by(status="success").count()
+    pending_count = Payment.query.filter_by(status="pending").count()
+    failed_count = Payment.query.filter_by(status="failed").count()
+
+    monthly_stats = (
+        db.session.query(func.extract('month', Payment.date), func.sum(Payment.amount))
+    .group_by(func.extract('month', Payment.date))
+    .order_by(func.extract('month', Payment.date))
+    .all()
+    )
+    months = [calender.month_name[int(row[0])] for row in monthly_stats]
+    monthly_data = [float(row[1]) for row in monthly_stats]
+
+    return render_template("admin/payments.html",
+                           payments=payments,
+                           total_amount=total_amount,
+                           success_count=success_count,
+                           pending_count=pending_count,
+                           failed_count=failed_count,
+                           months=months,
+                           monthly_data=monthly_data,
+                           )
+
+# Notifications
+@admin_bp.route('/send_notifiction', methods=['GET', 'POST'])
+def send_notification():
+    target = request.form.get('target')
+    message = request.form.get('message')
+
+    if not message:
+        flash('Message is required', 'danger')
+        return redirect(url_for('admin.dashboard'))
+
+    if target == 'all':
+        recepients = User.query.all()
+    elif target == 'patients':
+        recepients = User.query.filter_by(role='patient').all()
+    elif target == 'doctors':
+        recepients = User.query.filter_by(role='doctor').all()
+    else:
+        flash('Invalid target group', 'warning')
+        return redirect(url_for('admin.dashboard'))
+
+    for user in recepients:
+        send_notification(user, message)
+
+    flash(f'Notification sent to {target}.', 'success')
+    return redirect(url_for('admin.dashboard'))
+
 
 # Reports
 @admin_bp.route("/reports")

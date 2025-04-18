@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5" id="profile-form">
+  <h2 class="mb-4 text-primary">Edit Your Health Profile</h2>
+  <form method="POST" class="needs-validation" novalidate>
+    {{ form.hidden_tag() }}
+
+    <div class="row g-3">
+      <div class="col-md-6">
+        {{ form.name.label(class="form-label") }}
+        {{ form.name(class="form-control") }}
+      </div>
+
+      <div class="col-md-3">
+        {{ form.age.label(class="form-label") }}
+        {{ form.age(class="form-control") }}
+      </div>
+
+      <div class="col-md-3">
+        {{ form.gender.label(class="form-label") }}
+        {{ form.gender(class="form-select") }}
+      </div>
+
+      <div class="col-md-3">
+        {{ form.weight.label(class="form-label") }}
+        {{ form.weight(class="form-control") }}
+      </div>
+
+      <div class="col-md-3">
+        {{ form.height.label(class="form-label") }}
+        {{ form.height(class="form-control") }}
+      </div>
+
+      <div class="col-md-3">
+        {{ form.blood_type.label(class="form-label") }}
+        {{ form.blood_type(class="form-control") }}
+      </div>
+
+      <div class="col-md-6">
+        {{ form.allergies.label(class="form-label") }}
+        {{ form.allergies(class="form-control", rows=2) }}
+      </div>
+
+      <div class="col-12">
+        {{ form.medical_conditions.label(class="form-label") }}
+        {{ form.medical_conditions(class="form-control", rows=3) }}
+      </div>
+
+      <div class="col-12 mt-4">
+        {{ form.submit(class="btn btn-primary px-4") }}
+        <a href="{{ url_for('user_dashboard.dashboard') }}" class="btn btn-outline-secondary ms-2">Cancel</a>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}
+

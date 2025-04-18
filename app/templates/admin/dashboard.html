@@ -1,35 +1,177 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
 {% block content %}
-<div class="container">
-    <h2 class="text-center mt-3">Admin Dashboard</h2>
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body text-center">
-                    <h5>Total Doctors</h5>
-                    <p>{{ doctors|length }}</p>
-                    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-primary">View</a>
-                </div>
-            </div>
+<div class="container-fluid py-xl-5">
+  <div class="row">
+    <!-- Sidebar -->
+    <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+      <div class="position-sticky pt-3">
+        <div class="text-white text-center mb-3">
+          <h4>Admin Panel</h4>
+          <small>{{ current_user.name }}</small>
         </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body text-center">
-                    <h5>Total Patients</h5>
-                    <p>{{ patients|length }}</p>
-                    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-primary">View</a>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active text-white" href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{{ url_for('admin.manage_prescriptions') }}">Prescriptions</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{{ url_for('admin.manage_payments') }}">Payments</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{{ url_for('admin.reports') }}">Reports</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{{ url_for('admin.settings') }}">Settings</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+      <h2>Welcome, Admin</h2>
+
+      <div class="accordion" id="adminAccordion">
+
+        <!-- Doctor Management -->
+        <div class="accordion-item glass-card mb-3">
+          <h2 class="accordion-header" id="headingDoctor">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDoctor">
+              Doctor Management
+            </button>
+          </h2>
+          <div id="collapseDoctor" class="accordion-collapse collapse show" data-bs-parent="#adminAccordion">
+            <div class="accordion-body">
+              <h5>Pending Approvals</h5>
+              {% for doctor in doctors if not doctor.approved %}
+                <div class="d-flex justify-content-between mb-2">
+                  <span>{{ doctor.name }} - {{ doctor.specialty }}</span>
+                  <div>
+                    <a href="{{ url_for('admin.approve_doctor', doctor_id=doctor.id) }}" class="btn btn-sm btn-success">Approve</a>
+                    <a href="{{ url_for('admin.remove_doctor', doctor_id=doctor.id) }}" class="btn btn-sm btn-danger">Remove</a>
+                  </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body text-center">
-                    <h5>Total Appointments</h5>
-                    <p>{{ appointments|length }}</p>
-                    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-primary">View</a>
+              {% else %}
+                <p>No pending doctors</p>
+              {% endfor %}
+
+              <hr>
+
+              <h5>All Doctors</h5>
+              {% for doctor in doctors if doctor.approved %}
+                <div class="d-flex justify-content-between mb-2">
+                  <span>{{ doctor.name }} - {{ doctor.specialty }}</span>
+                  <div>
+                    <a href="{{ url_for('admin.update_doctor', doctor_id=doctor.id) }}" class="btn btn-sm btn-primary">Edit</a>
+                    <a href="{{ url_for('admin.remove_doctor', doctor_id=doctor.id) }}" class="btn btn-sm btn-danger">Remove</a>
+                  </div>
                 </div>
+              {% endfor %}
             </div>
+          </div>
         </div>
-    </div>
+
+        <!-- Appointment Management -->
+        <div class="accordion-item glass-card mb-3">
+          <h2 class="accordion-header" id="headingAppointments">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAppointments">
+              Appointment Management
+            </button>
+          </h2>
+          <div id="collapseAppointments" class="accordion-collapse collapse" data-bs-parent="#adminAccordion">
+            <div class="accordion-body">
+              <h5>Appointments</h5>
+              {% for appointment in appointments %}
+                <div class="d-flex justify-content-between mb-2">
+                  <span>{{ appointment.patient.name }} with {{ appointment.doctor.name }} - {{ appointment.date }}</span>
+                  <div>
+                    {% if not appointment.approved %}
+                      <a href="{{ url_for('admin.approve_appointment', appointment_id=appointment.id) }}" class="btn btn-sm btn-outline-primary">Approve</a>
+                    {% endif %}
+                    <a href="{{ url_for('admin.reschedule_appointment', appointment_id=appointment.id) }}" class="btn btn-sm btn-warning">Reschedule</a>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Payments Monitoring -->
+        <div class="accordion-item glass-card mb-3">
+          <h2 class="accordion-header" id="headingPayments">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePayments">
+              Payments & Billing
+            </button>
+          </h2>
+          <div id="collapsePayments" class="accordion-collapse collapse" data-bs-parent="#adminAccordion">
+            <div class="accordion-body">
+              <h5>Recent Payments</h5>
+              {% for payment in payments %}
+                <div class="d-flex justify-content-between mb-2">
+                  <span>{{ payment.user.name }} - {{ payment.amount }} {{ payment.currency }} on {{ payment.date }}</span>
+                  <span class="badge bg-success">{{ payment.status }}</span>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="accordion-item glass-card mb-3">
+          <h2 class="accordion-header" id="headingNotifications">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNotifications">
+              Notifications
+            </button>
+          </h2>
+          <div id="collapseNotifications" class="accordion-collapse collapse" data-bs-parent="#adminAccordion">
+            <div class="accordion-body">
+              <h5>Send Notifications</h5>
+              <form method="POST" action="{{ url_for('admin.send_notification') }}">
+                <div class="mb-2">
+                  <label for="targetGroup">Send to:</label>
+                  <select class="form-select" name="target" id="targetGroup" required>
+                    <option value="all">All Users</option>
+                    <option value="patients">Patients</option>
+                    <option value="doctors">Doctors</option>
+                  </select>
+                </div>
+                <div class="mb-2">
+                  <label for="message">Message:</label>
+                    <label for="notif-message"></label><input id="notif-message" type="text" placeholder="Enter Notification">
+                </div>
+                <button type="submit" class="btn btn-info" onclick="sendNotification()">Send Notification</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
 </div>
+
+<script>
+  gsap.from(".glass-card", { opacity: 0, y: 30, duration: 0.8, stagger: 0.2 });
+</script>
+<script>
+  const socket = new WebSocket("ws://localhost:5000/ws/messages/admin");
+
+  socket.onmessage = function(event) {
+      alert("Notification: " + event.data);
+  };
+
+  function sendNotification() {
+      const message = document.getElementById("notif-message").value;
+      const target = document.getElementById("targetGroup").value;
+      const data = {
+          "message": message,
+          "target": target
+      };
+      socket.send(JSON.stringify(data));
+  }
+</script>
+
 {% endblock %}

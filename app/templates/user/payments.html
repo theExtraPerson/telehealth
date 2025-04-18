@@ -5,12 +5,13 @@
 <div class="container">
     <h3 class="gsap-animate">Payments & Billing</h3>
 
-    <div class="card gsap-animate">
+    <div class="card gsap-animate mb-4">
         <div class="card-body">
-            <p>Consultation Fee: $50</p>
-            <p>Lab Test: $30</p>
-            <p><strong>Total: $80</strong></p>
-            <button class="btn btn-success">Pay Now</button>
+            {% for item in services %}
+                <p>{{ item.name }}: ${{ item.price }}</p>
+            {% endfor %}
+            <p><strong>Total: ${{ total }}</strong></p>
+            <a href="{{ url_for('user_dashboard.make_payment') }}" class="btn btn-success">Pay Now</a>
         </div>
     </div>
 
@@ -21,20 +22,26 @@
                 <th>Date</th>
                 <th>Service</th>
                 <th>Amount</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
+            {% for payment in payment_history %}
             <tr>
-                <td>March 20, 2025</td>
-                <td>Consultation</td>
-                <td>$50</td>
+                <td>{{ payment.date.utctime('%B %d, %Y') }}</td>
+                <td>{{ payment.service }}</td>
+                <td>${{ payment.amount }}</td>
+                <td>
+                    {% if payment.status == 'Paid' %}
+                        <span class="badge bg-success">Paid</span>
+                    {% else %}
+                        <span class="badge bg-warning text-dark">{{ payment.status }}</span>
+                    {% endif %}
+                </td>
             </tr>
-            <tr>
-                <td>March 15, 2025</td>
-                <td>Lab Test</td>
-                <td>$30</td>
-            </tr>
+            {% endfor %}
         </tbody>
     </table>
 </div>
 {% endblock %}
+

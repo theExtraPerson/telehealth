@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Invoice{% endblock %}
+{% block content %}
+<div class="container mt-5 gsap-animate">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="mb-3 text-primary">Invoice Summary</h4>
+            <p><strong>Doctor:</strong> {{ doctor.name }}</p>
+            <p><strong>Specialty:</strong> {{ specialty.name }}</p>
+            <p><strong>Consultation Fee:</strong> ${{ specialty.price }}</p>
+            <hr>
+            <h5>Total: <strong>${{ total }}</strong></h5>
+            <a href="{{ url_for('user_dashboard.make_payment', appointment_id=appointment.id) }}" class="btn btn-success">Pay Now</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script>
+  gsap.from(".gsap-animate", { y: 50, opacity: 0, duration: 1, ease: "power4.out" });
+</script>
+{% endblock %}
+

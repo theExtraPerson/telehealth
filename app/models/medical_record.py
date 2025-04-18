@@ -1,48 +1,32 @@
-from datetime import datetime
+from datetime import datetime, timezone
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
+from app import db
 
-class MedicalRecord:
-    def __init__(self, patient_id, patient_name, date_of_birth):
-        self.patient_id = patient_id
-        self.patient_name = patient_name
-        self.date_of_birth = date_of_birth
-        self.records = []
+class MedicalRecord(db.Model):
+    __tablename__ = 'medical_records'
 
-    def add_record(self, date, description, doctor):
-        self.records.append({
-            'date': date,
-            'description': description,
-            'doctor': doctor
-        })
+    id = Column(Integer, primary_key=True, index=True)
+    patient_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    date_of_birth = Column(String, nullable=False)
+    description = Column(String, nullable=False)
+    doctor_name = Column(String, nullable=False)
+    doctor_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    uploaded_at = Column(DateTime, default=datetime.now(timezone.utc))
 
-    def get_records(self):
-        return self.records
+    patient = db.relationship("User", foreign_keys=[patient_id], back_populates="medical_records_as_patient")
+    doctor = db.relationship("User", foreign_keys=[doctor_id], back_populates="medical_records_as_doctor")
+    access_records = db.relationship("MedicalRecordAccess", back_populates="record", cascade="all, delete-orphan")
 
     def to_dict(self):
         return {
+            'id': self.id,
             'patient_id': self.patient_id,
-            'patient_name': self.patient_name,
             'date_of_birth': self.date_of_birth,
-            'records': self.records
+            'description': self.description,
+            'doctor_name': self.doctor_name,
+            'date': self.date,
         }
 
-    def to_string(self):
-        record_str = f"Medical Record for {self.patient_name} (ID: {self.patient_id})\n"
-        record_str += f"Date of Birth: {self.date_of_birth}\n\n"
-        for record in self.records:
-            record_str += f"Date: {record['date']}\n"
-            record_str += f"Description: {record['description']}\n"
-            record_str += f"Doctor: {record['doctor']}\n"
-            record_str += "-" * 20 + "\n"
-        return record_str
-
-    def save_to_file(self, filename):
-        with open(filename, 'w') as file:
-            file.write(self.to_string())
-
-# Example usage
-if __name__ == "__main__":
-    mr = MedicalRecord(1, "John Doe", "1990-01-01")
-    mr.add_record(datetime.now().strftime("%Y-%m-%d"), "Routine Checkup", "Dr. Smith")
-    mr.add_record(datetime.now().strftime("%Y-%m-%d"), "Blood Test", "Dr. Brown")
-    print(mr.to_string())
-    mr.save_to_file("medical_record.txt")
+    def __repr__(self):
+        return f"<MedicalRecord(patient_id={self.patient_id}, description={self.description}, doctor={self.doctor_name})>"
