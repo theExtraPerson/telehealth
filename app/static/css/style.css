@@ -1,368 +1,241 @@
-
-
 @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-body, html {
-    font-family: 'Poppins', sans-serif;
-    background-color: #041349;
-    scroll-behavior: smooth;
-    color: #fff;
-    padding-top: 70px;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* Make the header sticky and minimize height */
+body, html {
+  font-family: 'Poppins', sans-serif;
+  background-color: #041349;
+  color: #fff;
+  scroll-behavior: smooth;
+  padding-top: 70px;
+}
+
+/* ========== HEADER / NAVBAR ========== */
 header {
   position: sticky;
   top: 0;
-  z-index: 1030; /* keeps it above content but below modals if any */
-  background-color: #198754; /* Bootstrap green */
+  z-index: 1030;
+  background-color: #198754;
   min-height: 60px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* optional for elevation */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Ensure the navbar doesn’t add unnecessary padding */
 .navbar {
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
-  /*height: 40vh;*/
+  background-color: forestgreen;
+  box-shadow: 0 5px 12px darkred;
+  padding: 8px 12px;
+  height: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
 }
 
 .navbar-brand {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+  font-weight: 700;
+  color: #3498db;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
+
 .navbar-brand img {
-    width: 40px;
-    height: 40px;
-    border-radius: 20%;
-}
-.mobile-menu {
-    background: #0f5132;
-}
-
-.mobile-menu a {
-    color: #fff;
-    padding: 0.75rem 1rem;
-    display: block;
-    text-decoration: none;
-}
-
-.mobile-menu a:hover {
-    background-color: #146c46;
-}
-
-/*admin dashboard*/
-
-.container {
-    margin-top: 20px;
-}
-
-.card {
-    border-radius: 10px;
-    transition: 0.3s;
-}
-
-.card:hover {
-    transform: scale(1.05);
-}
-
-/* BASE HTML */
-
-.navbar {
-    background-color: forestgreen;
-    box-shadow: 0 5px 12px darkred;
-    padding: 10px 0;
-    transition: all 0.3s ease;
-    z-index: 1000;
-    position: fixed;
-    width: 100%;
-    display: flex;
-    height: 12vh;
-}
-
-.navbar-brand {
-    font-weight: 700;
-    color: #3498db;
-    font-size: large;
-}
-
-.brand-highlight {
-    color: darkgreen;
-}
-
-.navbar-brand span {
-    color: darkgreen;
+  width: 32px;
+  height: 32px;
+  border-radius: 20%;
 }
 
 .nav-link {
-    font-weight: 300;
-    margin: 0 5px;
-    position: relative;
-    transition: all 0.3s ease;
-    color: #2c3e50;
-    font-size: 15px;
-    padding: 5px 10px !important;
+  font-size: 14px;
+  color: #2c3e50;
+  padding: 6px 10px;
+  position: relative;
 }
 
 .nav-link:after {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 2px;
-    bottom: 0;
-    left: 0;
-    background-color: darkgreen;
-    transition: width 0.3s ease;
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: darkgreen;
+  transition: width 0.3s ease;
 }
 
-.navbar .btn-primary {
-    padding: 6px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    border-radius: 15px;
-    margin-left: 10px;
-}
-
-.navbar .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-}
-
-.nav-link:hover::after,
-.nav-link:active:after {
-    width: 100%;
-}
-
+.nav-link:hover:after,
 .nav-link.active:after {
-    width: 100%;
+  width: 100%;
 }
 
 .navbar-toggler {
-    border: none;
-    outline: none;
-}
-nav .container img {
-    height: 40px;
-    width: 40px;
-}
-/* in your style.css or inside a <style>…</style> */
-
-.desktop-glass-nav {
-      position: absolute;
-      top: 60px;               /* match green navbar height */
-      left: 0; right: 0;
-      margin: 0 auto;
-      max-width: 800px;        /* optional limit width */
-      padding: 0.5rem 1rem;
-
-      background: rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-radius: 0.5rem;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-
-      z-index: 1020;           /* just below navbar (1030) */
+  border: none;
+  outline: none;
 }
 
+.navbar .btn-primary {
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 12px;
+}
 
+/* Mobile Menu */
+.mobile-menu {
+  background: #0f5132;
+}
 
-/*hero page*/
+.mobile-menu a {
+  color: #fff;
+  padding: 0.75rem 1rem;
+  display: block;
+  text-decoration: none;
+}
 
+.mobile-menu a:hover {
+  background-color: #146c46;
+}
+
+/* ========== HERO SECTION ========== */
 .hero-banner {
-    position: relative;
-    text-align: center;
-    color: white;
-    width: 100%;
-    height: 70vh;
+  position: relative;
+  text-align: center;
+  height: 70vh;
 }
 
 .hero-image {
-    width: 100%;
-    height: auto;
+  width: 100%;
+  height: auto;
 }
 
 .hero-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    /*background-image: url("../images/hero.jpg");*/
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
-/*login page*/
-
+/* ========== LOGIN PAGE ========== */
 .login-section {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
 .login-container {
-    background: white;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  color: #000;
+  width: 90%;
+  max-width: 400px;
 }
 
-.index-decor {
-    padding-top: 100px;
+/* ========== DASHBOARD & CARDS ========== */
+.container {
+  margin-top: 20px;
+  padding: 0 1rem;
 }
 
-/* doctor dashboard */
-
-/* GENERAL PAGE STYLING */
-/*body {*/
-/*    background-color: #f8f9fa;*/
-/*    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;*/
-/*    scroll-behavior: smooth;*/
-/*}*/
-
-h2 {
-    font-weight: 600;
-    color: #343a40;
+.card {
+  border-radius: 10px;
+  transition: transform 0.3s ease;
 }
 
-/* SIDEBAR PROFILE */
-.card-profile {
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    border-radius: 1rem;
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    color: #2c3e50;
-    transition: all 0.3s ease-in-out;
+.card:hover {
+  transform: scale(1.02);
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.doc-card {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #2c3e50;
+}
+
+.doc-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
 }
 
 .card-profile img {
-    border: 3px solid #0d6efd;
+  border: 3px solid #0d6efd;
+  width: 80px;
+  height: 80px;
 }
 
-/* SIDEBAR LINKS */
+/* ========== LIST ITEMS ========== */
 .list-group-item {
-    border: none;
-    background: transparent;
-    border-left: 4px solid transparent;
-    transition: all 0.3s ease;
-    color: #2c3e50;
+  border: none;
+  background: transparent;
+  border-left: 4px solid transparent;
+  color: #2c3e50;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  transition: all 0.3s ease;
 }
 
 .list-group-item:hover,
 .list-group-item.active {
-    background-color: #e9f5ff;
-    border-left: 4px solid #0d6efd;
-    color: #0d6efd;
-    font-weight: 500;
-    backdrop-filter: blur(10px);
+  background-color: #e9f5ff;
+  border-left: 4px solid #0d6efd;
+  color: #0d6efd;
+  font-weight: 500;
 }
 
-/* MAIN CONTENT AREA */
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 20px;
-}
+/* ========== MEDIA QUERIES ========== */
 
-/* CARD STYLES */
-.doc-card {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 1rem;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    color: #2c3e50;
-}
+/* Tablets */
+@media (min-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
-.doc-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 16px 32px 0 rgba(0, 0, 0, 0.15);
-}
+  .navbar {
+    padding: 10px 2rem;
+  }
 
-/* CARD HEADERS */
-.card-header {
-    font-weight: 600;
-    font-size: 1.1rem;
-    border-radius: 1rem 1rem 0 0;
-    background: rgba(255, 255, 255, 0.2);
-    color: #2c3e50;
-}
+  .navbar-brand {
+    font-size: 1.5rem;
+  }
 
-/* BUTTON STYLES */
-.card-body .btn {
-    margin: 0.2rem;
-    border-radius: 0.6rem;
-    backdrop-filter: blur(6px);
-    transition: background-color .3s ease;
-}
-.btn-outline-primary:hover,
-.btn-outline-success:hover,
-.btn-outline-danger:hover,
-.btn-outline-info:hover,
-.btn-outline-secondary:hover {
-    background-color: rgba(13, 110, 253, 0.1);
-}
+  .nav-link {
+    font-size: 1rem;
+  }
 
-/* LIST GROUP */
-.list-group-item-action {
-    backdrop-filter: blur(6px);
-}
-
-/* RESPONSIVE */
-@media screen and (max-width: 768px) {
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .list-group-item {
-        font-size: 0.95rem;
-    }
-}
-
-/* base navbar */
-@media (min-width: 992px) {
-    .mobile-menu {
-        display: none !important;
-    }
-}
-
-/*body*/
-@media (max-width: 768px) {
-  body {
-    padding-top: 140px; /* if mobile menu expands below */
+  .card-profile img {
+    width: 100px;
+    height: 100px;
   }
 }
 
-/*sidebar*/
-@media (max-width: 768px) {
-    .sidebar {
-        padding-top: 2rem;
-        text-align: left;
-    }
+/* Desktops */
+@media (min-width: 992px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 
-    .sidebar img {
-        width: 80px;
-        height: 80px;
-    }
-
-    .nav-link {
-        font-size: 0.9rem;
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
+  .mobile-menu {
+    display: none !important;
+  }
 }
-
-@media (max-width: 576px) {
-    .sidebar {
-        text-align: center;
-    }
-}
-
-

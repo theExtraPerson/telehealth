@@ -128,3 +128,14 @@ gsap.from("#registerCard", {
         stagger: 0.2,    // Stagger the animation for list items
         ease: "power4.out",
     });
+
+// Book appointment gsap animations
+document.addEventListener("DOMContentLoaded", function() {
+        gsap.from(".card", { duration: 1, opacity: 0, y: 50, ease: "power2.out" });
+        gsap.from("h2", { duration: 1, opacity: 0, x: -50, delay: 0.3, ease: "power2.out" });
+    });
+
+// Doctor Search Animation
+document.addEventListener("DOMContentLoaded", function() {
+        gsap.from(".doctor-card", { duration: 1, opacity: 0, y: 50, stagger: 0.2, ease: "power2.out" });
+    });

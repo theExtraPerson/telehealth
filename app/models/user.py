@@ -91,7 +91,7 @@ class Doctor(User):
 class Specialty(db.Model):
     __tablename__ = 'specialties'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(225), primary_key=True)
     name = db.Column(db.String(100), nullable=False, unique=True)
     price = db.Column(db.Float, nullable=False)  # Price per consultation
 

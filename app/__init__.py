@@ -17,6 +17,7 @@ csrf = CSRFProtect()
 db = SQLAlchemy()
 login_manager = LoginManager()
 migrate = Migrate()
+db_uri = os.environ.get("SQLALCHEMY_DATABASE_URI") or os.environ.get("DATABASE_URL")
 # jwt = JWTManager()
 
 login_manager.login_view = 'auth.login'
@@ -25,6 +26,7 @@ login_manager.login_message = "Please login to access this page."
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+    app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
      # Path for refresh tokens
 
     db.init_app(app)
@@ -68,9 +70,6 @@ def create_app():
 
     from app.routes.payment import payment
     app.register_blueprint(payment, url_prefix='/payment')
-
-    from app.display import display
-    app.register_blueprint(display, url_prefix='/display')
 
     with app.app_context():
         from app.models.user import User, Doctor, Patient, Admin

@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, url_for, redirect, render_template
+from flask import Blueprint, request, jsonify, url_for, redirect, render_template, flash
 from flask_login import login_required, logout_user, login_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -38,6 +38,8 @@ def register():
         )
         db.session.add(new_user)
         db.session.commit()
+
+        flash('Registration successful! Please login.', 'success' )
 
         return jsonify({
             'success': True,

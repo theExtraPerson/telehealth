@@ -1,6 +1,24 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+<style>
+  @media (max-width: 768px) {
+    #sidebar {
+      position: fixed;
+      z-index: 1000;
+      height: 100vh;
+      top: 0;
+      left: -250px;
+      width: 250px;
+      transition: all 0.3s;
+    }
+    #sidebar.show {
+      left: 0;
+    }
+  }
+</style>
+
 <div class="container-fluid py-xl-5">
   <div class="row">
     <!-- Sidebar -->
@@ -38,41 +56,66 @@
 
         <!-- Doctor Management -->
         <div class="accordion-item glass-card mb-3">
-          <h2 class="accordion-header" id="headingDoctor">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDoctor">
-              Doctor Management
+          <h2 class="accordion-header" id="headingUsers">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseUsers">
+              User & Doctor Management
             </button>
           </h2>
-          <div id="collapseDoctor" class="accordion-collapse collapse show" data-bs-parent="#adminAccordion">
+          <div id="collapseUsers" class="accordion-collapse collapse show" data-bs-parent="#adminAccordion">
             <div class="accordion-body">
-              <h5>Pending Approvals</h5>
-              {% for doctor in doctors if not doctor.approved %}
-                <div class="d-flex justify-content-between mb-2">
-                  <span>{{ doctor.name }} - {{ doctor.specialty }}</span>
-                  <div>
-                    <a href="{{ url_for('admin.approve_doctor', doctor_id=doctor.id) }}" class="btn btn-sm btn-success">Approve</a>
-                    <a href="{{ url_for('admin.remove_doctor', doctor_id=doctor.id) }}" class="btn btn-sm btn-danger">Remove</a>
+              <h5>Register New User</h5>
+              <form method="POST" action="{{ url_for('admin.add_user') }}">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token }}"/>
+                <div class="row g-2 mb-3">
+                  <div class="col-md-3">
+                      <label>
+                          <input type="text" class="form-control" name="name" placeholder="Full Name" required>
+                      </label>
+                  </div>
+                  <div class="col-md-3">
+                      <label>
+                          <input type="email" class="form-control" name="email" placeholder="Email" required>
+                      </label>
+                  </div>
+                  <div class="col-md-3">
+                      <label>
+                          <select class="form-select" name="role" required>
+                            <option value="doctor">Doctor</option>
+                            <option value="patient">Patient</option>
+                          </select>
+                      </label>
+                  </div>
+                  <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary">Add User</button>
                   </div>
                 </div>
-              {% else %}
-                <p>No pending doctors</p>
-              {% endfor %}
+              </form>
 
               <hr>
 
-              <h5>All Doctors</h5>
-              {% for doctor in doctors if doctor.approved %}
+              <h5>All Registered Users</h5>
+              {% for user in users %}
                 <div class="d-flex justify-content-between mb-2">
-                  <span>{{ doctor.name }} - {{ doctor.specialty }}</span>
+                  <span>{{ user.name }} ({{ user.role }}) - {{ user.email }}</span>
                   <div>
-                    <a href="{{ url_for('admin.update_doctor', doctor_id=doctor.id) }}" class="btn btn-sm btn-primary">Edit</a>
-                    <a href="{{ url_for('admin.remove_doctor', doctor_id=doctor.id) }}" class="btn btn-sm btn-danger">Remove</a>
+                    <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="btn btn-sm btn-primary"><i class="bi bi-pencil-square"></i></a>
+                      <form method="POST" action="{{ url_for('admin.delete_user', user_id=user_id) }}">
+                          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                          <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i>Delete</button>
+                      </form>
+                    {% if user.role == 'doctor' and not user.approved %}
+                        <form method="POST" action="{{ url_for('admin.approve_doctor', user_id=user_id) }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                            <button type="submit" class="btn btn-sm btn-success"><i class="bi bi-check-circle"></i>Approve</button>
+                        </form>
+                    {% endif %}
                   </div>
                 </div>
+              {% else %}
+                <p>No users registered.</p>
               {% endfor %}
             </div>
           </div>
-        </div>
 
         <!-- Appointment Management -->
         <div class="accordion-item glass-card mb-3">
@@ -147,7 +190,6 @@
             </div>
           </div>
         </div>
-
       </div>
     </main>
   </div>
@@ -172,6 +214,17 @@
       };
       socket.send(JSON.stringify(data));
   }
+</script>
+<script>
+  // Sidebar toggle for mobile
+  document.addEventListener("DOMContentLoaded", () => {
+    const sidebar = document.getElementById("sidebar");
+    const toggleBtn = document.createElement("button");
+    toggleBtn.className = "btn btn-secondary d-md-none m-2";
+    toggleBtn.textContent = "☰ Menu";
+    toggleBtn.onclick = () => sidebar.classList.toggle("show");
+    document.body.prepend(toggleBtn);
+  });
 </script>
 
 {% endblock %}

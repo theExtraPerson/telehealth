@@ -14,12 +14,39 @@ admin_bp = Blueprint("admin", __name__, template_folder="../../templates/admin")
 @admin_bp.route("/admin")
 @login_required
 def dashboard():
+    users = User.query.all()
     return render_template("admin/dashboard.html",
                            doctors=Doctor.query.all(),
                            patients=User.query.filter_by(role="patient").all(),
                            appointments=Appointment.query.all(),
                            prescriptions=Prescription.query.all(),
                            payments=Payment.query.all())
+
+#Add user
+@admin_bp.route('/add-user', methods=['POST'])
+def add_user():
+    username = request.form.get('username')
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+    if not username or not email or not password:
+        flash('All field are required', 'error')
+        return redirect(url_for('admin.dashboard'))
+
+    new_user = User(username=username, email=email, password=password)
+    db.session.add(new_user)
+    db.session.commit()
+    flash('User added successfully!', 'success')
+    return redirect(url_for('admin.dashboard'))
+
+# Delete User
+@admin_bp.route('/delete-user/<int:user_id>', methods=['POST'])
+def delete_user(user_id):
+    user = User.query.get_or_404(user_id)
+    db.session.delete(user)
+    db.session.commit()
+    flash('User deleted', 'info')
+    return redirect(url_for('admin.dashboard'))
 
 # Approve Doctor
 @admin_bp.route("/approve_doctor/<int:doctor_id>")

@@ -15,6 +15,7 @@ from app.models.prescription import Prescription
 from app.models.user import Patient, Doctor, User
 from app.models.message import Message
 from app.services.medical_records_service import MedicalRecordsService
+from app.services.notification_service import doctor
 
 user_dashboard = Blueprint('user_dashboard', __name__, template_folder='../../templates')
 
@@ -109,13 +110,24 @@ def manage_appointments():
 @user_dashboard.route('/doctors/search')
 @login_required
 def search_doctors():
-    query = request.args.get('q', '')
-    doctors = Doctor.query.filter(User.username.ilike(f'%{query}%')).all()
+    specialty = request.args.get('specialty', '')
+    location = request.args.get('location', '')
+    rating = request.args.get('rating', '')
 
-    if request.accept_mimetypes.best == 'application/json':
-        return jsonify([{'id': d.id, 'name': d.name, 'speciality': d.speciality} for d in doctors])
+    query = User.query.filter_by(role='doctor')
 
-    return render_template('user/search_doctors.html', doctors=doctors, query=query)
+    if specialty:
+        query = query.filter(User.specialty.ilike(f'%{specialty}%'))
+    if location:
+        query = query.filter(User.location.ilike(f'%{location}%'))
+    if rating:
+        query = query.filter(User.rating >= int(rating))
+
+    doctors = query.all()
+
+    doctors_data = [{'id': doctor.id, 'name': doctor.name, 'specialty': doctor.specialty}]
+
+    return jsonify(doctors_data)
 
 
 @user_dashboard.route('/prescriptions/refill')
