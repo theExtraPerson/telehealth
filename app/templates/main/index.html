@@ -1,18 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<section class="container-fluid index-decor text-center">
+<section class="container-fluid index-decor text-center py-2">
     <div>
         <h1>Convenient, Healthy Living</h1>
         <h3>At KMC - Hospital, every second of your life matters. Why waste it on a long, tiresome journey?</h3>
         <h5>Join us today and enjoy quality healthcare services wherever, whenever.</h5>
 
-        <button class="btn btn-primary m-2">
-            <a href="{{ url_for('auth.login') }}" class="text-white text-decoration-none">Login</a>
-        </button>
-        <button class="btn btn-primary m-2">
-            <a href="{{ url_for('auth.register') }}" class="text-white text-decoration-none">Register</a>
-        </button>
     </div>
 </section>
 
@@ -40,15 +34,7 @@
                 <button class="btn btn-primary m-2"  onclick="location.href='{{ url_for('doctor_dashboard.start_teleconference') }}'">Book Appointment</button>
             </div>
         </div>
-        <div class="col-md-4">
-{#            <div class="card service-card shadow-lg text-center p-4" onclick="location.href='{{ url_for('doctor_dashboard.start_teleconference') }}'">#}
-{#                <h4>Medical Collaboration</h4>#}
-{#                <p>Medical personnel, here is your chance to connect and collaborate with fellow doctors, and specialists.</p>#}
-{#                {% if doctor_id %}#}
-{#                <button class="btn btn-primary m-2"  onclick="location.href='{{ url_for('doctor_dashboard.collaborate', doctor_id=doctor_id) }}'">Collaborate</button>#}
-{#                {% endif %}#}
-{#            </div>#}
-        </div>
+
     </div>
 </section>
 
@@ -70,7 +56,7 @@
         <a href="mailto:support@kmchospital.com" class="text-white text-decoration-none">Email Us</a>
     </button>
     <button class="btn btn-success m-2">
-        <a href="https://wa.me/yourwhatsapplink" class="text-white text-decoration-none">Chat on WhatsApp</a>
+        <a href="https://wa.me/256762436435" class="text-white text-decoration-none">Chat on WhatsApp</a>
     </button>
 </section>
 

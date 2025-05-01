@@ -38,13 +38,17 @@ class ProfileForm(FlaskForm):
     age = IntegerField('Age', validators=[Optional()])
     gender = SelectField('Gender', choices=[
         ('Male', 'Male'),
-        ('Female', 'Female'),
-        ('Other', 'Other')
+        ('Female', 'Female')
     ])
     photo = FileField('Profile Photo')
     weight = IntegerField('Weight (kg)', validators=[Optional()])
     height = IntegerField('Height (cm)', validators=[Optional()])
-    blood_type = StringField('Blood Type', validators=[Optional()])
+    blood_type = SelectField('Blood Type', validators=[Optional()], choices=[
+        ('A', 'A'),
+        ('B', 'B'),
+        ('AB', 'AB'),
+        ('O', 'O')
+    ])
     allergies = TextAreaField('Allergies', validators=[Optional()])
     medical_conditions = TextAreaField('Medical Conditions', validators=[Optional()])
     submit = SubmitField('Save Changes')
@@ -81,7 +85,19 @@ class DoctorProfileForm(FlaskForm):
     # Weekly Schedule (simplified)
     monday_start = TimeField('Monday Start')
     monday_end = TimeField('Monday End')
-    # Repeat for other days...
+    tuesday_start = TimeField('Tuesday Start')
+    tuesday_end = TimeField('Tuesday End')
+    wednesday_start = TimeField('Wednesday Start')
+    wednesday_end = TimeField('Wednesday End')
+    thursday_start = TimeField('Thursday Start')
+    thursday_end = TimeField('Thursday End')
+    friday_start = TimeField('Friday Start')
+    friday_end = TimeField('Friday End')
+    saturday_start = TimeField('Saturday Start')
+    saturday_end = TimeField('Saturday End')
+    sunday_start = TimeField('Sunday Start')
+    sunday_end = TimeField('Sunday End')
+
 
     bio = TextAreaField('Medical Bio / Experience')
     submit = SubmitField('Save Changes')

@@ -1,52 +1,26 @@
+{# templates/admin/prescriptions.html #}
 {% extends 'base.html' %}
 
 {% block content %}
 <div class="container mt-5 py-xl-5">
-  <h2 class="mb-4">Manage Prescriptions</h2>
+  <h2 class="mb-4">Review Prescription Requests</h2>
 
-  <!-- Create Prescription Form -->
-  <div class="card mb-4 glass-card">
-    <div class="card-body">
-      <h5 class="card-title">Add New Prescription</h5>
-      <form id="createForm">
-        <div class="row">
-          <div class="col-md-4 mb-3">
-              <label>
-                  <input type="text" class="form-control" name="patient_name" placeholder="Patient Name" required>
-              </label>
-          </div>
-          <div class="col-md-4 mb-3">
-              <label>
-                  <input type="text" class="form-control" name="medicine" placeholder="Medicine" required>
-              </label>
-          </div>
-          <div class="col-md-4 mb-3">
-              <label>
-                  <input type="text" class="form-control" name="dosage" placeholder="Dosage" required>
-              </label>
-          </div>
-        </div>
-        <button type="submit" class="btn btn-primary">Create Prescription</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Prescriptions Table -->
   <div class="card glass-card">
     <div class="card-body">
-      <h5 class="card-title">Prescriptions List</h5>
-      <table class="table table-hover" id="prescriptionsTable">
+      <h5 class="card-title">Pending Requests</h5>
+      <table class="table table-hover" id="requestsTable">
         <thead>
           <tr>
             <th>ID</th>
             <th>Patient</th>
             <th>Medicine</th>
             <th>Dosage</th>
+            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody id="prescriptionBody">
-          <!-- JS Populated Rows -->
+        <tbody id="requestBody">
+          <!-- Populated by JS -->
         </tbody>
       </table>
     </div>
@@ -57,67 +31,80 @@
 {% block scripts %}
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const API_URL = "/api/prescriptions";
+  const API_URL = "/api/prescription_requests";
 
-  const fetchPrescriptions = async () => {
+  async function fetchRequests() {
     const res = await fetch(API_URL);
     const data = await res.json();
-    const tbody = document.getElementById("prescriptionBody");
+    const tbody = document.getElementById("requestBody");
     tbody.innerHTML = "";
-    data.forEach(p => {
-      tbody.innerHTML += `
-        <tr data-id="${p.id}">
-          <td>${p.id}</td>
-          <td>${p.patient_name}</td>
-          <td>${p.medicine}</td>
-          <td>${p.dosage}</td>
+
+    data.forEach(r => {
+      tbody.insertAdjacentHTML("beforeend", `
+        <tr data-id="${r.id}">
+          <td>${r.id}</td>
+          <td>${r.patient_name}</td>
+          <td>${r.medicine}</td>
+          <td>${r.dosage}</td>
+          <td>${r.status}</td>
           <td>
             <button class="btn btn-sm btn-warning editBtn">Edit</button>
-            <button class="btn btn-sm btn-danger deleteBtn">Delete</button>
+            <button class="btn btn-sm btn-success approveBtn" ${r.status!=='pending'?'disabled':''}>
+              Approve
+            </button>
+            <button class="btn btn-sm btn-danger rejectBtn" ${r.status!=='pending'?'disabled':''}>
+              Reject
+            </button>
           </td>
-        </tr>`;
+        </tr>
+      `);
     });
-  };
+  }
 
-  document.getElementById("createForm").addEventListener("submit", async e => {
-    e.preventDefault();
-    const form = e.target;
-    const formData = Object.fromEntries(new FormData(form));
-    await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData)
-    });
-    form.reset();
-    await fetchPrescriptions();
-  });
-
-  document.getElementById("prescriptionBody").addEventListener("click", async e => {
+  document.getElementById("requestBody").addEventListener("click", async e => {
     const row = e.target.closest("tr");
     const id = row.dataset.id;
 
-    if (e.target.classList.contains("deleteBtn")) {
-      await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-      await fetchPrescriptions();
-    }
-
+    // EDIT
     if (e.target.classList.contains("editBtn")) {
-      const name = prompt("Update patient name:", row.children[1].textContent);
-      const medicine = prompt("Update medicine:", row.children[2].textContent);
-      const dosage = prompt("Update dosage:", row.children[3].textContent);
-
+      const old = Array.from(row.children).slice(1,4).map(td => td.textContent);
+      const [name, medicine, dosage] = await Promise.all([
+        prompt("Patient name:", old[0]),
+        prompt("Medicine:",       old[1]),
+        prompt("Dosage:",         old[2])
+      ]);
       if (name && medicine && dosage) {
         await fetch(`${API_URL}/${id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ patient_name: name, medicine, dosage })
         });
-        await fetchPrescriptions();
+        await fetchRequests();
       }
+    }
+
+    // APPROVE
+    if (e.target.classList.contains("approveBtn")) {
+      await fetch(`${API_URL}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "approved" })
+      });
+      await fetchRequests();
+    }
+
+    // REJECT
+    if (e.target.classList.contains("rejectBtn")) {
+      await fetch(`${API_URL}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "rejected" })
+      });
+      await fetchRequests();
     }
   });
 
-  fetchPrescriptions();
+  fetchRequests();
 });
 </script>
 {% endblock %}

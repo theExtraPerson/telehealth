@@ -9,6 +9,8 @@ class User(db.Model, UserMixin):
     
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
+    # firstname = db.Column(db.String(255), nullable=False)
+    # lastname = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String, unique=True, nullable=False)
     password_hash = db.Column(db.String, nullable=False)
     is_active = db.Column(db.Boolean, default=True)
@@ -58,7 +60,11 @@ class Doctor(User):
     schedule = db.Column(db.Text)
     languages_spoken = db.Column(db.String(255))
     gender = db.Column(db.String(10))
-    date_of_birth = db.Column(db.Date)
+    # age = db.Column(db.Integer)
+    # rating: object = db.Column(db.Float, default=0.0)
+    # consultation_fee = db.Column(db.Integer)
+    #
+    # location = db.Column(db.String(255), nullable=False)
     phone = db.Column(db.String(20))
     medical_license = db.Column(db.String(100))
     conditions_treated = db.Column(db.Text)

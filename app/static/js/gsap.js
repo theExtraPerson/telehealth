@@ -139,3 +139,28 @@ document.addEventListener("DOMContentLoaded", function() {
 document.addEventListener("DOMContentLoaded", function() {
         gsap.from(".doctor-card", { duration: 1, opacity: 0, y: 50, stagger: 0.2, ease: "power2.out" });
     });
+
+// About page animation
+gsap.from(".section-title", {
+        opacity: 0,
+        y: 50,
+        duration: 1,
+        stagger: 0.2,
+        scrollTrigger: {
+            trigger: ".section-title",
+            start: "top 90%"
+        }
+    });
+
+gsap.utils.toArray(".card").forEach((card, i) => {
+    gsap.from(card, {
+        opacity: 0,
+        y: 50,
+        delay: i * 0.1,
+        scrollTrigger: {
+            trigger: card,
+            start: "top 90%",
+            toggleActions: "play none none none"
+        }
+    });
+});

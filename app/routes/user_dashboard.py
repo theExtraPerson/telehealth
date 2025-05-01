@@ -12,7 +12,7 @@ from app.models import appointment
 from app.models.appointment import Appointment
 from app.models.payments import Payment
 from app.models.prescription import Prescription
-from app.models.user import Patient, Doctor, User
+from app.models.user import Patient, Doctor, User, Specialty
 from app.models.message import Message
 from app.services.medical_records_service import MedicalRecordsService
 from app.services.notification_service import doctor
@@ -110,25 +110,45 @@ def manage_appointments():
 @user_dashboard.route('/doctors/search')
 @login_required
 def search_doctors():
-    specialty = request.args.get('specialty', '')
-    location = request.args.get('location', '')
-    rating = request.args.get('rating', '')
+    try:
+        # Get search parameters
+        specialty = request.args.get('specialty', '').strip()
+        conditions = request.args.get('conditions', '').strip()
+        available_day = request.args.get('day', '').strip().capitalize()  # Ensure proper case
 
-    query = User.query.filter_by(role='doctor')
+        # Build base query selecting only needed fields
+        query = db.session.query(
+            User.username,
+            Specialty.name.label('specialty'),
+            Doctor.conditions_treated,
+            Doctor.available_days
+        ).join(Doctor, User.id == Doctor.id) \
+            .join(Specialty, Doctor.specialty_id == Specialty.id) \
+            .filter(User.role == 'doctor')
 
-    if specialty:
-        query = query.filter(User.specialty.ilike(f'%{specialty}%'))
-    if location:
-        query = query.filter(User.location.ilike(f'%{location}%'))
-    if rating:
-        query = query.filter(User.rating >= int(rating))
+        # Apply filters
+        if specialty:
+            query = query.filter(Specialty.name.ilike(f'%{specialty}%'))
+        if conditions:
+            query = query.filter(Doctor.conditions_treated.ilike(f'%{conditions}%'))
+        if available_day:
+            # Search for day in JSON array string
+            query = query.filter(Doctor.available_days.ilike(f'%"{available_day}"%'))
 
-    doctors = query.all()
+        # Execute query and format results
+        doctors = query.all()
 
-    doctors_data = [{'id': doctor.id, 'name': doctor.name, 'specialty': doctor.specialty}]
+        doctors_data = [{
+            'username': doctor.username,
+            'specialty': doctor.specialty,
+            'conditions_treated': doctor.conditions_treated,
+            'available_days': doctor.available_days
+        } for doctor in doctors]
 
-    return jsonify(doctors_data)
+        return jsonify(doctors_data)
 
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @user_dashboard.route('/prescriptions/refill')
 @login_required

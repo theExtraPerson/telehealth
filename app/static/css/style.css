@@ -33,9 +33,14 @@ header {
 .navbar-brand {
     position: absolute;
     top: 50%;
-    left: 50%;
+    left: 20%;
     transform: translate(-50%, -50%);
+    font-weight: 700;
+    color: #3498db;
+    font-size: large;
+    margin-left: 0;
 }
+
 .navbar-brand img {
     width: 40px;
     height: 40px;
@@ -93,18 +98,12 @@ header {
     height: 12vh;
 }
 
-.navbar-brand {
-    font-weight: 700;
-    color: #3498db;
-    font-size: large;
-}
-
 .brand-highlight {
     color: darkgreen;
 }
 
 .navbar-brand span {
-    color: darkgreen;
+    color: #041349;
 }
 
 .nav-link {
@@ -151,9 +150,14 @@ header {
 }
 
 .navbar-toggler {
-    border: none;
     outline: none;
+    border-color: rgba(255, 255, 225, 0.5);
 }
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
 nav .container img {
     height: 40px;
     width: 40px;
@@ -176,6 +180,14 @@ nav .container img {
     border: 1px solid rgba(255, 255, 255, 0.3);
 
     z-index: 1020;           /* just below navbar (1030) */
+}
+
+#mobileNav {
+    position: absolute;
+    width: 100%;
+    z-index: 1000;
+    top: 0;
+    left: 0;
 }
 
 
@@ -310,6 +322,7 @@ nav .container img {
 
 .modal-content {
     border-radius: 1rem;
+    background-color: #0f5132;
   }
 
 .modal-body p {
@@ -459,6 +472,9 @@ h2 {
 @media (min-width: 992px) {
     .mobile-menu {
         display: none !important;
+    }
+    .navbar-nav .nav-link {
+        padding: 0.5rem 1rem;
     }
 }
 

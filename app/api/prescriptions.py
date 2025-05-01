@@ -72,6 +72,15 @@ def update_prescription(prescription_id):
     result = prescription_schema.dump(prescription)
     return jsonify(result), 200
 
+@prescriptions_api.route('/<int:prescription_id>/status', methods=["PATCH"])
+def update_prescription_status(prescription_id):
+    prescription = Prescription.query.get_or_404(prescription_id)
+    json_data = request.get_json()
+    new_status = json_data.get('status')
+
+    valid_statuses = ['pending', 'approved', 'rejected', 'issued', 'delivered']
+    if new_status not in valid_statuses:
+        abort(400, description='Invalid status update')
 
 @prescriptions_api.route("/<int:prescription_id>", method=["DELETE"])
 def delete_prescription(prescription_id):

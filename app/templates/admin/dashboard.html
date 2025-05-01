@@ -19,7 +19,7 @@
   }
 </style>
 
-<div class="container-fluid">
+<div class="container-fluid py-5">
   <div class="row">
     <!-- Sidebar -->
     <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
@@ -28,23 +28,20 @@
           <h4>Admin Panel</h4>
           <small>{{ current_user.name }}</small>
         </div>
-        <ul class="nav flex-column">
-          <li class="nav-item">
-            <a class="nav-link active text-white" href="{{ url_for('admin.dashboard') }}">Dashboard</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white" href="{{ url_for('admin.manage_prescriptions') }}">Prescriptions</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white" href="{{ url_for('admin.manage_payments') }}">Payments</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white" href="{{ url_for('admin.reports') }}">Reports</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white" href="{{ url_for('admin.settings') }}">Settings</a>
-          </li>
-        </ul>
+        <div class="list-group mb-4">
+          <a href="{{ url_for('admin.dashboard') }}" class="list-group-item list-group-item-action" id="dashboardLink">
+              <i class="bi bi-speedometer2"></i> Dashboard Home
+          </a>
+          <a href="{{ url_for('admin.manage_prescriptions') }}" class="list-group-item list-group-item-action" id="prescriptionsLink">
+              <i class="bi bi-file-earmark-medical"></i> Manage Prescriptions
+          </a>
+          <a href="{{ url_for('admin.reports') }}" class="list-group-item list-group-item-action" id="reportsLink">
+            <i class="bi bi-file-earmark-text"></i> Analysis and Reports
+          </a>
+          <a href="{{ url_for('admin.settings') }}" class="list-group-item-action list-group-item" id="settingsLink">
+            <i class="bi bi-people"></i> Settings
+          </a>
+        </div>
       </div>
     </nav>
 

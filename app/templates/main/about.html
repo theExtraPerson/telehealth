@@ -4,28 +4,95 @@
 
     <style>
 
-        .section {
-            padding: 60px 0;
+    .section {
+        padding: 60px 0;
+    }
+    .section-title {
+        font-size: 2rem;
+        margin-bottom: 20px;
+        font-weight: bold;
+    }
+    .card {
+        transition: transform 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    .bi {
+        font-size: 1rem;
+        margin-bottom: 10px;
+        color: #0d6efd;
+    }
+
+     .services-carousel {
+        min-height: 380px;
+    }
+    .service-card {
+        transition: all 0.3s ease;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .service-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    .icon-wrapper {
+        transition: all 0.3s ease;
+    }
+    .service-card:hover .icon-wrapper {
+        background-color: rgba(13, 110, 253, 0.1) !important;
+        transform: scale(1.1);
+    }
+    .carousel-control-prev, .carousel-control-next {
+        width: 40px;
+        opacity: 1;
+        transition: opacity 0.3s ease;
+    }
+    .carousel-control-prev {
+        left: -15px;
+    }
+    .carousel-control-next {
+        right: -15px;
+    }
+    /* Better mobile indicators */
+    .carousel-indicators {
+        bottom: -30px;
+    }
+    .carousel-indicators button {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: rgba(13, 110, 253, 0.5) !important;
+        border: none;
+        margin: 0 5px;
+    }
+    .carousel-indicators button.active {
+        background-color: #0d6efd !important;
+    }
+
+    .carousel-control-next:hover,
+    .carousel-control-prev:hover {
+        opacity: 0.85 !important;
+    }
+    .carousel-inner {
+        transition: transform 2s cubic-bezier(0.22, 0.61, 0.36, 1) !important;
+    }
+
+
+    @media (max-width: 767.98px) {
+        .services-carousel {
+            padding: 0;
         }
-        .section-title {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            font-weight: bold;
+        .service-card {
+            margin-bottom: 0;
         }
-        .card {
-            transition: transform 0.3s ease;
+        .card-body {
+            padding: 1.25rem !important;
         }
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        .bi {
-            font-size: 1rem;
-            margin-bottom: 10px;
-            color: #0d6efd;
-        }
+    }
     </style>
 
-<div class="container text-center mt-2 my-5">
+<div class="container text-center mt-2 my-5 py-5">
     <h1 class="display-4 fw-bold">{{ hospital_name }}</h1>
     <p class="lead">Compassionate care, advanced technology.</p>
 </div>
@@ -75,55 +142,119 @@
     </div>
 </div>
 
-<div class="container section rounded" id="services">
-    <h2 class="section-title text-center">Services We Offer</h2>
-    <div class="row text-center">
-        {% for service in services %}
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-sm p-3 h-100">
-                <i class="bi
-                    {% if service.title == 'Doctor Consultation' %}bi-capsule
-                    {% elif service.title == 'Laboratory Services' %}bi-heart-pulse
-                    {% elif service.title == 'Dental Care Services' %}bi-arrow-repeat
-                    {% elif service.title == 'Surgeries' %}bi-scissors
-                    {% elif service.title == 'ENT Clinic' %}bi-ear-fill
-                    {% elif service.title == 'Skin Care Clinic' %}bi-person-bounding-box
-                    {% elif service.title == 'Maternal & Child Health' %}bi-person-bounding-box
-                    {% elif service.title == 'Antenatal Care' %}bi-person-bounding-box
-                    {% else %}bi-activity{% endif %}
-                "></i>
-                <h5 class="card-title">{{ service.title }}</h5>
-                <p class="card-text">{{ service.description }}</p>
+<div class="container section rounded py-4" id="services">
+    <h2 class="section-title text-center mb-5">Services We Offer</h2>
+
+    <div class="services-carousel position-relative px-lg-5">
+        <!-- Navigation Arrows -->
+        <button class="carousel-control-prev d-none d-md-flex" type="button" data-bs-target="#servicesCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon bg-primary rounded-circle p-2 p-md-3" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+
+        <!-- Carousel -->
+        <div id="servicesCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-touch="true">
+            <div class="carousel-inner px-2">
+                {% for service in services | batch(2, ' ') %}
+                <div class="carousel-item {% if loop.first %}active{% endif %}">
+                    <div class="row g-3 g-md-4">
+                        {% for item in service %}
+                        <div class="col-6 col-md-4">
+                            {% if item != ' ' %}
+                            <div class="card service-card h-100 border-0 shadow-sm">
+                                <div class="card-body text-center p-3 p-md-4">
+                                    <div class="icon-wrapper mb-3 p-3 rounded-circle bg-light-primary d-inline-flex">
+                                        <i class="bi display-4 text-primary
+                                            {% if item.title == 'Doctor Consultation' %}bi-heart-pulse
+                                            {% elif item.title == 'Laboratory Services' %}bi-droplet
+                                            {% elif item.title == 'Dental Care Services' %}bi-tooth
+                                            {% elif item.title == 'Surgeries' %}bi-scissors
+                                            {% elif item.title == 'ENT Clinic' %}bi-ear
+                                            {% elif item.title == 'Skin Care Clinic' %}bi-shield-plus
+                                            {% elif item.title == 'Maternal & Child Health' %}bi-mother-child
+                                            {% elif item.title == 'Antenatal Care' %}bi-gender-female
+                                            {% else %}bi-hospital{% endif %}">
+                                        </i>
+                                    </div>
+                                    <h5 class="card-title fw-bold mb-2">{{ item.title }}</h5>
+                                    <p class="card-text text-muted small">{{ item.description }}</p>
+                                    <a href="#" class="btn btn-sm btn-outline-primary mt-2 stretched-link">Learn more</a>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
             </div>
         </div>
-        {% endfor %}
+
+             <button class="carousel-control-next d-none d-md-flex" type="button" data-bs-target="#servicesCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon bg-primary rounded-circle p-2 p-md-3" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+
+    <!-- Mobile Indicators -->
+    <div class="d-flex d-md-none justify-content-center mt-3">
+        <div class="carousel-indicators position-static mx-0">
+            {% for service in services | batch(2, ' ') %}
+            <button type="button" data-bs-target="#servicesCarousel" data-bs-slide-to="{{ loop.index0 }}"
+                class="rounded-circle {% if loop.first %}active{% endif %}"
+                style="width:10px; height:10px; border:0; background-color: rgba(0,0,0,0.2);">
+            </button>
+            {% endfor %}
+        </div>
     </div>
 </div>
 
+
 <script>
-    gsap.from(".section-title", {
-        opacity: 0,
-        y: 50,
-        duration: 1,
-        stagger: 0.2,
-        scrollTrigger: {
-            trigger: ".section-title",
-            start: "top 90%"
-        }
+    document.addEventListener('DOMContentLoaded', function() {
+    // Initialize carousel with pause on hover
+    const carousel = new bootstrap.Carousel('#servicesCarousel', {
+
+        interval: false,
+        wrap: true,
+        touchThreshold: 50
     });
 
-    gsap.utils.toArray(".card").forEach((card, i) => {
-        gsap.from(card, {
-            opacity: 0,
-            y: 50,
-            delay: i * 0.1,
-            scrollTrigger: {
-                trigger: card,
-                start: "top 90%",
-                toggleActions: "play none none none"
-            }
+    // adding smooth controls
+    const arrows = document.querySelectorAll('[data-bs-slide]');
+    arrows.forEach(arrow => {
+        arrow.addEventListener('click', function(e) {
+            e.preventDefault();
+            const direction = this.getAttribute('data-bs-slide');
+            direction === 'prev' ? carousel.prev() : carousel.next();
         });
     });
+
+    // Add touch/swipe support for mobile
+    const carouselElement = document.querySelector('#servicesCarousel');
+    if (carouselElement) {
+        carouselElement.addEventListener('touchstart', handleTouchStart, false);
+        carouselElement.addEventListener('touchmove', handleTouchMove, false);
+
+        let xDown = null;
+
+        function handleTouchStart(evt) {
+            xDown = evt.touches[0].clientX;
+        }
+
+        function handleTouchMove(evt) {
+            if (!xDown) return;
+
+            const xUp = evt.touches[0].clientX;
+            const xDiff = xDown - xUp;
+
+            if (Math.abs(xDiff) > 50) { // Minimum swipe distance
+                xDiff > 0 ? carousel.next() : carousel.prev();
+            }
+            xDown = null;
+        }
+    }
+});
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

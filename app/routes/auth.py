@@ -41,17 +41,20 @@ def register():
 
         flash('Registration successful! Please login.', 'success' )
 
-        return jsonify({
-            'success': True,
-            'message': 'Registration successful!',
-            'redirect': url_for('auth.login')
-        })
+        return redirect(url_for('auth.login'))
+        # return jsonify({
+        #     'success': True,
+        #     'message': 'Registration successful!',
+        #     'redirect': url_for('auth.login')
+        # })
 
+    flash('Registration failed! Please try again')
+    return render_template('auth/register.html')
     # Form validation failed
-    return jsonify({
-        'success': False,
-        'errors': form.errors
-    }), 400
+    # return jsonify({
+    #     'success': False,
+    #     'errors': form.errors
+    # }), 400
 
 
 
@@ -77,33 +80,19 @@ def login():
             if user.role == form.role.data:
                 login_user(user)
                 flash('Login successful!', 'success')
-                return jsonify({
-                    'success': True,
-                    'message': 'Login successful!',
-                    'redirect': get_dashboard_url(user.role)
-                })
-        flash('Login failed!, Please try again later.', 'warning')
-        return jsonify({
-            'success': False,
-            'errors': {'form': 'Invalid credentials'}
-        }), 401
+                return redirect_to_dashboard(user.role)
 
-    # Form validation failed
-    return jsonify({
-        'success': False,
-        'errors': form.errors
-    }), 400
+        flash('Login failed!, Please try again later.', 'warning')
+        return redirect('auth.login')
+
+    return render_template('auth/login.html', form=form)
 
 
 @auth.route('/logout', methods=['POST'])
 @login_required
 def logout():
     logout_user()
-    return jsonify({
-        'success': True,
-        'message': 'Logged out successfully',
-        'redirect': url_for('auth.login')
-    })
+    return redirect(url_for('auth.login'))
 
 
 # Helper functions

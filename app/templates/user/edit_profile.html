@@ -2,7 +2,7 @@
 {% block content %}
 <div class="container mt-5" id="profile-form">
   <h2 class="mb-4 text-primary">Edit Your Health Profile</h2>
-  <form method="POST" class="needs-validation" novalidate>
+  <form method="POST" action="{{ url_for('user_dashboard.edit_profile') }}" class="needs-validation" novalidate>
     {{ form.hidden_tag() }}
 
     <div class="row g-3">
@@ -33,7 +33,7 @@
 
       <div class="col-md-3">
         {{ form.blood_type.label(class="form-label") }}
-        {{ form.blood_type(class="form-control") }}
+        {{ form.blood_type(class="form-select-") }}
       </div>
 
       <div class="col-md-6">

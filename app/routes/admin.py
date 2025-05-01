@@ -74,6 +74,8 @@ def approve_appointment(appointment_id):
 def manage_prescriptions():
     return render_template("admin/prescriptions.html", prescriptions=Prescription.query.all())
 
+@admin_bp.route('')
+
 # Manage Payments
 @admin_bp.route("/manage_payments")
 @login_required
