@@ -1,9 +1,12 @@
 import os
+from shlex import join
+
 from flask import (
     Blueprint, render_template, flash, request,
     jsonify, redirect, send_file, url_for, abort, current_app
 )
 from flask_login import login_required, current_user
+from pydantic import json
 from werkzeug.utils import secure_filename
 from flask_wtf.csrf import generate_csrf
 from app import db
@@ -75,7 +78,7 @@ def book_appointment():
     # Choices from DB
     form.patient_id.choices = [(current_user.id, current_user.username)]
     form.doctor_id.choices = [
-        (d.id, f'Dr. {d.name} - {d.speciality}') for d in Doctor.query.all()
+        (d.id, f'Dr. {d.username} - {d.speciality}') for d in Doctor.query.all()
     ]
 
     if request.method == 'POST':
@@ -111,44 +114,31 @@ def manage_appointments():
 @login_required
 def search_doctors():
     try:
-        # Get search parameters
-        specialty = request.args.get('specialty', '').strip()
-        conditions = request.args.get('conditions', '').strip()
-        available_day = request.args.get('day', '').strip().capitalize()  # Ensure proper case
+        doctors = Doctor.query.all()
 
-        # Build base query selecting only needed fields
-        query = db.session.query(
-            User.username,
-            Specialty.name.label('specialty'),
-            Doctor.conditions_treated,
-            Doctor.available_days
-        ).join(Doctor, User.id == Doctor.id) \
-            .join(Specialty, Doctor.specialty_id == Specialty.id) \
-            .filter(User.role == 'doctor')
+        doctors_data = []
+        for doctor in doctors:
+            doctors_data.append({
+                'username': doctor.username,
+                'specialty': doctor.specialty.name if doctor.specialty else None,
+                'available_days': doctor.get_available_days(),
+                'conditions_treated': doctor.conditions_treated
+            })
 
-        # Apply filters
-        if specialty:
-            query = query.filter(Specialty.name.ilike(f'%{specialty}%'))
-        if conditions:
-            query = query.filter(Doctor.conditions_treated.ilike(f'%{conditions}%'))
-        if available_day:
-            # Search for day in JSON array string
-            query = query.filter(Doctor.available_days.ilike(f'%"{available_day}"%'))
-
-        # Execute query and format results
-        doctors = query.all()
-
-        doctors_data = [{
-            'username': doctor.username,
-            'specialty': doctor.specialty,
-            'conditions_treated': doctor.conditions_treated,
-            'available_days': doctor.available_days
-        } for doctor in doctors]
-
-        return jsonify(doctors_data)
+        return jsonify({
+            'success': True,
+            'doctors': doctors_data,
+            'count': len(doctors_data)
+        })
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        current_app.logger.error(f"Error fetching doctors: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'message': "An error occurred while fetching doctors.",
+            'error': str(e)
+        }), 500
+
 
 @user_dashboard.route('/prescriptions/refill')
 @login_required

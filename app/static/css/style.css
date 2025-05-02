@@ -162,7 +162,7 @@ nav .container img {
     height: 40px;
     width: 40px;
 }
-/* in your style.css or inside a <style>…</style> */
+
 
 .desktop-glass-nav {
     position: fixed;
@@ -190,6 +190,32 @@ nav .container img {
     left: 0;
 }
 
+.auth-buttons {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.auth-button {
+    padding: 0.375rem 0.75rem;
+    border-radius: 50%;
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: all .2s ease;
+}
+
+.login-btn {
+    background-color: white;
+    color: #0d6efd;
+    border: 1px solid transparent;
+}
+
+.register-btn {
+    background-color: transparent;
+    color: white;
+    border: 1px solid white;
+}
 
 
 /*hero page*/
@@ -199,7 +225,7 @@ nav .container img {
     text-align: center;
     color: white;
     width: 100%;
-    height: 70vh;
+    height: 50vh;
 }
 
 .hero-image {
@@ -209,7 +235,7 @@ nav .container img {
 
 .hero-text {
     position: absolute;
-    top: 50%;
+    top: 30%;
     left: 50%;
     transform: translate(-50%, -50%);
     /*background-image: url("../images/hero.jpg");*/
@@ -329,14 +355,6 @@ nav .container img {
     font-weight: 500;
     color: #333;
   }
-
-
-/* GENERAL PAGE STYLING */
-/*body {*/
-/*    background-color: #f8f9fa;*/
-/*    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;*/
-/*    scroll-behavior: smooth;*/
-/*}*/
 
 h2 {
     font-weight: 600;
@@ -475,6 +493,26 @@ h2 {
     }
     .navbar-nav .nav-link {
         padding: 0.5rem 1rem;
+    }
+    .auth-buttons {
+        margin-left: auto;
+        padding-right: 1rem;
+    }
+
+}
+
+@media (max-width: 991.98px) {
+    .auth-buttons {
+        order: 3;
+        width: 100%;
+        justify-content: right;
+        margin-top: 1rem;
+        padding: 0 1rem;
+    }
+    .auth-btn {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        flex-grow: 1;
     }
 }
 

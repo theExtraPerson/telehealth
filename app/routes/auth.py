@@ -83,7 +83,7 @@ def login():
                 return redirect_to_dashboard(user.role)
 
         flash('Login failed!, Please try again later.', 'warning')
-        return redirect('auth.login')
+        return redirect(url_for('auth.login'))
 
     return render_template('auth/login.html', form=form)
 

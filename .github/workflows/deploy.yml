@@ -41,8 +41,8 @@ jobs:
           SQLALCHEMY_DATABASE_URI: ${{ secrets.SQLALCHEMY_DATABASE_URI}}
 
       - name: Deploy to Render
-        uses: render-examples/gh-deploy@v1
+        uses: render-actions/deploy@v1
         with:
-          apiKey: ${{ secrets.RENDER_API_KEY }}
-          serviceId: ${{ secrets.RENDER_SERVICE_ID }}
+          api_key: ${{ secrets.RENDER_API_KEY }}
+          service_id: ${{ secrets.RENDER_SERVICE_ID }}
 
