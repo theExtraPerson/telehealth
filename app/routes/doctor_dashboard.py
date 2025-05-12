@@ -90,7 +90,21 @@ def collaborate(doctor_id):
 @login_required
 def manage_appointments():
     appointments = Appointment.query.filter_by(doctor_id=current_user.id).all()
-    return render_template('doctor/appointments.html', appointments=appointments)
+    detailed_appointments = []
+
+    for appointment in appointments:
+        patient = User.query.get(appointment.patient_id)
+        detailed_appointments.append({
+            "id": appointment.id,
+            "date": appointment.date,
+            "time": appointment.time,
+            "patient_name": patient.name if patient else "Unknown",
+            "patient_email": patient.email if patient else "Unknown",
+            "reason": appointment.reason,
+            "status": appointment.status
+        })
+
+    return render_template('doctor/appointments.html', appointments=detailed_appointments)
 
 
 @doctor_dashboard.route('/doctor/prescriptions')

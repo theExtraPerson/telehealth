@@ -125,11 +125,7 @@ def search_doctors():
                 'conditions_treated': doctor.conditions_treated
             })
 
-        return jsonify({
-            'success': True,
-            'doctors': doctors_data,
-            'count': len(doctors_data)
-        })
+        return render_template('user/search_doctors.html')
 
     except Exception as e:
         current_app.logger.error(f"Error fetching doctors: {str(e)}", exc_info=True)
@@ -298,6 +294,7 @@ def edit_profile():
         current_user.blood_type = form.blood_type.data
         current_user.allergies = form.allergies.data
         current_user.medical_conditions = form.medical_conditions.data
+
         db.session.commit()
         flash('Profile updated successfully!', 'success')
         return redirect(url_for('user_dashboard.dashboard'))
@@ -307,7 +304,7 @@ def edit_profile():
 @user_dashboard.route('/payments/invoice/<int:payment_id>')
 @login_required
 def invoice(payment_id):
-    appointment = Appointment.query.get_or_404(appointment_id)
+    appointment = Appointment.query.get_or_404(payment_id)
     if appointment.user_id != current_user.id:
         abort(403)
 

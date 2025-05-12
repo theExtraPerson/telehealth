@@ -9,6 +9,7 @@ class Message(db.Model):
     receiver_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     content = db.Column(db.String, nullable=False)
+    category = db.Column(db.String, nullable=False)
     file_url = db.Column(db.String, nullable=True)
     sent_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     seen = db.Column(db.Boolean, default=False)

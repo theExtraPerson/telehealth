@@ -1,13 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %} 
-<div class="container">
+<div class="container py-5">
     <h1 class="text-center mb-4">Your Medical Records</h1>
 
     <!-- Upload Medical Record -->
     <div class="card p-4 mb-4">
     <h4 class="card-title">Upload Medical Record</h4>
     <form method="POST" enctype="multipart/form-data" action="/upload">
+
         <!-- File Upload -->
         <div class="mb-3">
             <label for="fileUpload" class="form-label">Medical Record File</label>
@@ -38,15 +39,15 @@
         <input type="hidden" name="csrf_token" value="{{ csrf_token }}"/>
         {% endif %}
 
-        <button type="submit" class="btn btn-custom w-100">Upload Record</button>
+        <button type="submit" class="btn btn-custom w-20">Upload Record</button>
     </form>
 </div>
 
     <!-- Accordion for Medical Records -->
+            <h2 class="accordion-header" id="heading{{ record.id }}">
     <div class="accordion" id="recordsAccordion">
         {% for record in records %}
         <div class="accordion-item">
-            <h2 class="accordion-header" id="heading{{ record.id }}">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                     data-bs-target="#collapse{{ record.id }}" aria-expanded="false" aria-controls="collapse{{ record.id }}">
                     {{ record.name }} - {{ record.uploaded_at.utctime('%Y-%m-%d') }}
@@ -61,7 +62,7 @@
 
                     <div class="d-grid gap-2 mt-3">
                         <a href="/view/{{ record.id }}" class="btn btn-outline-primary">View Details</a>
-                        <a href="/download?record_id={{ record.id }}" class="btn btn-outline-success">Download</a>
+                        <a href="/download/record_id={{ record.id }}" class="btn btn-outline-success">Download</a>
 
                         <!-- Share via Email -->
                         <form method="POST" action="/send" class="d-flex mt-2">

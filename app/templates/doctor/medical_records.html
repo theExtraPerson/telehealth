@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}Share Medical Record{% endblock %}
+
+{% block extra_css %}
+<style>
+    .share-methods {
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    .share-method {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #eee;
+    }
+    .share-method:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+    .copy-link {
+        cursor: pointer;
+    }
+    .copy-link:hover {
+        color: #0d6efd;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Share Medical Record</h4>
+                    <a href="{{ url_for('record_detail', record_id=record.id) }}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Record
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    You are about to share the medical record for <strong>{{ record.patient.full_name }}</strong> 
+                    from {{ record.visit_date.strftime('%Y-%m-%d') }}.
+                </div>
+                
+                <div class="share-methods">
+                    <div class="share-method">
+                        <h5><i class="fas fa-envelope me-2"></i>Share via Email</h5>
+                        <form method="POST" action="{{ url_for('send_share_email', record_id=record.id) }}">
+                            <div class="row g-3">
+                                <div class="col-md-8">
+                                    <input type="email" name="recipient_email" class="form-control" 
+                                           placeholder="Enter recipient's email" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="fas fa-paper-plane me-1"></i> Send
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-text mt-2">
+                                A secure link to this record will be emailed to the recipient.
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="share-method">
+                        <h5><i class="fas fa-link me-2"></i>Share via Link</h5>
+                        <div class="input-group mb-3">
+                            <input type="text" id="share-link" class="form-control" 
+                                   value="{{ share_link }}" readonly>
+                            <button class="btn btn-outline-secondary copy-link" type="button" 
+                                    onclick="copyToClipboard('share-link')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <div class="form-text">
+                            Copy this link to share with others. Access expires in 7 days.
+                        </div>
+                    </div>
+                    
+                    <div class="share-method">
+                        <h5><i class="fas fa-user-md me-2"></i>Grant Doctor Access</h5>
+                        <form method="POST" action="{{ url_for('grant_doctor_access', record_id=record.id) }}">
+                            <div class="row g-3">
+                                <div class="col-md-8">
+                                    <select name="doctor_id" class="form-select" required>
+                                        <option value="">Select a doctor...</option>
+                                        {% for doctor in doctors %}
+                                        <option value="{{ doctor.id }}">{{ doctor.name }} ({{ doctor.specialization }})</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <button type="submit" class="btn btn-success w-100">
+                                        <i class="fas fa-user-plus me-1"></i> Grant Access
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">Previously Shared With</h6>
+                    </div>
+                    <div class="card-body">
+                        {% if shared_with %}
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Recipient</th>
+                                            <th>Shared On</th>
+                                            <th>Expires</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for share in shared_with %}
+                                        <tr>
+                                            <td>
+                                                {% if share.doctor %}
+                                                    Dr. {{ share.doctor.name }}
+                                                {% else %}
+                                                    {{ share.recipient_email }}
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ share.shared_at.strftime('%Y-%m-%d') }}</td>
+                                            <td>{{ share.expires_at.strftime('%Y-%m-%d') }}</td>
+                                            <td>
+                                                {% if share.is_active %}
+                                                    <span class="badge bg-success">Active</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">Expired</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center text-muted py-3">
+                                <i class="fas fa-share-alt fa-2x mb-2"></i>
+                                <p>This record hasn't been shared with anyone yet.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function copyToClipboard(elementId) {
+        const element = document.getElementById(elementId);
+        element.select();
+        element.setSelectionRange(0, 99999); // For mobile devices
+        document.execCommand("copy");
+        
+        // Show tooltip or alert
+        const originalText = element.nextElementSibling.innerHTML;
+        element.nextElementSibling.innerHTML = '<i class="fas fa-check me-1"></i> Copied!';
+        setTimeout(() => {
+            element.nextElementSibling.innerHTML = originalText;
+        }, 2000);
+    }
+</script>
+{% endblock %}

@@ -1,16 +1,19 @@
 
 
-@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Abel&display=swap');
 
 body, html {
-    font-family: 'Poppins', sans-serif;
+    /* font-family: 'Poppins', sans-serif; */
     background-color: #041349;
     scroll-behavior: smooth;
     color: #fff;
     padding-top: 15px;
     height: 100vh;
     font-weight: 400;
+    font-family: "Abel", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+
 }
 
 /* Make the header sticky and minimize height */
@@ -48,6 +51,8 @@ header {
 }
 .mobile-menu {
     background: #0f5132;
+    top: 0;
+
 }
 
 .mobile-menu a {
@@ -78,6 +83,12 @@ header {
 .card {
     border-radius: 10px;
     transition: 0.3s;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    padding: 1rem 1.5rem;
 }
 
 .card:hover {
@@ -96,6 +107,7 @@ header {
     width: 100%;
     display: flex;
     height: 12vh;
+    font-weight: 500;
 }
 
 .brand-highlight {
@@ -151,7 +163,9 @@ header {
 
 .navbar-toggler {
     outline: none;
-    border-color: rgba(255, 255, 225, 0.5);
+    border: 1px solid rgba(2, 20, 5, 0.5);
+    color: #041349;
+    
 }
 
 .navbar-toggler-icon {
@@ -209,12 +223,19 @@ nav .container img {
     background-color: white;
     color: #0d6efd;
     border: 1px solid transparent;
+    border-radius: 30px;
 }
 
 .register-btn {
     background-color: transparent;
     color: white;
     border: 1px solid white;
+    border-radius: 30px;
+}
+
+btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
 }
 
 
@@ -226,6 +247,7 @@ nav .container img {
     color: white;
     width: 100%;
     height: 50vh;
+    top: 120px;
 }
 
 .hero-image {
@@ -239,6 +261,67 @@ nav .container img {
     left: 50%;
     transform: translate(-50%, -50%);
     /*background-image: url("../images/hero.jpg");*/
+}
+
+/*INDEX PAGE SERVICE CARDS*/
+
+/* Services Section Styling */
+.service-card {
+    /* Glass Morphism Effect */
+    background: rgba(182, 172, 172, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+    /* Card Layout */
+    height: 80%;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem !important;
+}
+
+/* Hover Effects */
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    background: rgb(29, 74, 11);
+}
+
+/* Card Content Styling */
+.service-card h4 {
+    color: #1265e3;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.service-card p {
+    color: #010823;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+
+
+.service-card .btn {
+    border-radius: 50px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+    background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+}
+
+.service-card .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+}
+
+/* Clickable Card Enhancement */
+.service-card[onclick] {
+    cursor: pointer;
 }
 
 /*login page*/
@@ -273,6 +356,15 @@ nav .container img {
 .form-control:focus {
     border-color: #1d4a0b;
     box-shadow: 0 0 0 0.25rem rgb(105, 204, 65);
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+.form-control, .form-select {
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
 }
 
 .index-decor {
@@ -347,8 +439,9 @@ nav .container img {
 }
 
 .modal-content {
-    border-radius: 1rem;
+    border-radius: 50px;
     background-color: #0f5132;
+    margin-top: 25px;
   }
 
 .modal-body p {
@@ -475,6 +568,56 @@ h2 {
     backdrop-filter: blur(6px);
 }
 
+/* TABLE STYLES */
+.table {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 1rem;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    margin-bottom: 0;
+}
+
+.table th,
+.table td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    font-weight: 500;
+    color: #495057;
+}
+
+.alert {
+    border-radius: 0.357rem;
+    padding: 0.75rem 1.25rem;
+}
+
+.avatar {
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e9ecef;
+    border-radius: 50%;
+}
+
+.action-icons i {
+    cursor: pointer;
+    margin: 0 5px;
+    font-size: 1.2rem;
+}
+.action-icons i:hover {
+    color: #007bff;
+}
+
+/* Status badges */
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+}
+
 /* RESPONSIVE */
 @media screen and (max-width: 768px) {
     .dashboard-grid {
@@ -518,9 +661,17 @@ h2 {
 
 /*body*/
 @media (max-width: 768px) {
-  body {
-    padding-top: 140px; /* if mobile menu expands below */
-  }
+    body {
+        padding-top: 140px; /* if mobile menu expands below */
+    }
+    .card-body{
+        padding: 1rem;
+    }
+    .table-responsive{
+        margin-bottom: auto;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
 }
 
 /*sidebar*/
@@ -555,7 +706,52 @@ h2 {
     .login-container {
         padding: 1.5rem;
         border-radius: 1rem;
+        width: 100%;
     }
+
 }
 
+  /* Responsive Adjustments  for index page service cards*/
+    @media (max-width: 992px) {
+        .service-card {
+            margin-bottom: 1rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .service-card {
+            margin-bottom: 1.5rem;
+            padding: 1.25rem !important;
+
+        }
+
+        .service-card h4 {
+            font-size: 1.25rem;
+        }
+
+        .service-card p {
+            font-size: 0.9rem;
+        }
+
+        .service-card .btn {
+            padding: 0.4rem 1.25rem;
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .service-card {
+            border-radius: 12px;
+        }
+
+        .row {
+            margin-left: -0.5rem;
+            margin-right: -0.5rem;
+        }
+
+        .col-md-4 {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+    }
 

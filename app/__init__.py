@@ -26,8 +26,12 @@ login_manager.login_message = "Please login to access this page."
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
-    app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
+
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("SQLALCHEMY_DATABASE_URI")
      # Path for refresh tokens
+
+    app.config['SQLACHEMY_TRACK_MODIFICATIONS'] = False
 
     db.init_app(app)
     login_manager.init_app(app)
@@ -113,11 +117,9 @@ def create_app():
     return app
 
 
-# def root_path():
+# class Base:
+#     metadata = None
+
+
+# def get_db():
 #     return None
-class Base:
-    metadata = None
-
-
-def get_db():
-    return None

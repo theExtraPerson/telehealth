@@ -1,0 +1,190 @@
+
+{% extends "base.html" %} 
+
+{% block title %}Notifications{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <style>
+        /* Custom CSS for Notifications */
+        .notification-list {
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden; /* Ensures rounded corners apply */
+        }
+
+        .notification-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .notification-item .notification-content {
+            flex-grow: 1;
+            margin-right: 15px;
+        }
+
+        .notification-item .notification-sender {
+            font-weight: bold;
+            margin-right: 10px;
+            min-width: 100px; /* Give sender some minimum width */
+        }
+
+        .notification-item .notification-subject {
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-grow: 1; /* Allow subject to take available space */
+        }
+
+        .notification-item .notification-meta {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0; /* Prevent meta from shrinking */
+        }
+
+        .notification-item .notification-timestamp {
+            font-size: 0.85rem;
+            color: #777;
+            margin-left: 15px;
+            min-width: 80px; /* Give timestamp some minimum width */
+            text-align: right;
+        }
+
+        /* Badge styling */
+        .notification-item .badge {
+            font-size: 0.75rem;
+            padding: 0.3em 0.6em;
+            margin-left: 5px;
+        }
+
+        /* Optional: Style for unread messages */
+        .notification-item.unread {
+            background-color: #e8f0fe; /* Light blue background for unread */
+            font-weight: bold;
+        }
+
+        .notification-item.unread .notification-subject {
+             font-weight: bold;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .notification-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .notification-item .notification-content {
+                margin-right: 0;
+                margin-bottom: 5px;
+                width: 100%; /* Full width on small screens */
+            }
+
+             .notification-item .notification-sender {
+                margin-right: 0;
+                margin-bottom: 5px;
+                min-width: auto;
+            }
+
+            .notification-item .notification-meta {
+                width: 100%; /* Full width on small screens */
+                justify-content: space-between; /* Space out badges and timestamp */
+            }
+
+            .notification-item .notification-timestamp {
+                 margin-left: 0;
+                 min-width: auto;
+                 text-align: left;
+            }
+        }
+
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Notification Center</h2>
+
+    {% if notifications %}
+        <div class="notification-list">
+            {% for notification in notifications %}
+                {# Add 'unread' class if message is not seen #}
+                <div class="notification-item {% if not notification.seen %}unread{% endif %}" data-id="{{ notification.id }}">
+                    <div class="notification-content">
+                         <span class="notification-sender">
+                             {% if notification.sender %}
+                                 {{ notification.sender.username }} {# Assuming User model has username #}
+                             {% else %}
+                                 System
+                             {% endif %}
+                         </span>
+                        <span class="notification-subject">{{ notification.content | truncate(100, True) }}</span> {# Truncate long content #}
+                    </div>
+                    <div class="notification-meta">
+                        {# Display category badge #}
+                        {% if notification.category == 'appointment' %}
+                            <span class="badge bg-primary rounded-pill">Appointment</span>
+                        {% elif notification.category == 'payment' %}
+                            <span class="badge bg-success rounded-pill">Payment</span>
+                        {% elif notification.category == 'prescription refill' %}
+                            <span class="badge bg-warning rounded-pill">Prescription</span>
+                        {% elif notification.category == 'system' %}
+                            <span class="badge bg-secondary rounded-pill">System</span>
+                        {% else %}
+                             <span class="badge bg-info rounded-pill">{{ notification.category | default('Other') }}</span> {# Display category from DB, default to Other #}
+                        {% endif %}
+
+                        <span class="notification-timestamp">
+                            {{ notification.timestamp.strftime('%b %d') }} {# e.g., Jan 25 #}
+                        </span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No notifications found.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    {# Include GSAP library if not already in base.html #}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate notification items on load
+            gsap.from(".notification-item", {
+                opacity: 0,
+                y: 20, // Start 20px below
+                duration: 0.5, // Animation duration
+                stagger: 0.05, // Small delay between items
+                ease: "power2.out"
+            });
+
+            // Optional: Add click behavior to notification items
+            document.querySelectorAll('.notification-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const notificationId = this.getAttribute('data-id');
+                    // TODO: Implement logic to mark as read and potentially redirect
+                    console.log('Notification clicked:', notificationId);
+                    // Example: Redirect to a detail page or trigger an API call
+                    // window.location.href = '/notifications/' + notificationId;
+                });
+            });
+        });
+    </script>
+{% endblock %}

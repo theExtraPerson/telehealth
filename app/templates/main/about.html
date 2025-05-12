@@ -9,8 +9,9 @@
     }
     .section-title {
         font-size: 2rem;
+        color: blue;
         margin-bottom: 20px;
-        font-weight: bold;
+        font-weight: 700;
     }
     .card {
         transition: transform 0.3s ease;
@@ -24,47 +25,115 @@
         color: #0d6efd;
     }
 
-     .services-carousel {
+    .services-carousel {
         min-height: 380px;
+        position: relative;
     }
     .service-card {
         transition: all 0.3s ease;
         border-radius: 12px;
         overflow: hidden;
+        background-color: #fff;
+        box-shadow: 0 5px 15px rgba(114, 233, 150, 0.1);
+        backdrop-filter: blur(10px);
+        box-sizing: border-box;
+        padding: 20px;
+        margin-bottom: 30px;
+        border: none;
     }
+
+    .service-card .card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #071f42;
+        margin-bottom: 10px;
+    }
+
+    .service-card .card-text {
+        font-size: 0.9rem;
+        color: #0f0f0f;
+        /* margin-bottom: 15px; */
+    }
+
+    .service-card .btn-outline-primary {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+        color: #071f42;
+        border-color: #6c757d;
+        
+    }
+    
+    .service-card .btn-outline-primary:hover {
+        background-color: #637186;
+        color: #fff;
+        border-color: #0d6efd;
+    }
+
+    .service-card .card-body {
+        padding: 1.5rem;
+        text-align: center;
+    }
+
     .service-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     }
     .icon-wrapper {
         transition: all 0.3s ease;
+        color: forestgreen;
+        width: 70px;
+        height: 70px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
     }
+
+    .icon-wrapper i {
+        font-size: 2rem;
+        color: #071f42;
+    }
+
     .service-card:hover .icon-wrapper {
         background-color: rgba(13, 110, 253, 0.1) !important;
         transform: scale(1.1);
     }
-    .carousel-control-prev, .carousel-control-next {
+    .services-carousel .carousel-control-prev-icon,
+    .services-carousel .carousel-control-next-icon {
         width: 40px;
-        opacity: 1;
+        height: 40px;
+        background-color: rgba(13, 110, 253, 0.5);
+        border-radius: 10%;
+        display: flex;
+        justify-content: center;
+        opacity: 0.8;
         transition: opacity 0.3s ease;
+        
     }
-    .carousel-control-prev {
-        left: -15px;
-    }
-    .carousel-control-next {
-        right: -15px;
+    .services-carousel .carousel-control-prev-icon:hover,
+    .services-carousel .carousel-control-next-icon:hover {
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: 1;
     }
     /* Better mobile indicators */
     .carousel-indicators {
         bottom: -30px;
+        margin-bottom: 0;
+        margin-top: 20px;
+        position: static;
     }
     .carousel-indicators button {
         width: 12px;
         height: 12px;
         border-radius: 50%;
-        background-color: rgba(13, 110, 253, 0.5) !important;
+        background-color: rgba(43, 73, 119, 0.5) !important;
         border: none;
         margin: 0 5px;
+        opacity: 0.7;
+        transition: background-color 0.3s ease, opacity 0.3s ease;
     }
     .carousel-indicators button.active {
         background-color: #0d6efd !important;
@@ -76,8 +145,21 @@
     }
     .carousel-inner {
         transition: transform 2s cubic-bezier(0.22, 0.61, 0.36, 1) !important;
+        padding: 0 15px;
     }
 
+    .services-carousel .carousel-control-next,
+    .services-carousel .carousel-control-prev {
+        width: auto;
+        opacity: 1;
+    }
+
+    .services-carousel .carousel-control-prev {
+        left: -20px;
+    }
+    .services-carousel .carousel-control-next {
+        right: -20px;
+    }
 
     @media (max-width: 767.98px) {
         .services-carousel {
@@ -89,6 +171,19 @@
         .card-body {
             padding: 1.25rem !important;
         }
+        .carousel-inner {
+            padding: 0 10px;
+        }
+    }
+
+    @media (min-width: 992px) {
+        .services-carousel .carousel-control-prev {
+            left: -50px;
+        }
+        .services-carousel .carousel-control-next {
+            right: -50px;
+        }
+        
     }
     </style>
 
@@ -125,17 +220,17 @@
         {% for value in core_values %}
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm p-3 h-100">
-                <i class="bi
+                <i class="bi display-4 text-primary mb-3
                     {% if value.title == 'Compassion' %}bi-heart-fill
-                    {% elif value.title == 'Respect and Integrity' %}bi-shield-lock-fill
-                    {% elif value.title == 'Innovation and Excellence' %}bi-bulb-fill
-                    {% elif value.title == 'Accountability and Professionalism' %}bi-star-fill
-                    {% elif value.title == 'Teamwork and Patient Centric' %}bi-star-fill
-                    {% elif value.title == 'Empathy and Care' %}bi-balloon-heart-fill
-                    {% else %}bi-check-circle-fill{% endif %}
-                "></i>
-                <h5 class="card-title">{{ value.title }}</h5>
-                <p class="card-text">{{ value.description }}</p>
+                    {% elif value.title == 'Respect and Integrity' %}bi-shield-check
+                    {% elif value.title == 'Innovation and Excellence' %}bi-lightbulb
+                    {% elif value.title == 'Accountability and Professionalism' %}bi-briefcase-fill
+                    {% elif value.title == 'Teamwork and Patient Centric' %}bi-people-fill
+                    {% elif value.title == 'Empathy and Care' %}bi-hand-thumbs-up-fill
+                    {% else %}bi-check-circle-fill{% endif %}">
+                </i>
+                <h5 class="card-title fw-bold">{{ value.title }}</h5>
+                <p class="card-text text-muted">{{ value.description }}</p>
             </div>
         </div>
         {% endfor %}
@@ -211,50 +306,31 @@
 
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-    // Initialize carousel with pause on hover
-    const carousel = new bootstrap.Carousel('#servicesCarousel', {
+document.addEventListener('DOMContentLoaded', function() {
+    const servicesCarousel = document.getElementById('servicesCarousel');
 
-        interval: false,
-        wrap: true,
-        touchThreshold: 50
-    });
+    if (servicesCarousel) {
+        animateActivateCards(servicesCarousel.querySelector('.carousel-item.active'));
 
-    // adding smooth controls
-    const arrows = document.querySelectorAll('[data-bs-slide]');
-    arrows.forEach(arrow => {
-        arrow.addEventListener('click', function(e) {
-            e.preventDefault();
-            const direction = this.getAttribute('data-bs-slide');
-            direction === 'prev' ? carousel.prev() : carousel.next();
-        });
-    });
+        servicesCarousel.addEventListener('slide.bs.carousel', function (event) {
+            animateActivateCards(event.relatedTarget);
+        });  
+    }
 
-    // Add touch/swipe support for mobile
-    const carouselElement = document.querySelector('#servicesCarousel');
-    if (carouselElement) {
-        carouselElement.addEventListener('touchstart', handleTouchStart, false);
-        carouselElement.addEventListener('touchmove', handleTouchMove, false);
-
-        let xDown = null;
-
-        function handleTouchStart(evt) {
-            xDown = evt.touches[0].clientX;
-        }
-
-        function handleTouchMove(evt) {
-            if (!xDown) return;
-
-            const xUp = evt.touches[0].clientX;
-            const xDiff = xDown - xUp;
-
-            if (Math.abs(xDiff) > 50) { // Minimum swipe distance
-                xDiff > 0 ? carousel.next() : carousel.prev();
-            }
-            xDown = null;
+    function animateActivateCards(activeItem) {
+        if (activeItem) {
+            const cards = activeItem.querySelectorAll('.service-card');
+            gsap.from(cards, {
+                opacity: 0,
+                y: 50,
+                duration: 0.6,
+                stagger: 0.2,
+                ease: "power3.out"
+            });
         }
     }
 });
+
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

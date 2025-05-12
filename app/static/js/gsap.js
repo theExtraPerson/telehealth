@@ -103,17 +103,7 @@ gsap.from("#registerCard", {
     ease: "power3.out"
   });
 
-  // Password validation
-  document.getElementById('registerForm').addEventListener('submit', function (e) {
-    const pass = document.getElementById('password').value;
-    const confirm = document.getElementById('confirm_password').value;
-    if (pass !== confirm) {
-      e.preventDefault();
-      alert("Passwords do not match!");
-    }
-  });
-
- // GSAP Animation for Sidebar Transition
+// GSAP Animation for Sidebar Transition
     gsap.from(".sidebar img", {
         duration: 1,
         opacity: 0,
@@ -130,10 +120,10 @@ gsap.from("#registerCard", {
     });
 
 // Book appointment gsap animations
-document.addEventListener("DOMContentLoaded", function() {
-        gsap.from(".card", { duration: 1, opacity: 0, y: 50, ease: "power2.out" });
-        gsap.from("h2", { duration: 1, opacity: 0, x: -50, delay: 0.3, ease: "power2.out" });
-    });
+// document.addEventListener("DOMContentLoaded", function() {
+//         gsap.from(".card", { duration: 1, opacity: 0, y: 50, ease: "power2.out" });
+//         gsap.from("h2", { duration: 1, opacity: 0, x: -50, delay: 0.3, ease: "power2.out" });
+//     });
 
 // Doctor Search Animation
 document.addEventListener("DOMContentLoaded", function() {

@@ -1,130 +1,168 @@
-# app/services/medical_records_service.py
-
 import os
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, UploadFile
+import uuid
+from pathlib import Path
 
-from app.models.medical_record import MedicalRecord
-from app.models.record_access import MedicalRecordAccess
+from app.models.medical_record import MedicalRecord, MedicalRecordAccess
 from app.models.user import User
-
+from app.schemas.medical_records_schema import MedicalRecordCreate, MedicalRecordUpdate
+from app.config import settings
+from app.utils.pdf_generator import generate_pdf_from_record
+from app.utils.telemedicine import generate_telemedicine_link
 
 class MedicalRecordsService:
     def __init__(self, db: Session):
         self.db = db
 
-    def get_medical_records(self, user_id: int, skip: int = 0, limit: int = 10):
-        """
-        Fetches the medical records for a specific patient.
-        """
-        return (
-            self.db
-            .query(MedicalRecord)
-            .filter(MedicalRecord.patient_id == user_id)
-            .order_by(MedicalRecord.uploaded_at.desc())
-            .offset(skip)
-            .limit(limit)
-            .all()
-        )
+        self.UPLOAD_DIR = 'uploads'
 
-    def get_medical_record_by_id(self, record_id: int, user_id: int):
-        """
-        Fetches a single medical record by ID, verifying ownership.
-        """
-        return (
-            self.db
-            .query(MedicalRecord)
-            .filter(
-                MedicalRecord.id == record_id,
-                MedicalRecord.patient_id == user_id
+        self.EXPORT_DIR = 'exports'
+
+    def _verify_patient_access(self, record_id: int, user_id: int) -> MedicalRecord:
+        record = self.db.query(MedicalRecord).filter(
+            MedicalRecord.id == record_id,
+            MedicalRecord.patient_id == user_id
+        ).first()
+        
+        if not record:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Record not found or access denied."
             )
-            .first()
-        )
+        return record
 
-    def create_medical_record_with_file(
-        self,
-        description: str,
-        doctor_name: str,
-        date_of_birth: datetime,
-        file_path: str,
-        user_id: int
-    ):
-        """
-        Creates a new medical record for the patient, saving the file path.
-        """
+    def _verify_doctor_access(self, record_id: int, doctor_id: int) -> MedicalRecord:
+        # Check if doctor has direct access or shared access
+        record = self.db.query(MedicalRecord).join(
+            MedicalRecordAccess,
+            MedicalRecord.id == MedicalRecordAccess.record_id
+        ).filter(
+            (MedicalRecord.id == record_id) &
+            (
+                (MedicalRecord.doctor_id == doctor_id) |
+                (MedicalRecordAccess.doctor_id == doctor_id)
+            )
+        ).first()
+        
+        if not record:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access to this record is not authorized."
+            )
+        return record
+
+    def create_medical_record(self, record_data: MedicalRecordCreate, doctor_id: int, file: UploadFile = None) -> MedicalRecord:
+        """Create a new medical record with optional file attachment"""
+        file_path = None
+        if file:
+            upload_dir = Path(settings.UPLOAD_DIR) / "medical_records"
+            upload_dir.mkdir(parents=True, exist_ok=True)
+            
+            file_ext = file.filename.split('.')[-1]
+            file_name = f"{uuid.uuid4()}.{file_ext}"
+            file_path = str(upload_dir / file_name)
+            
+            with open(file_path, "wb") as buffer:
+                buffer.write(file.file.read())
+
         db_record = MedicalRecord(
-            patient_id=user_id,
-            description=description,
-            doctor_name=doctor_name,
-            date_of_birth=date_of_birth,
+            patient_id=record_data.patient_id,
+            date_of_visit=record_data.date_of_visit,
+            description=record_data.description,
+            diagnosis=record_data.diagnosis,
+            treatment=record_data.treatment,
+            medications=record_data.medications,
+            notes=record_data.notes,
+            doctor_name=record_data.doctor_name,
+            doctor_id=doctor_id,
             file_path=file_path,
-            uploaded_at=datetime.utcnow()
+            is_telemedicine=record_data.is_telemedicine,
+            telemedicine_link=generate_telemedicine_link() if record_data.is_telemedicine else None,
+            uploaded_at=datetime.now(timezone.utc)
         )
+        
         self.db.add(db_record)
         self.db.commit()
         self.db.refresh(db_record)
         return db_record
 
-    def get_file_path(self, record_id: int, user_id: int) -> str:
-        """
-        Retrieves the file path for a given record (for download).
-        """
-        record = self.get_medical_record_by_id(record_id, user_id)
-        if not record:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Record not found."
-            )
-        return record.file_path
+    def update_medical_record(self, record_id: int, update_data: MedicalRecordUpdate, user_id: int) -> MedicalRecord:
+        """Update an existing medical record"""
+        record = self._verify_patient_access(record_id, user_id)
+        
+        for field, value in update_data.dict(exclude_unset=True).items():
+            setattr(record, field, value)
+        
+        record.last_updated = datetime.now(timezone.utc)
+        self.db.commit()
+        self.db.refresh(record)
+        return record
 
-    def share_medical_record(self, record_id: int, recipient_email: str, user_id: int):
-        """
-        Logic to share the medical record (e.g., send via email).
-        """
-        record = self.get_medical_record_by_id(record_id, user_id)
-        if not record:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Record not found."
-            )
+    def share_record_via_email(self, record_id: int, recipient_email: str, user_id: int) -> dict:
+        """Share a record via email with a secure link"""
+        record = self._verify_patient_access(record_id, user_id)
+        
+        # Generate a secure token for email sharing
+        token = str(uuid.uuid4())
+        expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+        
+        # In a real implementation, you would send an email here with the token
+        share_url = f"{settings.FRONTEND_URL}/shared-records/{token}"
+        
+        return {
+            "message": "Record shared successfully",
+            "share_url": share_url,
+            "expires_at": expires_at.isoformat()
+        }
 
-        # TODO: implement real email-sending logic
-        # send_email(to=recipient_email, subject=..., body=..., attachments=[record.file_path])
+    def generate_pdf_export(self, record_id: int, user_id: int) -> str:
+        """Generate a PDF version of the medical record"""
+        record = self._verify_patient_access(record_id, user_id)
+        
+        output_dir = Path(settings.EXPORT_DIR) / "pdf"
+        output_dir.mkdir(parents=True, exist_ok=True)
+        pdf_path = str(output_dir / f"record_{record_id}_{user_id}.pdf")
+        
+        generate_pdf_from_record(record, pdf_path)
+        return pdf_path
 
-        return {"message": f"Record {record.id} shared with {recipient_email}"}
-
-    def grant_doctor_access(self, record_id: int, doctor_id: int, user_id: int):
-        """
-        Grants a doctor access to a patient's record.
-        """
-        record = self.get_medical_record_by_id(record_id, user_id)
-        if not record:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Record not found."
-            )
-
-        # ensure doctor exists
+    def create_telemedicine_session(self, patient_id: int, doctor_id: int, session_data: dict) -> dict:
+        """Create a telemedicine session and return join links"""
         doctor = self.db.query(User).filter(User.id == doctor_id, User.is_doctor).first()
         if not doctor:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Doctor not found."
-            )
-
-        access = MedicalRecordAccess(
-            record_id=record_id,
+            raise HTTPException(status_code=404, detail="Doctor not found")
+        
+        # Create a telemedicine record
+        record = MedicalRecord(
+            patient_id=patient_id,
             doctor_id=doctor_id,
-            granted_by=user_id,
-            granted_at=datetime.utcnow()
+            doctor_name=f"{doctor.first_name} {doctor.last_name}",
+            date_of_visit=datetime.now(timezone.utc),
+            description="Telemedicine consultation",
+            is_telemedicine=True,
+            telemedicine_link=generate_telemedicine_link(),
+            uploaded_at=datetime.now(timezone.utc)
         )
-        self.db.add(access)
+        
+        self.db.add(record)
         self.db.commit()
-        return {"message": f"Access granted to doctor {doctor_id} for record {record_id}"}
+        self.db.refresh(record)
+        
+        return {
+            "patient_link": f"{settings.TELEMEDICINE_URL}/join/{record.telemedicine_link}?role=patient",
+            "doctor_link": f"{settings.TELEMEDICINE_URL}/join/{record.telemedicine_link}?role=doctor",
+            "record_id": record.id,
+            "expires_at": (datetime.now(timezone.utc) + timedelta(hours=2)).isoformat()
+        }
 
-    def export_medical_record(self, record_id: int, user_id: int):
-        """
-        Returns the path for file download (you can wrap this in a FileResponse).
-        """
-        return self.get_file_path(record_id, user_id)
+    def get_records_shared_with_doctor(self, patient_id: int, doctor_id: int) -> list:
+        """Get all records shared with a specific doctor for a patient"""
+        return self.db.query(MedicalRecord).join(
+            MedicalRecordAccess,
+            MedicalRecord.id == MedicalRecordAccess.record_id
+        ).filter(
+            (MedicalRecord.patient_id == patient_id) &
+            (MedicalRecordAccess.doctor_id == doctor_id)
+        ).all()

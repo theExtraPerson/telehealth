@@ -1,14 +1,279 @@
-{% extends 'base.html' %}
-{% block content %}
-<div class="container py-xl-5">
-    <h2>Business Intelligence Reports</h2>
-    <p>View insights on application performance, user engagement, revenue, and more.</p>
-    <canvas id="reportsChart"></canvas>
-</div>
+{% extends "base.html" %} 
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        gsap.from("#reportsChart", { duration: 1, opacity: 0, y: -50 });
-    });
-</script>
+{% block title %}Reports & Analytics{% endblock %}
+
+{# Custom CSS for Reports Page #}
+{% block styles %}
+<style>
+    /* Basic styling for report sections */
+    .report-section {
+        margin-bottom: 30px;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .report-section h2 {
+        border-bottom: 2px solid #007bff; /* Bootstrap primary color */
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        color: #343a40; /* Bootstrap dark color */
+    }
+
+    /* Styling for metric cards */
+    .metric-card {
+        text-align: center;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        color: #fff; /* White text for contrast */
+    }
+
+    .metric-card h3 {
+        font-size: 2.5rem;
+        margin-bottom: 5px;
+    }
+
+    .metric-card p {
+        font-size: 1rem;
+        opacity: 0.9;
+    }
+
+    /* Background colors for metric cards */
+    .metric-card.bg-primary { background-color: #007bff !important; }
+    .metric-card.bg-success { background-color: #28a745 !important; }
+    .metric-card.bg-info { background-color: #17a2b8 !important; }
+    .metric-card.bg-warning { background-color: #ffc107 !important; }
+    .metric-card.bg-danger { background-color: #dc3545 !important; }
+    .metric-card.bg-secondary { background-color: #6c757d !important; }
+
+    /* Styling for charts */
+    .chart-container {
+        position: relative;
+        height: 400px; /* Adjust height as needed */
+        width: 100%;
+    }
+
+    /* GSAP related styles (optional - for animation targets) */
+    .gsap-fade-in {
+        opacity: 0; /* Start invisible */
+        transform: translateY(20px); /* Start slightly below final position */
+    }
+
+</style>
 {% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mt-4 gsap-fade-in">Reports & Analytics</h1>
+
+    {# Summary Metrics Section #}
+    <div class="row mt-4 gsap-fade-in">
+        <div class="col-xl-3 col-md-6">
+            <div class="card metric-card bg-primary">
+                <div class="card-body">
+                    <h3>{{ total_appointments }}</h3>
+                    <p>Total Appointments</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card metric-card bg-success">
+                <div class="card-body">
+                    <h3>{{ total_prescriptions }}</h3>
+                    <p>Total Prescriptions</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card metric-card bg-info">
+                <div class="card-body">
+                    <h3>{{ total_doctors }}</h3>
+                    <p>Total Doctors</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card metric-card bg-warning">
+                <div class="card-body">
+                    <h3>{{ total_patients }}</h3>
+                    <p>Total Patients</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Monthly Payment Trends Section #}
+    <div class="report-section mt-4 gsap-fade-in">
+        <h2>Monthly Payment Trends</h2>
+        <div class="chart-container">
+            {# Canvas for the payment trend chart #}
+            <canvas id="monthlyPaymentChart"></canvas>
+        </div>
+        {# Optional: Add a table or list of the raw data #}
+        {#
+        <h3 class="mt-4">Raw Data</h3>
+        <ul>
+            {% for month, total in payment_months | zip(payment_totals) %}
+                <li>Month {{ month }}: ${{ "%.2f" | format(total) }}</li>
+            {% endfor %}
+        </ul>
+        #}
+    </div>
+
+    {# Daily User Signups Section #}
+    <div class="report-section mt-4 gsap-fade-in">
+        <h2>Daily User Signups</h2>
+        <div class="chart-container">
+             {# Canvas for the daily user chart #}
+            <canvas id="dailyUserChart"></canvas>
+        </div>
+         {# Optional: Add a table or list of the raw data #}
+         {#
+         <h3 class="mt-4">Raw Data</h3>
+         <ul>
+             {% for date, count in user_dates | zip(user_counts) %}
+                 <li>{{ date.strftime('%Y-%m-%d') }}: {{ count }} users</li>
+             {% endfor %}
+         </ul>
+         #}
+    </div>
+
+    {# Placeholder for other potential reports/insights #}
+    <div class="report-section mt-4 gsap-fade-in">
+        <h2>Other Insights</h2>
+        <p>This section can be used to display other relevant business intelligence or health informatics insights derived from your data.</p>
+        {# Example: Most popular specialty, busiest doctor, average appointment duration, etc. #}
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+    {# Required Libraries for Charts (using Chart.js as an example) #}
+    {# Include Chart.js library #}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    {# Required Libraries for GSAP (Optional - for animations) #}
+    {# Include GSAP library #}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <script>
+        // Data passed from Flask route
+        const paymentMonths = {{ payment_months | tojson }}; // Use tojson filter
+        const paymentTotals = {{ payment_totals | tojson }}; // Use tojson filter
+        const userDates = {{ user_dates | tojson }}; // Use tojson filter
+        const userCounts = {{ user_counts | tojson }}; // Use tojson filter
+
+        // --- Chart.js Initialization ---
+
+        // Monthly Payment Chart
+        const monthlyPaymentCtx = document.getElementById('monthlyPaymentChart').getContext('2d');
+        new Chart(monthlyPaymentCtx, {
+            type: 'line', // or 'bar'
+            data: {
+                labels: paymentMonths.map(monthNum => { // Convert month numbers to names
+                    const date = new Date(2000, monthNum - 1, 1); // Use a dummy year
+                    return date.toLocaleString('default', { month: 'long' });
+                }),
+                datasets: [{
+                    label: 'Total Revenue ($)',
+                    data: paymentTotals,
+                    backgroundColor: 'rgba(0, 123, 255, 0.5)', // Bootstrap primary with transparency
+                    borderColor: 'rgba(0, 123, 255, 1)',
+                    borderWidth: 1,
+                    tension: 0.1 // Smooth the line
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false, // Allow chart to fill container
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Amount ($)'
+                        }
+                    },
+                    x: {
+                         title: {
+                            display: true,
+                            text: 'Month'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true
+                    },
+                    title: {
+                        display: true,
+                        text: 'Monthly Revenue Trend'
+                    }
+                }
+            }
+        });
+
+        // Daily User Signup Chart
+        const dailyUserCtx = document.getElementById('dailyUserChart').getContext('2d');
+        new Chart(dailyUserCtx, {
+            type: 'bar', // or 'line'
+            data: {
+                labels: userDates, // Dates as labels
+                datasets: [{
+                    label: 'New Users',
+                    data: userCounts,
+                    backgroundColor: 'rgba(40, 167, 69, 0.5)', // Bootstrap success with transparency
+                    borderColor: 'rgba(40, 167, 69, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                 responsive: true,
+                maintainAspectRatio: false, // Allow chart to fill container
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                         title: {
+                            display: true,
+                            text: 'Number of Users'
+                        }
+                    },
+                     x: {
+                         title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    }
+                },
+                 plugins: {
+                    legend: {
+                        display: true
+                    },
+                    title: {
+                        display: true,
+                        text: 'Daily User Signups'
+                    }
+                }
+            }
+        });
+
+        // --- GSAP Animations (Optional) ---
+        // Use GSAP to animate elements on page load
+        gsap.from(".gsap-fade-in", {
+            duration: 0.8, // Animation duration
+            opacity: 0,    // Start from invisible
+            y: 20,         // Start 20px below final position
+            stagger: 0.2,  // Delay between animating each element
+            ease: "power3.out" // Easing function
+        });
+
+        // You can add more complex animations here, e.g., animating chart elements after they render
+        // Note: Animating Chart.js elements directly with GSAP can be complex and might require Chart.js animation options instead.
+
+    </script>
+
+{% endblock %}
+

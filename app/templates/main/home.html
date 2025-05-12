@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="hero-banner">
-
+    <div class="hero-banner py-5">
         <div class="hero-text">
-            <h1>Welcome to Our Hospital</h1>
-            <p>Your health is our priority. We provide top-notch medical services to ensure your well-being.</p>
-            <a href="{{ url_for('user_dashboard.book_appointment') }}" class="btn btn-primary">Book an Appointment</a>
+            <span class="text-center text-info font-italic font-weight-bolder">We are</span>
+            <h1 class="font-weight-bolder font-monospace">Konge Medical City - Hospital</h1>
+            <p>Your health is our priority <br> We provide top-notch medical services to ensure your healthy living.</p>
+            <a href="{{ url_for('main.home') }}" class="btn btn-primary">Explore our services</a>
         </div>
     </div>
 
