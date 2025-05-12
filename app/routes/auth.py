@@ -1,13 +1,14 @@
 from flask import Blueprint, request, jsonify, url_for, redirect, render_template, flash
 from flask_login import login_required, logout_user, login_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from fastapi import APIRouter
 
 from app import db
 from app.models.user import User
 from ..forms import RegistrationForm, LoginForm
 
 auth = Blueprint("auth", __name__, template_folder="../../templates/auth")
-
+router = APIRouter(prefix="/auth", tags=["auth"])
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register():

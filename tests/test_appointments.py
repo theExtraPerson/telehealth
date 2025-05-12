@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-from ..app import create_app
+from app import create_app
 # from app.api.appointments import app, appointments, Appointment
 from datetime import datetime
 

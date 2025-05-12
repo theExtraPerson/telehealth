@@ -1,7 +1,8 @@
 # import pytest
 from fastapi.testclient import TestClient
 from app.routes.auth import router, create_access_token
-from ..app import create_app
+from app import create_app
+from app import app
 
 app = create_app()
 
