@@ -32,7 +32,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link d-flex align-items-center py-2" href="{{ url_for('user_dashboard.prescription_refill') }}">
+                <a class="nav-link d-flex align-items-center py-2" href="{{ url_for('user_dashboard.request_refill') }}">
                     <i class="bi bi-capsule me-2 text-warning"></i> Prescription Refills
                 </a>
             </li>
@@ -96,7 +96,7 @@
                             {% else %}
                                 <p>No prescriptions yet.</p>
                             {% endif %}
-                            <a href="{{ url_for('user_dashboard.prescription_refill') }}" class="btn btn-success mt-2">Refill Now</a>
+                            <a href="{{ url_for('user_dashboard.prescriptions') }}" class="btn btn-success mt-2">Refill Now</a>
                         </div>
                     </div>
                 </div>

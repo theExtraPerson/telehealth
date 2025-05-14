@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, jsonify, request, redirect, url_for
+from flask import Blueprint, abort, flash, render_template, jsonify, request, redirect, url_for
 
 from app import db
 from app.forms import DoctorProfileForm
@@ -107,12 +107,66 @@ def manage_appointments():
     return render_template('doctor/appointments.html', appointments=detailed_appointments)
 
 
-@doctor_dashboard.route('/doctor/prescriptions')
+@doctor_dashboard.route('/prescriptions/pending')
 @login_required
-def manage_prescriptions():
-    prescriptions = Prescription.query.filter_by(doctor_id=current_user.id).all()
-    return render_template('doctor/prescriptions.html', prescriptions=prescriptions)
+# @doctor_required
+def pending_prescriptions():
+    # Get prescriptions for doctor's patients
+    pending = Prescription.query.join(
+        User, Prescription.patient_id == User.id
+    ).filter(
+        User.doctor_id == current_user.id,
+        Prescription.status == 'pending'
+    ).all()
+    
+    return render_template('doctor/pending_prescriptions.html',
+                         prescriptions=pending)
 
+@doctor_dashboard.route('/prescriptions/<int:prescription_id>/review', methods=['GET', 'POST'])
+@login_required
+# @doctor_required
+def review_prescription(prescription_id):
+    prescription = Prescription.query.get_or_404(prescription_id)
+    
+    # Verify this is the doctor's patient
+    if prescription.patient.doctor_id != current_user.id:
+        abort(403)
+    
+    if request.method == 'POST':
+        action = request.form.get('action')
+        
+        if action == 'approve':
+            prescription.status = 'approved'
+            flash('Prescription approved', 'success')
+        elif action == 'reject':
+            prescription.status = 'rejected'
+            flash('Prescription rejected', 'warning')
+        elif action == 'issue':
+            prescription.status = 'issued'
+            flash('Prescription issued', 'success')
+        
+        prescription.doctor_notes = request.form.get('notes', '')
+        db.session.commit()
+        
+        return redirect(url_for('doctor.pending_prescriptions'))
+    
+    return render_template('doctor/review_prescription.html',
+                         prescription=prescription)
+
+@doctor_dashboard.route('/prescriptions/history')
+@login_required
+# @role_required('doctor')
+def prescription_history():
+    prescriptions = Prescription.query.join(
+        User, Prescription.patient_id == User.id
+    ).filter(
+        User.doctor_id == current_user.id
+    ).order_by(
+        Prescription.updated_at.desc()
+    ).all()
+    
+    return render_template('doctor/prescription_history.html',
+                         prescriptions=prescriptions)
 
 @doctor_dashboard.route('/doctor/medical-records')
 @login_required

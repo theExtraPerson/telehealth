@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+
+{% block head %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+    .file-upload-area {
+        border: 1px dashed #0a0236;
+        border-radius: 5px;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    .file-upload-area:hover {
+        border-color: #0d6efd;
+    }
+    .prescription-card {
+        transition: all 0.3s ease;
+    }
+    .prescription-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h5 mb-0">Request Prescription Refill</h2>
+                </div>
+                <div class="card-body">
+                    <form id="refillForm" method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="medication" class="form-label">Medication</label>
+                            <select class="form-select select2" id="medication" name="medication" required>
+                                <option value="Ibuprofen"></option>
+                                <option value="Paracetamol"></option>
+                                <option value="Artesunate"></option>
+                                <option value="Salbactomax"></option>
+                                <!-- {% for rx in previous_prescriptions %}
+                                <option value="{{ rx.medication }}">{{ rx.medication }}</option>
+                                {% endfor %} -->
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="symptoms" class="form-label">Current Symptoms</label>
+                            <textarea class="form-control" id="symptoms" name="symptoms" rows="3" required></textarea>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="fileInput" class="form-label">Upload Medical Records</label>
+                            <input type="file" id="fileInput" name="medical_records[]" multiple 
+                                   class="form-control" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.txt">
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-send me-2"></i> Submit Request
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+<script>
+    // Initialize select2
+    $(document).ready(function() {
+        $('.select2').select2({
+            placeholder: "Select medication",
+            allowClear: true
+        });
+        
+        // File upload handling
+        const dropArea = document.getElementById('dropArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        
+        dropArea.addEventListener('click', () => fileInput.click());
+        
+        fileInput.addEventListener('change', handleFiles);
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            gsap.to(dropArea, { 
+                backgroundColor: 'rgba(13, 110, 253, 0.1)', 
+                duration: 0.3 
+            });
+        }
+        
+        function unhighlight() {
+            gsap.to(dropArea, { 
+                backgroundColor: '', 
+                duration: 0.3 
+            });
+        }
+        
+        dropArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles({ target: { files } });
+        }
+        
+        function handleFiles(e) {
+            const files = e.target.files;
+            fileList.innerHTML = '';
+            
+            if (files.length > 0) {
+                gsap.from(fileList, { 
+                    opacity: 0, 
+                    y: 20, 
+                    duration: 0.5 
+                });
+            }
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const fileItem = document.createElement('div');
+                fileItem.className = 'badge bg-light text-dark p-2';
+                fileItem.innerHTML = `
+                    <i class="bi bi-file-earmark-text me-1"></i>
+                    ${file.name} (${(file.size / 1024).toFixed(1)}KB)
+                `;
+                fileList.appendChild(fileItem);
+            }
+        }
+        
+        // Form submission animation
+        $('#refillForm').on('submit', function() {
+            gsap.to('button[type="submit"]', {
+                scale: 0.95,
+                repeat: 1,
+                yoyo: true,
+                duration: 0.2
+            });
+        });
+    });
+</script>
+{% endblock %}

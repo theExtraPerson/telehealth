@@ -36,7 +36,7 @@ def read_prescriptions():
 
     # Query prescriptions with pagination
     prescriptions = Prescription.query.offset(skip).limit(limit).all()
-    result = prescriptions_schema.dump(prescriptions)
+    result = prescription_schema.dump(prescriptions)
     return jsonify(result), 200
 
 

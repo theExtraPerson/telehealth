@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+    .prescription-card {
+        transition: all 0.3s ease;
+        border-left: 4px solid transparent;
+    }
+    .prescription-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .status-pending {
+        border-left-color: #ffc107;
+    }
+    .status-approved {
+        border-left-color: #0dcaf0;
+    }
+    .status-issued {
+        border-left-color: #198754;
+    }
+    .status-rejected {
+        border-left-color: #dc3545;
+    }
+    .badge-refill {
+        background-color: #6f42c1;
+    }
+    .fade-in {
+        animation: fadeIn 0.5s ease-in;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Your Prescriptions</h1>
+        <a href="{{ url_for('user_dashboard.request_refill') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i> Request Refill
+        </a>
+    </div>
+    
+    <div class="row g-4">
+        {% for prescription in prescriptions %}
+        <div class="col-md-6 col-lg-4 fade-in" style="animation-delay: '{{ loop.index * 0.1 }}s'">
+            <div class="card prescription-card h-100 status-{{ prescription.status }}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h3 class="h5 card-title mb-0">{{ prescription.medication }}</h3>
+                        <span class="badge bg-{% if prescription.status == 'pending' %}warning{% elif prescription.status == 'approved' %}info{% elif prescription.status == 'issued' %}success{% else %}danger{% endif %}">
+                            {{ prescription.status|title }}
+                        </span>
+                    </div>
+                    
+                    <p class="card-text text-muted small mb-2">
+                        <i class="bi bi-calendar me-1"></i>
+                        {{ prescription.date_prescribed }}
+                    </p>
+                    
+                    {% if prescription.is_refill %}
+                    <span class="badge badge-refill text-white mb-2">
+                        <i class="bi bi-arrow-repeat me-1"></i> Refill Request
+                    </span>
+                    {% endif %}
+                    
+                    <p class="card-text mb-3">
+                        <strong>Dosage:</strong> {{ prescription.dosage }}<br>
+                        {% if prescription.doctor_notes %}
+                        <strong>Notes:</strong> {{ prescription.doctor_notes|truncate(100) }}
+                        {% endif %}
+                    </p>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{{ url_for('user.prescription_detail', id=prescription.id) }}" 
+                           class="btn btn-sm btn-outline-primary">
+                            View Details
+                        </a>
+                        
+                        {% if prescription.status == 'approved' and not prescription.is_refill %}
+                        <a href="{{ url_for('user.request_refill', id=prescription.id) }}" 
+                           class="btn btn-sm btn-success">
+                            Request Refill
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-prescription2 fs-1 text-muted mb-3"></i>
+                    <h3 class="h5">No prescriptions found</h3>
+                    <p class="text-muted">You haven't requested any prescriptions yet</p>
+                    <a href="{{ url_for('user_dashboard.request_refill') }}" class="btn btn-primary mt-2">
+                        Request Your First Prescription
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate cards on load
+        gsap.from('.fade-in', {
+            opacity: 0,
+            y: 20,
+            stagger: 0.1,
+            duration: 0.5,
+            ease: 'power2.out'
+        });
+        
+        // Hover animations
+        const cards = document.querySelectorAll('.prescription-card');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                gsap.to(card, {
+                    y: -5,
+                    duration: 0.3
+                });
+            });
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, {
+                    y: 0,
+                    duration: 0.3
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

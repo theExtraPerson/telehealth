@@ -14,26 +14,26 @@
     <h2 class="text-center text-light mb-4">Our Services</h2>
     <div class="row">
         <div class="col-md-4">
-            <div class="card service-card shadow-lg text-center p-4">
-                <h4>The queue can be long, do not wait.</h4>
-                <p>Schedule an appointment with our expert doctors at your convenience.</p>
-                <button class="btn btn-primary m-2 mb-4"  onclick="location.href='{{ url_for('user_dashboard.book_appointment') }}'">Book Now</button>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card service-card shadow-lg text-center p-4" onclick="location.href='{{ url_for('user_dashboard.prescription_refill') }}'">
-                <h4>And when you are out of meds, do not fret.</h4>
-                <p>Get your prescriptions refilled easily and have them delivered to your location.</p>
-                <button class="btn btn-primary m-2 mb-4"  onclick="location.href='{{ url_for('user_dashboard.prescription_refill') }}'">Request a Refill</button>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card service-card shadow-lg text-center p-4" onclick="location.href='{{ url_for('doctor_dashboard.start_teleconference') }}'">
-                <h4>Health can be delicate, lets handle it for you.</h4>
-                <p>Receive professional medical advice from our qualified doctors anytime, anywhere.</p>
-                <button class="btn btn-primary m-2 mb-4"  onclick="location.href='{{ url_for('doctor_dashboard.start_teleconference') }}'">Consult the doctor</button>
-            </div>
-        </div>
+    <div class="card service-card shadow-lg text-center p-4">
+        <h4>The queue can be long, do not wait.</h4>
+        <p>Schedule an appointment with our expert doctors at your convenience.</p>
+        <a href="{{ url_for('user_dashboard.book_appointment') }}" class="btn btn-primary m-2 mb-4">Book Now</a>
+    </div>
+</div>
+<div class="col-md-4">
+    <div class="card service-card shadow-lg text-center p-4">
+        <h4>And when you are out of meds, do not fret.</h4>
+        <p>Get your prescriptions refilled easily and have them delivered to your location.</p>
+        <a href="{{ url_for('user_dashboard.request_refill') }}" class="btn btn-primary m-2 mb-4">Request a Refill</a>
+    </div>
+</div>
+<div class="col-md-4">
+    <div class="card service-card shadow-lg text-center p-4">
+        <h4>Health can be delicate, let's handle it for you.</h4>
+        <p>Receive professional medical advice from our qualified doctors anytime, anywhere.</p>
+        <a href="{{ url_for('doctor_dashboard.start_teleconference') }}" class="btn btn-primary m-2 mb-4">Consult the Doctor</a>
+    </div>
+</div>
 
     </div>
 </section>

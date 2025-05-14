@@ -135,16 +135,59 @@ def search_doctors():
             'error': str(e)
         }), 500
 
-
-@user_dashboard.route('/prescriptions/refill')
+@user_dashboard.route('/prescriptions/refill', methods=['GET', 'POST'])
 @login_required
-def prescription_refill():
-    prescriptions = Prescription.query.filter_by(patient_id=current_user.id).all()
+# @role_required('patient')
+def request_refill():
+    if request.method == 'POST':
+        # Process refill request
+        medication = request.form.get('medication')
+        symptoms = request.form.get('symptoms')
+        
+        new_request = Prescription(
+            patient_id=current_user.id,
+            medication=medication,
+            symptoms=symptoms,
+            status='pending',
+            is_refill=True
+        )
+        
+        # Attach previous records
+        if 'previous_records' in request.files:
+            records = request.files.getlist('previous_records')
+            for record in records:
+                # Save files and create MedicalRecord entries
+                pass
+        
+        db.session.add(new_request)
+        db.session.commit()
+        
+        flash('Refill request submitted for review', 'success')
+        return redirect(url_for('user.prescriptions'))
+    
+    # Get previous prescriptions for autocomplete
+    previous_prescriptions = Prescription.query.filter_by(
+        patient_id=current_user.id
+    ).distinct(Prescription.medication).all()
+    
+    return render_template('user/request_refill.html', 
+                         previous_prescriptions=previous_prescriptions)
 
-    if request.accept_mimetypes.best == 'application/json':
-        return jsonify([p.to_dict() for p in prescriptions])
 
-    return render_template('user/prescription_refill.html', prescriptions=prescriptions)
+
+@user_dashboard.route('/prescriptions')
+@login_required
+# @role_required('patient')
+def prescriptions():
+    prescriptions = Prescription.query.filter_by(
+        patient_id=current_user.id
+    ).order_by(
+        Prescription.date_prescribed.desc()
+    ).all()
+    
+    return render_template('user/prescriptions.html', 
+                         prescriptions=prescriptions)
+
 
 @user_dashboard.route('/payments', methods=['GET', 'POST'])
 @login_required
