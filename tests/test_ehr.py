@@ -1,7 +1,8 @@
 import pytest
 from flask import url_for
 from app import db
-from app.models.medical_record import MedicalRecord, Prescription
+from app.models.medical_record import MedicalRecord
+from app.models.prescription import Prescription
 from app.models.user import User
 
 def test_create_medical_record(client, authenticated_doctor):

@@ -9,6 +9,7 @@ from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect, generate_csrf
 
 import logging
+from contextlib import contextmanager
 
 logging.basicConfig(level=logging.INFO)
 
@@ -81,13 +82,12 @@ def create_app():
         from app.models.prescription import Prescription
         from app.models.medical_record import MedicalRecord
         from app.models.payments import Payment
+        db.create_all()
 
     @login_manager.user_loader
     def load_user(user_id):
         from app.models.user import User
         return User.query.get(int(user_id))
-
-
 
     @app.shell_context_processor
     def make_shell_context():
@@ -116,10 +116,14 @@ def create_app():
 
     return app
 
+@contextmanager
+def get_db():
+    try:
+        yield db.session
+    except Exception as e:
+        db.session.rollback()
+        raise e
+    finally:
+        pass
 
-# class Base:
-#     metadata = None
 
-
-# def get_db():
-#     return None
