@@ -37,7 +37,7 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest tests/ --cov=app --cov-report=xml
+          PYTH0NPATH=. pytest tests/ --cov=app --cov-report=xml
         env:
           SQLALCHEMY_DATABASE_URI: ${{ secrets.SQLALCHEMY_DATABASE_URI }}
           
