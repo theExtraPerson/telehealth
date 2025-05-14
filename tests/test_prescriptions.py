@@ -2,8 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app import app
-from app import Base, get_db, create_app
+from app import Base, get_db, create_app, app
 from app.schemas import Prescription
 import os
 
