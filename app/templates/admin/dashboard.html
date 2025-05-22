@@ -46,7 +46,7 @@
           <a href="{{ url_for('admin.manage_payments') }}" class="list-group-item list-group-item-action">
             <i class="bi bi-cash-stack"></i> Payments & Billings
           </a>
-          <a href="{{ url_for('admin.send_notification') }}" class="list-group-item list-group-item-action">
+          <a href="{{ url_for('admin.send_message') }}" class="list-group-item list-group-item-action">
             <i class="bi bi-bell"></i> Notification Center
           </a>
           <!-- <a href="{{ url_for('admin.generate_reports') }}" class="list-group-item list-group-item-action">
@@ -185,7 +185,7 @@
           <div id="collapseNotifications" class="accordion-collapse collapse" data-bs-parent="#adminAccordion">
             <div class="accordion-body">
               <h5>Send Notifications</h5>
-              <form method="POST" action="{{ url_for('admin.send_notification') }}">
+              <form method="POST" action="{{ url_for('admin.send_message') }}">
                 <div class="mb-2">
                   <label for="targetGroup">Send to:</label>
                   <select class="form-select" name="target" id="targetGroup" required>

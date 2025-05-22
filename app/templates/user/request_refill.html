@@ -34,17 +34,10 @@
                 </div>
                 <div class="card-body">
                     <form id="refillForm" method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
                         <div class="mb-3">
                             <label for="medication" class="form-label">Medication</label>
-                            <select class="form-select select2" id="medication" name="medication" required>
-                                <option value="Ibuprofen"></option>
-                                <option value="Paracetamol"></option>
-                                <option value="Artesunate"></option>
-                                <option value="Salbactomax"></option>
-                                <!-- {% for rx in previous_prescriptions %}
-                                <option value="{{ rx.medication }}">{{ rx.medication }}</option>
-                                {% endfor %} -->
-                            </select>
+                            <textarea class="form-control" id="medication" rows="3" required></textarea>
                         </div>
                         
                         <div class="mb-3">
@@ -56,6 +49,11 @@
                             <label for="fileInput" class="form-label">Upload Medical Records</label>
                             <input type="file" id="fileInput" name="medical_records[]" multiple 
                                    class="form-control" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.txt">
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="share_medical_form" class="form_label">Were the prescriptions made at KMC?</label>
+                            <button type="submit" class="btn ntn-primary btn-lg">Let's take a look</button>
                         </div>
                         
                         <div class="d-grid">

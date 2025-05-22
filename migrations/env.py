@@ -1,74 +1,55 @@
 import logging
 from logging.config import fileConfig
-from flask import current_app
-from alembic import context
 
+from alembic import context
+from flask import current_app
+from app import create_app, db  # update with your actual module name
+
+# Alembic config
 config = context.config
 
-# Configure logging
+
+# Logging setup
 fileConfig(config.config_file_name)
-logger = logging.getLogger('alembic.env')
+logger = logging.getLogger("alembic.env")
 
-def get_app():
-    """Create and configure the Flask application"""
-    from app import create_app
-    app = create_app()
-    return app
+# Create the Flask app and manage context correctly
+app = create_app()
 
-def get_database():
-    """Get database instance from Flask-SQLAlchemy"""
-    # For Flask-SQLAlchemy 3.x+
-    if hasattr(current_app, 'extensions') and 'sqlalchemy' in current_app.extensions:
-        return current_app.extensions['sqlalchemy']
-    raise RuntimeError("SQLAlchemy database not found in Flask app extensions")
+with app.app_context():
+    # Set DB URL from the Flask SQLAlchemy instance
+    config.set_main_option("sqlalchemy.url", str(db.engine.url))
 
-def run_migrations_offline():
-    """Run migrations in 'offline' mode."""
-    app = get_app()
-    with app.app_context():
-        db = get_database()
-        url = str(db.engine.url).replace('%', '%%')
-        config.set_main_option('sqlalchemy.url', url)
-        
+    target_metadata = db.metadata
+
+    def run_migrations_offline():
+        """Run migrations in 'offline' mode."""
+        url = config.get_main_option("sqlalchemy.url")
         context.configure(
             url=url,
-            target_metadata=db.metadata,
+            target_metadata=target_metadata,
             literal_binds=True,
-            compare_type=True,
-            compare_server_default=True,
-            render_as_batch=True
+            dialect_opts={"paramstyle": "named"},
         )
 
         with context.begin_transaction():
             context.run_migrations()
 
-def run_migrations_online():
-    """Run migrations in 'online' mode."""
-    app = get_app()
-    
-    with app.app_context():
-        db = get_database()
-        
-        # Configure connection
+    def run_migrations_online():
+        """Run migrations in 'online' mode."""
         connectable = db.engine
-
-        # Set the database URL
-        url = str(db.engine.url).replace('%', '%%')
-        config.set_main_option('sqlalchemy.url', url)
 
         with connectable.connect() as connection:
             context.configure(
                 connection=connection,
-                target_metadata=db.metadata,
-                compare_type=True,
-                compare_server_default=True,
-                render_as_batch=True
+                target_metadata=target_metadata,
+                render_as_batch=True  # useful for SQLite
             )
 
             with context.begin_transaction():
                 context.run_migrations()
 
-if context.is_offline_mode():
-    run_migrations_offline()
-else:
-    run_migrations_online()
+    if context.is_offline_mode():
+        run_migrations_offline()
+    else:
+        run_migrations_online()

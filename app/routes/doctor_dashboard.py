@@ -168,6 +168,9 @@ def prescription_history():
     return render_template('doctor/prescription_history.html',
                          prescriptions=prescriptions)
 
+# TO-DO
+# Create a route that allows the docto to create and share medical records and prescribe drugs for a patient after consultation.
+
 @doctor_dashboard.route('/doctor/medical-records')
 @login_required
 def view_medical_records():

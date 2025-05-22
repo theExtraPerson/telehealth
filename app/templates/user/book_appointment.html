@@ -1,129 +1,282 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container mt-5 py-xl-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-lg p-4">
-                <h2 class="text-center mb-4">Book an Appointment</h2>
-                <form method="POST" action="{{ url_for('user_dashboard.book_appointment') }}">
-                    {{ form.hidden_tag() }}
+<!-- Load Required Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/Flip.min.js"></script>
 
-                    <div class="mb-3">
-                        <label for="patient_name" class="form-label">Full Name</label>
-                        <input type="text" id="patient_name" name="patient_name" class="form-control" required>
-                    </div>
+<section class="appointment-section py-5" id="appointment">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="animate__animated animate__fadeIn">Tell Us About Your Needs</h2>
+                <p class="lead animate__animated animate__fadeIn animate__delay-1s">We'll match you with the perfect care in just a few steps</p>
+            </div>
+        </div>
 
-                    <div class="mb-3">
-                        <label for="location" class="form-label">Location</label>
-                        <input type="text" id="location" name="location" class="form-control" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="doctor" class="form-label">Select Doctor</label>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <select id="doctor" name="doctor_id" class="form-control" required>
-                                {% for doctor in doctors %}
-                                <option value="{{ doctor.id }}">Dr. {{ doctor.name }} - {{ doctor.specialty }}</option>
-                                {% endfor %}
-                            </select>
-                            <button type="button" class="btn btn-outline-primary ms-2" data-bs-toggle="modal" data-bs-target="#doctorSearchModal">
-                                Search Doctor
-                            </button>
+        <div class="row justify-content-center mt-4">
+            <div class="col-lg-8">
+                <div class="appointment-flow position-relative" style="min-height: 500px;">
+                    <!-- Step 1: Storytelling Input -->
+                    <div class="step position-absolute top-0 start-0 w-100 active" id="step1">
+                        <div class="card shadow-sm glass-morphism">
+                            <div class="card-body p-5">
+                                <h3 class="mb-4">How can we help you today?</h3>
+                                <div class="form-group mb-4">
+                                    <textarea class="form-control story-input" rows="3" 
+                                              placeholder="Tell us about your symptoms or needs in your own words (e.g. 'I've had a persistent cough for 2 weeks')" required></textarea>
+                                </div>
+                                <button class="btn btn-primary btn-lg w-100 pulse-animation" id="continueStep1">
+                                    Continue <i class="bi bi-arrow-right ms-2"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="modal fade" id="doctorSearchModal" tabindex="-1" aria-labelledby="doctorSearchModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="doctorSearchModalLabel">Search Doctors</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <!-- Step 2: Department Selection -->
+                    <div class="step position-absolute top-0 start-100 w-100" id="step2">
+                        <div class="card shadow-sm glass-morphism">
+                            <div class="card-body p-5">
+                                <h3 class="mb-4">Which department suits your needs?</h3>
+                                <p class="text-muted mb-4">Based on what you told us, here are our specialized departments:</p>
+                                
+                                <div class="row department-options g-4">
+                                    <!-- Department Cards (2 per row) -->
+                                    <div class="col-md-6">
+                                        <div class="option-card glass-card" data-dept="general">
+                                            <div class="option-icon"><i class="bi bi-heart-pulse"></i></div>
+                                            <h5>General Consultation</h5>
+                                            <p class="text-muted">For non-urgent medical advice and checkups</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="option-card glass-card" data-dept="ENT">
+                                            <div class="option-icon"><i class="bi bi-ear"></i></div>
+                                            <h5>Ear, Nose & Throat</h5>
+                                            <p class="text-muted">For sinus, hearing or throat issues</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- More department cards... -->
                                 </div>
-                                <div class="modal-body">
-                                    <form id="doctorSearchForm" method="get" action="#">
-                                        <div class="mb-3">
-                                            <label for="specialty" class="form-label">Specialty</label>
-                                            <input type="text" id="specialty" name="specialty" class="form-control" placeholder="Enter specialty">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="location" class="form-label">Location</label>
-                                            <input type="text" id="location" name="location" class="form-control" placeholder="Enter location">
-                                        </div>
-                                        <div class="d-flex justify-content-end">
-                                            <button type="submit" class="btn btn-primary">Search</button>
-                                        </div>
-                                    </form>
-
-                                    <div id="doctorSearchResults" class="mt-3">
-                                        <!-- Search results will be displayed here -->
-                                    </div>
-
-                                    <!-- Selected Doctor's Name -->
-                                    <div class="mt-3">
-                                        <label for="selectedDoctor" class="form-label">Selected Doctor</label>
-                                        <input type="text" id="selectedDoctor" class="form-control" readonly placeholder="Doctor name will appear here">
-                                    </div>
+                                
+                                <div class="d-flex justify-content-between mt-4">
+                                    <button class="btn btn-outline-primary btn-lg" id="backStep1">
+                                        <i class="bi bi-arrow-left me-2"></i> Back
+                                    </button>
+                                    <button class="btn btn-primary btn-lg pulse-animation" id="continueStep2">
+                                        Continue <i class="bi bi-arrow-right ms-2"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="appointment_date" class="form-label">Appointment Date</label>
-                        <input type="datetime-local" id="appointment_date" name="appointment_date" class="form-control" required>
+                    <!-- Step 3: Final Details -->
+                    <div class="step position-absolute top-0 start-100 w-100" id="step3">
+                        <div class="card shadow-sm glass-morphism">
+                            <div class="card-body p-5">
+                                <h3 class="mb-4">Almost done!</h3>
+                                <p class="text-muted mb-4">Just a few details to complete your booking</p>
+                                
+                                <form method="POST" id="appointmentForm" action="{{ url_for('user_dashboard.book_appointment') }}">
+                                    {{ form.hidden_tag() }}
+                                    <input type="hidden" name="department" id="selectedDepartment">
+                                    <input type="hidden" name="patient_story" id="patientStory">
+                                    
+                                    <!-- Form fields... -->
+                                    
+                                    <div class="d-flex justify-content-between mt-4">
+                                        <button type="button" class="btn btn-outline-primary btn-lg" id="backStep2">
+                                            <i class="bi bi-arrow-left me-2"></i> Back
+                                        </button>
+                                        <button type="submit" class="btn btn-success btn-lg pulse-animation">
+                                            Confirm Appointment <i class="bi bi-check-lg ms-2"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="mb-3">
-                        <label for="description" class="form-label">Description</label>
-                        <textarea id="description" name="description" class="form-control" rows="3"></textarea>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100">Book Appointment</button>
-                </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</section>
+
+<style>
+    /* Artistic Glass Morphism */
+    .glass-morphism {
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    .glass-card {
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(8px);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        transition: all 0.4s ease;
+    }
+    
+    .glass-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Step Transitions */
+    .step {
+        transition: all 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+        opacity: 0;
+        pointer-events: none;
+    }
+    
+    .step.active {
+        opacity: 1;
+        pointer-events: all;
+        transform: translateX(0) !important;
+    }
+    
+    /* Artistic Details */
+    .option-icon {
+        font-size: 2.5rem;
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1rem;
+    }
+    
+    .pulse-animation {
+        animation: pulse 2s infinite ease-in-out;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.4); }
+        50% { transform: scale(1.03); box-shadow: 0 0 0 12px rgba(13, 110, 253, 0); }
+    }
+</style>
 
 <script>
-     document.getElementById('doctorSearchForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-
-        // Get the search values
-        let specialty = document.getElementById('specialty').value;
-        let location = document.getElementById('location').value;
-
-        // Make AJAX request to search doctors
-        fetch(`/search_doctors?specialty=${specialty}&location=${location}`)
-            .then(response => response.json())
-            .then(data => {
-                let resultsContainer = document.getElementById('doctorSearchResults');
-                resultsContainer.innerHTML = ''; // Clear previous results
-
-                if (data.doctors.length > 0) {
-                    data.doctors.forEach(doctor => {
-                        let doctorOption = document.createElement('div');
-                        doctorOption.classList.add('doctor-option');
-                        doctorOption.textContent = `Dr. ${doctor.name} - ${doctor.specialty}`;
-                        doctorOption.setAttribute('data-id', doctor.id);
-                        doctorOption.setAttribute('data-name', doctor.name);
-
-                        // Add click event to select the doctor
-                        doctorOption.addEventListener('click', function() {
-                            document.getElementById('doctor').value = doctor.id;
-                            document.getElementById('selectedDoctor').value = doctor.name;
-                            $('#doctorSearchModal').modal('hide'); // Close modal after selection
-                        });
-
-                        resultsContainer.appendChild(doctorOption);
-                    });
-                } else {
-                    resultsContainer.innerHTML = '<p>No doctors found</p>';
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching doctors:', error);
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize GSAP plugins
+        gsap.registerPlugin(Flip);
+        
+        // Cache DOM elements
+        const elements = {
+            continueStep1: document.getElementById('continueStep1'),
+            continueStep2: document.getElementById('continueStep2'),
+            backStep1: document.getElementById('backStep1'),
+            backStep2: document.getElementById('backStep2'),
+            storyInput: document.querySelector('.story-input'),
+            patientStory: document.getElementById('patientStory'),
+            selectedDepartment: document.getElementById('selectedDepartment'),
+            departmentCards: document.querySelectorAll('.option-card')
+        };
+        
+        // Initialize step positions
+        gsap.set("#step2", { x: "100%", opacity: 0 });
+        gsap.set("#step3", { x: "100%", opacity: 0 });
+        
+        // Animate first step entrance
+        gsap.from("#step1", {
+            x: "100%",
+            opacity: 0,
+            duration: 1,
+            ease: "power3.out",
+            delay: 0.3
+        });
+        
+        // Department card selection
+        elements.departmentCards.forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove previous selections
+                elements.departmentCards.forEach(c => {
+                    c.classList.remove('selected');
+                    gsap.to(c, { scale: 1, duration: 0.3 });
+                });
+                
+                // Add selection to clicked card
+                this.classList.add('selected');
+                elements.selectedDepartment.value = this.dataset.dept;
+                
+                // Artistic micro-interaction
+                gsap.to(this, {
+                    scale: 0.95,
+                    duration: 0.2,
+                    yoyo: true,
+                    repeat: 1,
+                    ease: "power1.inOut"
+                });
             });
-     });
+        });
+        
+        // Navigation functions
+        function navigateSteps(current, next, direction) {
+            const currentStep = document.getElementById(`step${current}`);
+            const nextStep = document.getElementById(`step${next}`);
+            
+            // Validate before proceeding
+            if (current === 1 && !elements.storyInput.value.trim()) {
+                gsap.to(elements.storyInput, {
+                    x: -5,
+                    duration: 0.1,
+                    repeat: 5,
+                    yoyo: true,
+                    onComplete: () => elements.storyInput.focus()
+                });
+                return;
+            }
+            
+            if (current === 2 && !elements.selectedDepartment.value) {
+                gsap.to(elements.departmentCards, {
+                    y: -5,
+                    duration: 0.1,
+                    repeat: 5,
+                    yoyo: true
+                });
+                return;
+            }
+            
+            // Capture data between steps
+            if (next === 2) {
+                elements.patientStory.value = elements.storyInput.value;
+            }
+            
+            // Create artistic transition
+            const state = Flip.getState([currentStep, nextStep]);
+            
+            currentStep.classList.remove('active');
+            nextStep.classList.add('active');
+            
+            Flip.from(state, {
+                duration: 0.8,
+                ease: "power2.inOut",
+                absolute: true,
+                onStart: () => {
+                    gsap.set(nextStep, { x: direction === 'next' ? '100%' : '-100%', opacity: 0 });
+                },
+                onComplete: () => {
+                    gsap.to(nextStep, { x: '0%', opacity: 1, duration: 0.6 });
+                    gsap.to(currentStep, { 
+                        x: direction === 'next' ? '-100%' : '100%', 
+                        opacity: 0, 
+                        duration: 0.6 
+                    });
+                }
+            });
+        }
+        
+        // Event listeners
+        elements.continueStep1.addEventListener('click', () => navigateSteps(1, 2, 'next'));
+        elements.continueStep2.addEventListener('click', () => navigateSteps(2, 3, 'next'));
+        elements.backStep1.addEventListener('click', () => navigateSteps(2, 1, 'prev'));
+        elements.backStep2.addEventListener('click', () => navigateSteps(3, 2, 'prev'));
+    });
 </script>
 {% endblock %}

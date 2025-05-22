@@ -98,18 +98,7 @@
 {% endblock %}
 
 {% block scripts %}
-    {# Required Libraries for DataTables (assuming you have them in your base.html or include them here) #}
-    {# Example includes: #}
-    {# <script src="https://code.jquery.com/jquery-3.7.0.js"></script> #}
-    {# <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"> #}
-    {# <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script> #}
-
-    {# Your custom DataTables initialization script (e.g., static/js/datatables.js) #}
-    {# <script src="{{ url_for('static', filename='js/datatables.js') }}"></script> #}
-
-    {# Ensure Bootstrap JS is included for alerts and potentially modals #}
-    {# <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script> #}
-
+    
     <script>
         $(document).ready(function() {
             // Initialize DataTables on the table with the ID 'doctorsTable'
@@ -121,14 +110,6 @@
             });
         });
     </script>
-
-    {# GSAP Mention: #}
-    {# GSAP (GreenSock Animation Platform) is for JavaScript animations. #}
-    {# You would include the GSAP library here if you wanted to add animations, #}
-    {# e.g., animating table rows when they load, animating modals, etc. #}
-    {# Example GSAP include: #}
-    {# <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script> #}
-    {# Then, write custom JavaScript using GSAP to target elements and create animations. #}
 
 {% endblock %}
 

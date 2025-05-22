@@ -10,6 +10,7 @@ class Appointment(db.Model):
     doctor_id = db.Column(db.Integer, db.ForeignKey('doctors.id'), nullable=False)
     appointment_date = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     description = db.Column(db.String, nullable=True)
+    department = db.Column(db.String, nullable=True)
 
     patient = db.relationship("Patient", back_populates="appointments")
     doctor = db.relationship("Doctor", back_populates="appointments")
@@ -23,5 +24,6 @@ class Appointment(db.Model):
             'doctor_id': self.id,
             'patient_id': self.patient_id,
             'appointment_date': self.appointment_date.isoformat(),
-            'description': self.description
+            'description': self.description,
+            'department': self.department
         }

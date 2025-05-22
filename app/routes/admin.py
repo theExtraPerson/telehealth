@@ -86,6 +86,20 @@ def approve_appointment(appointment_id):
 def fetch_appointments():
     appointments = Appointment.query.order_by(Appointment.appointment_date.desc()).all()
 
+    detailed_appointments = []
+
+    for appointment in appointments:
+        patient = User.query.get(appointment.patient_id)
+        detailed_appointments.append({
+            "id": appointment.id,
+            "date": appointment.date,
+            "time": appointment.time,
+            "patient_name": patient.name if patient else "Unknown",
+            "patient_email": patient.email if patient else "Unknown",
+            "reason": appointment.reason,
+            "status": appointment.status
+        })
+
     return render_template('admin/appointments.html', appointments=appointments)
 
 # Manage Prescriptions

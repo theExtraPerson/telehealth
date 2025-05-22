@@ -87,6 +87,7 @@ def book_appointment():
                 patient_id=current_user.id,
                 doctor_id=form.doctor_id.data,
                 appointment_date=form.appointment_date.data,
+                
                 description=form.description.data
             )
             db.session.add(appointment)
