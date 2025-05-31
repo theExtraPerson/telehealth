@@ -40,3 +40,15 @@ def generate_access_token(user_id: str, secret_key: str, expiration: int = 3600)
 def verify_token(token: str, stored_token: str) -> bool:
     """Verify if the provided token matches the stored token."""
     return hmac.compare_digest(token, stored_token)
+
+def generate_secure_share_token(length: int = 32) -> str:
+    """
+    Generate a secure random share token.
+
+    Args:
+        length (int): The length of the token in bytes (default is 32).
+
+    Returns:
+        str: A securely generated hexadecimal token.
+    """
+    return os.urandom(length).hex()

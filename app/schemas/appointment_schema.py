@@ -28,7 +28,7 @@ class AppointmentSchema(Schema):
         metadata={"description": "The date and time of the appointment"}
     )
     
-    reason = fields.Str(
+    description = fields.Str(
         required=False,
         allow_none=True,
         validate=validate.Length(max=500),
@@ -46,3 +46,10 @@ class AppointmentSchema(Schema):
         ]),
         metadata={"description": "The status of the appointment"}
     )
+
+    department = fields.Str(    
+        required=True,
+        validate=validate.Length(min=1, max=100),
+        metadata={"description": "The department of the appointment"}
+    )
+

@@ -1,0 +1,597 @@
+{% extends 'base.html' %}
+{% block content %}
+<!-- Required CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+
+<section class="appointment-section py-5" id="appointment">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="display-4 fw-bold text-gradient">Let's Take Care of You</h2>
+                <p class="lead text-muted mb-5">We're here to listen and help you feel better</p>
+            </div>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-lg-8">
+                <div class="progress-wrapper">
+                    <div class="progress-bar" role="progressbar"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="appointment-flow">
+                    <!-- Step 1: Storytelling Input -->
+                    <div class="step active" id="step1">
+                        <div class="card glass-card">
+                            <div class="card-body p-5">
+                                <div class="step-icon mb-4">
+                                    <i class="bi bi-chat-heart-fill"></i>
+                                </div>
+                                <h3 class="mb-4">How can we help you today?</h3>
+                                <p class="text-muted mb-4">Share your concerns with us, and we'll guide you to the right care.</p>
+                                <div class="form-group mb-4">
+                                    <textarea class="form-control story-input glass-input" rows="3" 
+                                              placeholder="I've been experiencing..."></textarea>
+                                    <small class="form-text text-muted mt-2 character-count"></small>
+                                </div>
+                                <button class="btn btn-primary btn-lg w-100 glass-button" onclick="validateAndNext(2)">
+                                    <i class="bi bi-arrow-right-circle me-2"></i>Continue
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Department Selection -->
+                    <div class="step" id="step2">
+                        <div class="card glass-card">
+                            <div class="card-body p-5">
+                                <div class="step-icon mb-4">
+                                    <i class="bi bi-hospital"></i>
+                                </div>
+                                <h3 class="mb-4">Find Your Specialist</h3>
+                                <!-- <p class="text-muted mb-4">Based on your description, here are our recommended departments:</p> -->
+                                
+                                <div class="department-options">
+                                    <div class="option-card glass-card-sm" data-dept="general">
+                                        <div class="option-icon">
+                                            <i class="bi bi-heart-pulse"></i>
+                                        </div>
+                                        <h5>General Medicine</h5>
+                                        <!-- <p>Primary healthcare and general medical consultations</p> -->
+                                    </div>
+                                    
+                                    <div class="option-card glass-card-sm" data-dept="antenatal">
+                                        <div class="option-icon">
+                                            <i class="bi bi-person-heart"></i>
+                                        </div>
+                                        <h5>Antenatal Care</h5>
+                                        <!-- <p>Pregnancy care and monitoring services</p> -->
+                                    </div>
+                                    
+                                    <div class="option-card glass-card-sm" data-dept="dental">
+                                        <div class="option-icon">
+                                            <i class="bi bi-emoji-smile"></i>
+                                        </div>
+                                        <h5>Dental Care Clinic</h5>
+                                        <!-- <p>Comprehensive dental and oral health services</p> -->
+                                    </div>
+                                    
+                                    <div class="option-card glass-card-sm" data-dept="ent">
+                                        <div class="option-icon">
+                                            <i class="bi bi-ear"></i>
+                                        </div>
+                                        <h5>ENT Clinic</h5>
+                                        <!-- <p>Ear, nose and throat specialist care</p> -->
+                                    </div>
+
+                                    <div class="option-card glass-card-sm" data-dept="maternal">
+                                        <div class="option-icon">
+                                            <i class="bi bi-people"></i>
+                                        </div>
+                                        <h5>Maternal & Child Health</h5>
+                                        <!-- <p>Specialized care for mothers and children</p> -->
+                                    </div>
+
+                                    <div class="option-card glass-card-sm" data-dept="laboratory">
+                                        <div class="option-icon">
+                                            <i class="bi bi-microscope"></i>
+                                        </div>
+                                        <h5>Laboratory & Diagnostics</h5>
+                                        <!-- <p>Medical testing and diagnostic services</p> -->
+                                    </div>
+                                    
+                                    <button class="btn btn-outline-secondary mt-4 glass-button-outline" onclick="showAllDepartments()">
+                                        <i class="bi bi-plus-circle me-2"></i>View More Departments
+                                    </button>
+                                    
+                                    <div class="all-departments mt-3" style="display:none;">
+                                        <select class="form-select glass-input" id="departmentSelect">
+                                            <option value="" disabled selected>Choose a department</option>
+                                            <option value="general">General Medicine</option>
+                                            <option value="antenatal">Antenatal Care</option>
+                                            <option value="dental">Dental Care Clinic</option>
+                                            <option value="ent">ENT Clinic</option>
+                                            <option value="maternal">Maternal & Child Health</option>
+                                            <option value="laboratory">Laboratory & Diagnostics</option>
+                                            <option value="dermatology">Dermatology</option>
+                                            <option value="consultation">General Consultation</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between mt-4">
+                                    <button class="btn btn-outline-primary glass-button-outline" onclick="previousStep(1)">
+                                        <i class="bi bi-arrow-left me-2"></i>Back
+                                    </button>
+                                    <button class="btn btn-primary glass-button" onclick="validateAndNext(3)">
+                                        Continue<i class="bi bi-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Final Details -->
+                    <div class="step" id="step3">
+                        <div class="card glass-card">
+                            <div class="card-body p-5">
+                                <div class="step-icon mb-4">
+                                    <i class="bi bi-calendar-check"></i>
+                                </div>
+                                <h3 class="mb-4">Almost There!</h3>
+                                <p class="text-muted mb-4">Let's schedule your appointment at a time that works for you.</p>
+                                
+                                <form method="POST" id="appointmentForm" action="{{ url_for('user_dashboard.book_appointment') }}">
+                                    {{ form.hidden_tag() }}
+                                    <input type="hidden" name="department" id="selectedDepartment">
+                                    <input type="hidden" name="patient_story" id="patientStory">
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Your Name</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text glass-input-icon">
+                                                    <i class="bi bi-person"></i>
+                                                </span>
+                                                <input type="text" class="form-control glass-input" name="name" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Phone Number</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text glass-input-icon">
+                                                    <i class="bi bi-phone"></i>
+                                                </span>
+                                                <input type="tel" class="form-control glass-input" name="phone" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label class="form-label">Preferred Date & Time</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text glass-input-icon">
+                                                <i class="bi bi-calendar"></i>
+                                            </span>
+                                            <input type="datetime-local" class="form-control glass-input" name="appointment_time" required>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-between">
+                                        <button type="button" class="btn btn-outline-primary glass-button-outline" onclick="previousStep(2)">
+                                            <i class="bi bi-arrow-left me-2"></i>Back
+                                        </button>
+                                        <button type="submit" class="btn btn-success glass-button">
+                                            <i class="bi bi-check-circle me-2"></i>Confirm Appointment
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<style>
+    
+/* Glass Morphism Styles */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.125);
+        border-radius: 15px;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    }
+
+    .glass-card-sm {
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(7px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .glass-input {
+        background: rgba(255, 255, 255, 0.8) !important;
+        border: 1px solid rgba(255, 255, 255, 0.18) !important;
+        backdrop-filter: blur(5px);
+        color: var(--bs-primary) !important;
+        font-weight: 500;
+    }
+
+    .glass-input::placeholder {
+        color: var(--bs-primary-rgb);
+        opacity: 0.6;
+    }
+
+    .glass-input-icon {
+        background: rgba(255, 255, 255, 0.8) !important;
+        border: 1px solid rgba(255, 255, 255, 0.18) !important;
+        color: var(--bs-primary);
+    }
+
+    .glass-button {
+        background: var(--bs-primary);
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        transition: all 0.3s ease;
+        color: white;
+        font-weight: 500;
+    }
+
+    .glass-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+        background: var(--bs-primary);
+        opacity: 0.9;
+    }
+
+    .glass-button-outline {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(4px);
+        border: 1px solid var(--bs-primary);
+        color: var(--bs-primary);
+        transition: all 0.3s ease;
+    }
+
+    .glass-button-outline:hover {
+        background: rgba(13, 110, 253, 0.1);
+        transform: translateY(-2px);
+    }
+
+    /* Progress Bar */
+    .progress-wrapper {
+        height: 4px;
+        background: rgba(13, 110, 253, 0.1);
+        border-radius: 2px;
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--bs-primary), var(--bs-primary));
+        width: 0;
+        transition: width 0.6s ease;
+    }
+
+    /* Step Transitions */
+    .appointment-flow {
+        position: relative;
+        min-height: 500px;
+    }
+
+    .step {
+        position: absolute;
+        width: 100%;
+        opacity: 0;
+        transform: translateX(50px);
+        transition: all 0.5s ease;
+        pointer-events: none;
+    }
+
+    .step.active {
+        opacity: 1;
+        transform: translateX(0);
+        pointer-events: all;
+    }
+
+    /* Department Cards */
+    .department-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.8rem;
+        margin-bottom: 1rem;
+        position: relative;
+        padding: 0.5rem;
+    }
+    
+    .option-card {
+        padding: 1rem 0.5rem;
+        cursor: pointer;
+        text-align: center;
+        background: var(--bs-primary);
+        backdrop-filter: blur(7px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        height: 100%;
+        min-height: 100px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .option-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(13, 110, 253, 0.2);
+        background: var(--bs-primary);
+        opacity: 0.9;
+    }
+    
+    .option-card.selected {
+        background: white;
+        border: 2px solid var(--bs-primary);
+        position: relative;
+    }
+    
+    .option-card h5 {
+        color: white;
+        font-size: 0.9rem;
+        margin: 0;
+        font-weight: 500;
+    }
+    
+    .option-icon {
+        font-size: 1.5rem;
+        color: white;
+        margin: 0;
+    }
+
+    /* Adjust spacing for buttons below departments */
+    .department-select-wrapper {
+        margin-top: 1rem;
+    }
+
+    .all-departments {
+        margin-top: 1rem;
+        padding: 0.8rem;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 8px;
+        border: 1px solid var(--bs-primary);
+    }
+
+    /* Adjust step padding */
+    .card-body {
+        padding: 1.5rem !important;
+    }
+
+    /* Adjust step icon size */
+    .step-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Adjust headings */
+    .card-body h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Text Gradient */
+    .text-gradient {
+        background: linear-gradient(135deg, var(--bs-primary), var(--bs-primary));
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Form Elements */
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--bs-primary);
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    /* Character Count */
+    .character-count {
+        color: var(--bs-primary);
+    }
+
+    .character-count.text-success {
+        color: var(--bs-success) !important;
+    }
+
+</style>
+
+<script>
+    // Initialize progress bar
+    const progressBar = document.querySelector('.progress-bar');
+    updateProgress(1);
+
+    // Form progression logic with validation
+    function validateAndNext(step) {
+        if (step === 2) {
+            const story = document.querySelector('.story-input').value.trim();
+            if (story.length < 10) {
+                showError('Please provide more details about your needs');
+                return;
+            }
+            document.getElementById('patientStory').value = story;
+        }
+        
+        if (step === 3) {
+            const selectedDept = document.getElementById('selectedDepartment').value;
+            if (!selectedDept) {
+                showError('Please select a department before continuing');
+                return;
+            }
+        }
+        
+        nextStep(step);
+    }
+
+    function nextStep(step) {
+        const currentStep = document.querySelector('.step.active');
+        const nextStep = document.getElementById(`step${step}`);
+        
+        currentStep.classList.remove('active');
+        nextStep.classList.add('active');
+        
+        updateProgress(step);
+    }
+
+    function previousStep(step) {
+        const currentStep = document.querySelector('.step.active');
+        const prevStep = document.getElementById(`step${step}`);
+        
+        currentStep.classList.remove('active');
+        prevStep.classList.add('active');
+        
+        updateProgress(step);
+    }
+
+    function updateProgress(step) {
+        const progress = ((step - 1) / 2) * 100;
+        progressBar.style.width = `${progress}%`;
+    }
+
+    // Enhanced department selection with better feedback
+    document.querySelectorAll('.option-card').forEach(card => {
+        card.addEventListener('click', function() {
+            document.querySelectorAll('.option-card').forEach(c => {
+                c.classList.remove('selected');
+                c.style.transform = 'scale(1)';
+            });
+            
+            this.classList.add('selected');
+            document.getElementById('selectedDepartment').value = this.dataset.dept;
+            
+            // Provide visual feedback
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => this.style.transform = 'scale(1)', 200);
+            
+            // Enable continue button
+            const continueBtn = document.querySelector('#step2 .btn-primary');
+            continueBtn.classList.add('ready');
+            continueBtn.disabled = false;
+        });
+    });
+
+    // Show all departments dropdown with improved handling
+    function showAllDepartments() {
+        const allDepts = document.querySelector('.all-departments');
+        const departmentSelect = document.getElementById('departmentSelect');
+        
+        if (allDepts.style.display === 'none') {
+            allDepts.style.display = 'block';
+            gsap.from(allDepts, {
+                height: 0,
+                opacity: 0,
+                duration: 0.3
+            });
+            
+            // Add change event listener only once
+            if (!departmentSelect.hasAttribute('data-listener')) {
+                departmentSelect.addEventListener('change', function() {
+                    const selectedValue = this.value;
+                    document.getElementById('selectedDepartment').value = selectedValue;
+                    
+                    // Deselect any selected cards
+                    document.querySelectorAll('.option-card').forEach(c => {
+                        c.classList.remove('selected');
+                    });
+                    
+                    // Enable continue button
+                    const continueBtn = document.querySelector('#step2 .btn-primary');
+                    continueBtn.classList.add('ready');
+                    continueBtn.disabled = false;
+                });
+                departmentSelect.setAttribute('data-listener', 'true');
+            }
+        } else {
+            gsap.to(allDepts, {
+                height: 0,
+                opacity: 0,
+                duration: 0.3,
+                onComplete: () => allDepts.style.display = 'none'
+            });
+        }
+    }
+
+    // Initialize step 2 continue button as disabled
+    document.addEventListener('DOMContentLoaded', function() {
+        const step2ContinueBtn = document.querySelector('#step2 .btn-primary');
+        if (step2ContinueBtn) {
+            step2ContinueBtn.disabled = true;
+        }
+    });
+
+    // Character count feedback
+    const storyInput = document.querySelector('.story-input');
+    const charCount = document.querySelector('.character-count');
+    const minChars = 10;
+
+    storyInput.addEventListener('input', function() {
+        const remaining = minChars - this.value.trim().length;
+        if (remaining > 0) {
+            charCount.textContent = `Please add ${remaining} more character${remaining === 1 ? '' : 's'} for a meaningful description`;
+            charCount.className = 'form-text text-muted mt-2';
+        } else {
+            charCount.textContent = 'Perfect! This helps us understand your needs better';
+            charCount.className = 'form-text text-success mt-2';
+        }
+    });
+
+    // Error message display enhancement
+    function showError(message) {
+        const existingError = document.querySelector('.alert-danger');
+        if (existingError) {
+            existingError.remove();
+        }
+
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'alert alert-danger alert-dismissible fade show mt-3';
+        errorDiv.innerHTML = `
+            <i class="bi bi-exclamation-circle me-2"></i>${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        const currentStep = document.querySelector('.step.active .card-body');
+        currentStep.appendChild(errorDiv);
+        
+        // Shake animation for error feedback
+        gsap.from(errorDiv, {
+            x: -10,
+            duration: 0.1,
+            repeat: 3,
+            yoyo: true
+        });
+        
+        setTimeout(() => {
+            gsap.to(errorDiv, {
+                opacity: 0,
+                height: 0,
+                duration: 0.3,
+                onComplete: () => errorDiv.remove()
+            });
+        }, 3000);
+    }
+</script>
+{% endblock %}

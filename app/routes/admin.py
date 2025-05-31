@@ -1,5 +1,6 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
-from flask_login import login_required
+from datetime import datetime
+from flask import Blueprint, abort, render_template, redirect, url_for, flash, request
+from flask_login import current_user, login_required
 from sqlalchemy import func, or_
 
 from app import db
@@ -71,36 +72,101 @@ def approve_doctor(doctor_id):
     return redirect(url_for("admin.dashboard"))
 
 # Approve Appointment
-@admin_bp.route("/approve_appointment/<int:appointment_id>")
+@admin_bp.route("/approve_appointment/<uuid:appointment_uid>")
 @login_required
-def approve_appointment(appointment_id):
-    appointment = Appointment.query.get_or_404(appointment_id)
-    appointment.approved = True
-    db.session.commit()
-    flash("Appointment approved successfully!", "success")
+def update_appointment(appointment_id):
+    if not current_user.is_admin():
+        abort(403)  # Forbidden access for non-admin users
+    
+    appointment = Appointment.query.filter_by(appointment_uid=str(appointment_uid)).first_or_404()
+
+    new_status = request.form.get('status')
+    cancelation_reason = request.form.get('cancellation_reason')
+
+    if new_status not in ['approved', 'cancelled', 'scheduled', 'completed', 'no-show']:
+        flash("Invalid appointment status.", "danger")
+        return redirect(url_for("admin.dashboard"))  
+    try: 
+        appointment.status = new_status
+
+        if new_status == 'cancelled' and cancellation_reason:
+            appointment.cancellation_reason = cancellation_reason
+        if new_status == 'compeleted':
+            appointment.completed_at = datetime.utcnow()
+        
+        db.session.commit()
+        flash(f"Appointment status updated to {new_status} successfully.", "success")
+    except Exception as e:
+        db.rollback()
+        flash(f"Error updating appointment status: {str(e)}", "danger")
     return redirect(url_for("admin.dashboard"))
+
+
 
 # Fetch all appointments
 @admin_bp.route("/appointments")
 @login_required
 def fetch_appointments():
-    appointments = Appointment.query.order_by(Appointment.appointment_date.desc()).all()
+    # Get filter parameters from query string
+    status_filter = request.args.get('status', 'all')
+    department_filter = request.args.get('department', 'all')
+    date_filter = request.args.get('date')
 
+    # Base query
+    query = Appointment.query
+
+    # Apply filters
+    if status_filter != 'all':
+        query = query.filter(Appointment.status == status_filter)
+
+    if department_filter != 'all':
+        query = query.filter(Appointment.department == department_filter)
+
+    if date_filter:
+        try:
+            date_obj = datetime.strptime(date_filter, "%Y-%m-%d").date()
+            query = query.filter(Appointment.date == date_obj)
+        except ValueError:
+            pass  # invalid date format, ignore
+
+    appointments = query.order_by(Appointment.date.desc(), Appointment.time.desc()).all()
+
+    # Join with patient data
     detailed_appointments = []
-
     for appointment in appointments:
         patient = User.query.get(appointment.patient_id)
         detailed_appointments.append({
             "id": appointment.id,
-            "date": appointment.date,
-            "time": appointment.time,
+            "date": appointment.appointment_date,
+            "time": appointment.appointment_date,
+            "department": appointment.department,
+            "reason": appointment.reason,
+            "status": appointment.status,
             "patient_name": patient.name if patient else "Unknown",
             "patient_email": patient.email if patient else "Unknown",
-            "reason": appointment.reason,
-            "status": appointment.status
+            "patient_phone": patient.phone if patient else "Unknown",
+            "created_at": appointment.created_at
         })
 
-    return render_template('admin/appointments.html', appointments=appointments)
+    # Prepare current filters to pass to template
+    current_filters = {
+        "status": status_filter,
+        "department": department_filter,
+        "date": date_filter
+    }
+
+    # List of departments for filter dropdown
+    departments = [
+        "Antenatal Care", "Dental Care", "ENT", "Skin Care Clinic",
+        "Obstetrics and Gynaecology", "General Medicine"
+    ]
+
+    return render_template(
+        'admin/appointments.html',
+        appointments=detailed_appointments,
+        current_filters=current_filters,
+        departments=departments
+    )
 
 # Manage Prescriptions
 @admin_bp.route("/manage_prescriptions")

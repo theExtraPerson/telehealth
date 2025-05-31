@@ -8,12 +8,60 @@ from wtforms.validators import DataRequired, Email, Optional
 from wtforms.widgets.core import CheckboxInput, ListWidget
 
 
-class AppointmentForm(FlaskForm):
-    patient_id = SelectField('Patient', coerce=int, validators=[DataRequired()])
-    doctor_id = SelectField('Doctor', coerce=int, validators=[DataRequired()])
-    appointment_date = DateTimeLocalField('Appointment Date', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
-    description = TextAreaField('Description')
-    submit = SubmitField('Book Appointment')
+from flask_wtf import FlaskForm
+from wtforms import (StringField, TextAreaField, SelectField, 
+                     DateTimeLocalField, SubmitField, HiddenField)
+from wtforms.validators import DataRequired, Length, Optional
+from wtforms.widgets import TextArea
+
+class AppointmentStep1Form(FlaskForm):
+    patient_story = TextAreaField('Describe Your Symptoms', 
+                                validators=[DataRequired(), Length(min=10, max=500)],
+                                widget=TextArea(),
+                                render_kw={"rows": 5, "placeholder": "I've been experiencing..."})
+    next_step = SubmitField('Continue')
+
+class AppointmentStep2Form(FlaskForm):
+    department = SelectField('Specialty', 
+                           validators=[DataRequired()],
+                           choices=[
+                               ('', 'Select a specialty...'),
+                               ('general', 'General Medicine'),
+                               ('cardiology', 'Cardiology'),
+                               ('dermatology', 'Dermatology'),
+                               ('pediatrics', 'Pediatrics'),
+                               ('neurology', 'Neurology')
+                           ])
+    is_urgent = SelectField('Priority', 
+                           choices=[
+                               (False, 'Routine'),
+                               (True, 'Urgent')
+                           ],
+                           validators=[DataRequired()])
+    next_step = SubmitField('Continue')
+    prev_step = SubmitField('Back')
+
+class AppointmentStep3Form(FlaskForm):
+    patient_id = HiddenField('Patient ID')
+    doctor_id = SelectField('Preferred Provider', 
+                          coerce=int,
+                          validators=[DataRequired()])
+    appointment_date = DateTimeLocalField('Date & Time', 
+                                        format='%Y-%m-%dT%H:%M',
+                                        validators=[DataRequired()])
+    appointment_type = SelectField('Visit Type',
+                                 choices=[
+                                     ('video', 'Video Consultation'),
+                                     ('in-person', 'In-Person Visit'),
+                                     ('phone', 'Phone Consultation')
+                                 ],
+                                 validators=[DataRequired()])
+    reason = StringField('Reason for Visit',
+                        validators=[DataRequired(), Length(max=255)])
+    description = TextAreaField('Additional Notes',
+                               validators=[Optional(), Length(max=1000)])
+    submit = SubmitField('Confirm Appointment')
+    prev_step = SubmitField('Back')
 
 class RegistrationForm(FlaskForm):
     fullname = StringField('Full Name', validators=[DataRequired()])

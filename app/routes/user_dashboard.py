@@ -1,17 +1,17 @@
+from datetime import datetime, timedelta
 import os
 from shlex import join
 
 from flask import (
     Blueprint, render_template, flash, request,
-    jsonify, redirect, send_file, url_for, abort, current_app
+    jsonify, redirect, send_file, session, url_for, abort, current_app
 )
 from flask_login import login_required, current_user
 from pydantic import json
 from werkzeug.utils import secure_filename
 from flask_wtf.csrf import generate_csrf
 from app import db
-from app.forms import AppointmentForm, ProfileForm
-from app.models import appointment
+from app.forms import AppointmentStep1Form, AppointmentStep2Form, AppointmentStep3Form, ProfileForm
 from app.models.appointment import Appointment
 from app.models.payments import Payment
 from app.models.prescription import Prescription
@@ -19,6 +19,7 @@ from app.models.user import Patient, Doctor, User, Specialty
 from app.models.message import Message
 from app.services.medical_records_service import MedicalRecordsService
 from app.services.notification_service import doctor
+from app.utils.telemedicine import generate_telemedicine_link
 
 user_dashboard = Blueprint('user_dashboard', __name__, template_folder='../../templates')
 
@@ -70,45 +71,124 @@ def dashboard():
 
 
 
-@user_dashboard.route('/appointments/book', methods=['GET', 'POST'])
+@user_dashboard.route('/book_appointment', methods=['GET', 'POST'])
 @login_required
 def book_appointment():
-    form = AppointmentForm()
-
-    # Choices from DB
-    form.patient_id.choices = [(current_user.id, current_user.username)]
-    form.doctor_id.choices = [
-        (d.id, f'Dr. {d.username} - {d.speciality}') for d in Doctor.query.all()
-    ]
-
+    # Initialize step from session or default to 1
+    current_step = session.get('current_step', 1)
+    
+    # Handle form submissions
     if request.method == 'POST':
-        if form.validate_on_submit():
-            appointment = Appointment(
-                patient_id=current_user.id,
-                doctor_id=form.doctor_id.data,
-                appointment_date=form.appointment_date.data,
+        if current_step == 1:
+            form = AppointmentStep1Form(request.form)
+            if form.next_step.data and form.validate():
+                session['appointment_data'] = {
+                    'patient_story': form.patient_story.data
+                }
+                session['current_step'] = 2
+                return redirect(url_for('user_dashboard.book_appointment'))
                 
-                description=form.description.data
-            )
-            db.session.add(appointment)
-            db.session.commit()
-            flash('Appointment booked successfully!', 'success')
-            return redirect(url_for('user_dashboard.dashboard'))
-        else:
-            flash('Failed to book appointment. Please correct the errors.', 'danger')
+        elif current_step == 2:
+            form = AppointmentStep2Form(request.form)
+            if form.next_step.data and form.validate():
+                session['appointment_data'].update({
+                    'department': form.department.data,
+                    'is_urgent': form.is_urgent.data == 'True'
+                })
+                session['current_step'] = 3
+                return redirect(url_for('user_dashboard.book_appointment'))
+            elif form.prev_step.data:
+                session['current_step'] = 1
+                return redirect(url_for('user_dashoard.book_appointment'))
+                
+        elif current_step == 3:
+            form = AppointmentStep3Form(request.form)
+            form.doctor_id.choices = [(doc.id, doc.full_name) 
+                                     for doc in Doctor.query.filter_by(
+                                         department=session['appointment_data']['department']
+                                     ).all()]
+            
+            if form.validate_on_submit():
+                try:
+                    # Create appointment
+                    appointment = Appointment(
+                        patient_id=current_user.id,
+                        doctor_id=form.doctor_id.data,
+                        appointment_date=form.appointment_date.data,
+                        department=session['appointment_data']['department'],
+                        reason=form.reason.data,
+                        description=form.description.data or session['appointment_data']['patient_story'],
+                        appointment_type=form.appointment_type.data,
+                        is_urgent=session['appointment_data']['is_urgent'],
+                        status='scheduled'
+                    )
+                    
+                    # Generate telemedicine link if needed
+                    if form.appointment_type.data == 'video':
+                        appointment.meeting_link = generate_telemedicine_link()
+                    
+                    db.session.add(appointment)
+                    db.session.commit()
+                    
+                    # Clear session data
+                    session.pop('appointment_data', None)
+                    session.pop('current_step', None)
+                    
+                    flash('Appointment booked successfully!', 'success')
+                    return redirect(url_for('user_dashboard.view_appointment', 
+                                         appointment_id=appointment.id))
+                    
+                except Exception as e:
+                    db.session.rollback()
+                    flash(f'Error creating appointment: {str(e)}', 'error')
+            
+            elif form.prev_step.data:
+                session['current_step'] = 2
+                return redirect(url_for('user_dashoard.book_appointment'))
+    
+    # Handle GET requests or form validation failures
+    if current_step == 1:
+        form = AppointmentStep1Form()
+        if 'appointment_data' in session:
+            form.patient_story.data = session['appointment_data'].get('patient_story', '')
+            
+    elif current_step == 2:
+        form = AppointmentStep2Form()
+        if 'appointment_data' in session:
+            form.department.data = session['appointment_data'].get('department', '')
+            form.is_urgent.data = str(session['appointment_data'].get('is_urgent', False))
+            
+    elif current_step == 3:
+        form = AppointmentStep3Form()
+        form.patient_id.data = current_user.id
+        form.doctor_id.choices = [(doc.id, doc.full_name) 
+                                 for doc in Doctor.query.filter_by(
+                                     department=session['appointment_data']['department']
+                                 ).all()]
+        
+        # Set default appointment time to next available slot
+        default_time = datetime.now() + timedelta(hours=24)
+        form.appointment_date.data = default_time.replace(minute=0, second=0)
+    
+    return render_template('user/book_appointment.html', 
+                         form=form,
+                         current_step=current_step,
+                         min_date=datetime.now().strftime('%Y-%m-%d'),
+                         max_date=(datetime.now() + timedelta(days=90)).strftime('%Y-%m-%d'))
 
-    return render_template('user/book_appointment.html', form=form)
 
-
-@user_dashboard.route('/appointments/manage')
+@user_dashboard.route('/appointments/<uuid:appointment_uid>', methods=['GET'])
 @login_required
-def manage_appointments():
-    appointments = Appointment.query.filter_by(patient_id=current_user.id).all()
-
-    if request.accept_mimetypes.best == 'application/json':
-        return jsonify([a.to_dict() for a in appointments])
-
-    return render_template('user/manage_appointments.html', appointments=appointments)
+def view_appointment(appointment_uid):
+    appointment = Appointment.query.filter_by(appointment_uid=appointment_uid).first_or_404()
+    if not (current_user.is_admin or
+            appointment.patient_id == current_user.id or
+            appointment.creator_id == current_user.id):
+        abort(403)
+    flash('Unauthorized access to this appointment.', 'danger')
+    return render_template('user/manage_appointment.html',
+                         appointment=appointment,
+                         now=datetime.utcnow())
 
 
 @user_dashboard.route('/doctors/search')
@@ -324,6 +404,8 @@ def grant_access():
 
     flash(result["message"], "info")
     return redirect(url_for('user_dashboard.list_records'))
+
+
 @user_dashboard.route('/profile/edit', methods=['GET', 'POST'])
 @login_required
 def edit_profile():

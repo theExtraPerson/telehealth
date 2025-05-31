@@ -1,65 +1,106 @@
-from pydantic import BaseModel, Field
+from datetime import datetime
 from typing import Optional, List
-from datetime import date, datetime
+from pydantic import BaseModel, Field
+from enum import Enum
 
 class MedicalRecordBase(BaseModel):
     patient_id: int
-    date_of_visit: date
+    date_of_visit: datetime
     description: str
-    doctor_name: str
     diagnosis: Optional[str] = None
     treatment: Optional[str] = None
     medications: Optional[str] = None
-    file_path: Optional[str] = None
-    notes: Optional[str]
+    notes: Optional[str] = None
     is_telemedicine: bool = False
 
-    class Config:
-        from_attributes = True
+class MedicalRecordCreate(MedicalRecordBase):
+    doctor_id: int
+    facility_id: Optional[int] = None
+    diagnosis_code: Optional[str] = None
+    procedures: Optional[str] = None
+    allergies: Optional[str] = None
+    vital_signs: Optional[str] = None
 
-# --- CREATE ---
-class MedicalRecordCreate(BaseModel):
-    description: str
-    doctor_name: str
-    date_of_visit: date  # Converted from str to `date`
-
-    class Config:
-        from_attributes = True
-
-# --- UPDATE ---
 class MedicalRecordUpdate(BaseModel):
-    description: Optional[str]
-    doctor_name: Optional[str]
-    date_of_visit: Optional[date]
-    diagnosis: Optional[str]
-    treatment: Optional[str]
-    medications: Optional[str]
-    notes: Optional[str]
-    is_telemedicine: Optional[bool]
+    description: Optional[str] = None
+    diagnosis: Optional[str] = None
+    treatment: Optional[str] = None
+    medications: Optional[str] = None
+    notes: Optional[str] = None
+    is_confidential: Optional[bool] = None
 
-
-# --- SHARE ---
-class ShareRecordCreate(BaseModel):
-    record_id: int
+class MedicalRecordOut(MedicalRecordBase):
+    id: int
+    record_uid: str
+    doctor_id: int
+    doctor_name: str
+    uploaded_at: datetime
+    last_updated: Optional[datetime] = None
+    is_confidential: bool = False
+    record_status: str = "active"
 
     class Config:
         orm_mode = True
 
+class AccessLevel(str, Enum):
+    view = "view"
+    edit = "edit"
+    full = "full"
 
-# --- ACCESS GRANT (OPTIONAL) ---
-class GrantAccessSchema(BaseModel):
-    record_id: int
+class MedicalRecordAccessCreate(BaseModel):
     doctor_id: int
+    access_level: AccessLevel = AccessLevel.view
+    purpose: str = Field(..., min_length=5, max_length=255)
+    expires_at: Optional[datetime] = None
 
-
-# --- OUT / RETURN ---
-class MedicalRecordOut(BaseModel):
+class MedicalRecordAccessOut(BaseModel):
     id: int
-    description: str
-    doctor_name: str
-    patient_id: int
-    uploaded_at: datetime
+    record_id: int
+    accessor_id: int
+    granted_by: int
+    access_level: AccessLevel
+    purpose: str
+    granted_at: datetime
+    expires_at: Optional[datetime]
+    is_emergency_access: bool = False
 
     class Config:
-        from_attributes = True
+        orm_mode = True
 
+class LabResultCreate(BaseModel):
+    test_name: str
+    result_value: str
+    result_units: Optional[str] = None
+    reference_range: Optional[str] = None
+    performed_at: Optional[datetime] = None
+
+class LabResultOut(BaseModel):
+    id: int
+    record_id: int
+    test_name: str
+    result_value: str
+    result_units: Optional[str]
+    reference_range: Optional[str]
+    performed_at: datetime
+
+    class Config:
+        orm_mode = True
+
+class TelemedicineSessionCreate(BaseModel):
+    patient_id: int
+    platform: str
+    expected_duration: int = 30  # minutes
+    meeting_url: Optional[str] = None
+    meeting_password: Optional[str] = None
+
+class TelemedicineSessionOut(BaseModel):
+    record_uid: str
+    patient_link: str
+    doctor_link: str
+    expires_at: datetime
+    platform: str
+
+class ShareRecordRequest(BaseModel):
+    recipient_email: str
+    expires_hours: int = 168  # 7 days default
+    access_level: AccessLevel = AccessLevel.view

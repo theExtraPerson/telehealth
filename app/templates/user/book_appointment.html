@@ -1,97 +1,209 @@
 {% extends 'base.html' %}
 {% block content %}
-<!-- Load Required Libraries -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/Flip.min.js"></script>
+<!-- Required CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
 
 <section class="appointment-section py-5" id="appointment">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8 text-center">
-                <h2 class="animate__animated animate__fadeIn">Tell Us About Your Needs</h2>
-                <p class="lead animate__animated animate__fadeIn animate__delay-1s">We'll match you with the perfect care in just a few steps</p>
+                <h2 class="display-4 fw-bold text-gradient-primary">Personalized Care Starts Here</h2>
+                <p class="lead text-muted mb-5">Share your concerns and we'll match you with the perfect specialist</p>
             </div>
         </div>
 
-        <div class="row justify-content-center mt-4">
+        <!-- Enhanced Progress Indicator -->
+        <div class="row justify-content-center mb-4">
             <div class="col-lg-8">
-                <div class="appointment-flow position-relative" style="min-height: 500px;">
-                    <!-- Step 1: Storytelling Input -->
-                    <div class="step position-absolute top-0 start-0 w-100 active" id="step1">
-                        <div class="card shadow-sm glass-morphism">
-                            <div class="card-body p-5">
-                                <h3 class="mb-4">How can we help you today?</h3>
-                                <div class="form-group mb-4">
-                                    <textarea class="form-control story-input" rows="3" 
-                                              placeholder="Tell us about your symptoms or needs in your own words (e.g. 'I've had a persistent cough for 2 weeks')" required></textarea>
-                                </div>
-                                <button class="btn btn-primary btn-lg w-100 pulse-animation" id="continueStep1">
-                                    Continue <i class="bi bi-arrow-right ms-2"></i>
-                                </button>
-                            </div>
-                        </div>
+                <div class="progress-wrapper">
+                    <div class="progress-info d-flex justify-content-between mb-2">
+                        <small class="step-label" id="step1-label">Tell us about you</small>
+                        <small class="step-label" id="step2-label">Choose specialist</small>
+                        <small class="step-label" id="step3-label">Confirm details</small>
                     </div>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" aria-labelledby="step1-label"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                    <!-- Step 2: Department Selection -->
-                    <div class="step position-absolute top-0 start-100 w-100" id="step2">
-                        <div class="card shadow-sm glass-morphism">
-                            <div class="card-body p-5">
-                                <h3 class="mb-4">Which department suits your needs?</h3>
-                                <p class="text-muted mb-4">Based on what you told us, here are our specialized departments:</p>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="appointment-flow" aria-live="polite">
+                    <!-- Step 1: Patient Storytelling -->
+                    <div class="step active" id="step1" role="tabpanel" aria-labelledby="step1-label">
+                        <div class="card glass-card">
+                            <div class="card-body p-4 p-md-5">
+                                <div class="step-icon mb-4 text-primary">
+                                    <i class="bi bi-chat-heart-fill" aria-hidden="true"></i>
+                                </div>
+                                <h3 class="mb-4">What brings you in today?</h3>
+                                <p class="text-muted mb-4">Describe your symptoms or concerns in your own words. The more you share, the better we can help.</p>
                                 
-                                <div class="row department-options g-4">
-                                    <!-- Department Cards (2 per row) -->
-                                    <div class="col-md-6">
-                                        <div class="option-card glass-card" data-dept="general">
-                                            <div class="option-icon"><i class="bi bi-heart-pulse"></i></div>
-                                            <h5>General Consultation</h5>
-                                            <p class="text-muted">For non-urgent medical advice and checkups</p>
-                                        </div>
+                                <div class="form-floating mb-4">
+                                    <textarea class="form-control story-input glass-input" id="patientStory" 
+                                              placeholder="I've been experiencing..." rows="5"
+                                              aria-describedby="storyHelp"></textarea>
+                                    <label for="patientStory">Your health concern</label>
+                                    <div id="storyHelp" class="form-text d-flex justify-content-between mt-2">
+                                        <span class="character-count text-muted">Minimum 10 characters</span>
+                                        <button class="btn btn-sm btn-link p-0" type="button" data-bs-toggle="modal" data-bs-target="#storyTipsModal">
+                                            <i class="bi bi-info-circle"></i> Tips for describing symptoms
+                                        </button>
                                     </div>
-                                    
-                                    <div class="col-md-6">
-                                        <div class="option-card glass-card" data-dept="ENT">
-                                            <div class="option-icon"><i class="bi bi-ear"></i></div>
-                                            <h5>Ear, Nose & Throat</h5>
-                                            <p class="text-muted">For sinus, hearing or throat issues</p>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- More department cards... -->
                                 </div>
                                 
-                                <div class="d-flex justify-content-between mt-4">
-                                    <button class="btn btn-outline-primary btn-lg" id="backStep1">
-                                        <i class="bi bi-arrow-left me-2"></i> Back
-                                    </button>
-                                    <button class="btn btn-primary btn-lg pulse-animation" id="continueStep2">
-                                        Continue <i class="bi bi-arrow-right ms-2"></i>
+                                <div class="d-flex justify-content-end">
+                                    <button class="btn btn-primary btn-lg px-4 glass-button" onclick="validateAndNext(2)"
+                                            aria-label="Continue to specialist selection">
+                                        Continue <i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Step 3: Final Details -->
-                    <div class="step position-absolute top-0 start-100 w-100" id="step3">
-                        <div class="card shadow-sm glass-morphism">
-                            <div class="card-body p-5">
-                                <h3 class="mb-4">Almost done!</h3>
-                                <p class="text-muted mb-4">Just a few details to complete your booking</p>
+                    <!-- Step 2: Smart Specialist Matching -->
+                    <div class="step" id="step2" role="tabpanel" aria-labelledby="step2-label">
+                        <div class="card glass-card">
+                            <div class="card-body p-4 p-md-5">
+                                <div class="step-icon mb-4 text-primary">
+                                    <i class="bi bi-heart-pulse" aria-hidden="true"></i>
+                                </div>
+                                <h3 class="mb-4">Recommended Specialists</h3>
+                                <p class="text-muted mb-4">Based on your description, these specialists might be best suited to help:</p>
+                                
+                                <div class="department-options mb-4" id="recommendedSpecialists">
+                                    <!-- Dynamically populated based on patient story -->
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <button class="btn btn-outline-primary w-100 glass-button-outline" 
+                                            type="button" data-bs-toggle="collapse" data-bs-target="#allSpecialists"
+                                            aria-expanded="false" aria-controls="allSpecialists">
+                                        <i class="bi bi-search me-2"></i> Browse all specialties
+                                    </button>
+                                    
+                                    <div class="collapse mt-3" id="allSpecialists">
+                                        <div class="department-options" id="allSpecialistsGrid">
+                                            <!-- All specialties will be loaded here -->
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between">
+                                    <button class="btn btn-outline-primary glass-button-outline" onclick="previousStep(1)"
+                                            aria-label="Back to symptoms description">
+                                        <i class="bi bi-arrow-left me-2" aria-hidden="true"></i> Back
+                                    </button>
+                                    <button class="btn btn-primary glass-button" id="continueSpecialist" 
+                                            onclick="validateAndNext(3)" disabled
+                                            aria-label="Continue to appointment details">
+                                        Continue <i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Appointment Confirmation -->
+                    <div class="step" id="step3" role="tabpanel" aria-labelledby="step3-label">
+                        <div class="card glass-card">
+                            <div class="card-body p-4 p-md-5">
+                                <div class="step-icon mb-4 text-primary">
+                                    <i class="bi bi-calendar-check" aria-hidden="true"></i>
+                                </div>
+                                <h3 class="mb-4">Finalize Your Appointment</h3>
+                                
+                                <div class="alert alert-info d-flex align-items-center mb-4">
+                                    <i class="bi bi-info-circle-fill me-2" aria-hidden="true"></i>
+                                    <div>Review your information before confirming</div>
+                                </div>
                                 
                                 <form method="POST" id="appointmentForm" action="{{ url_for('user_dashboard.book_appointment') }}">
                                     {{ form.hidden_tag() }}
                                     <input type="hidden" name="department" id="selectedDepartment">
-                                    <input type="hidden" name="patient_story" id="patientStory">
+                                    <input type="hidden" name="patient_story" id="patientStoryInput">
                                     
-                                    <!-- Form fields... -->
+                                    <!-- Summary Card -->
+                                    <div class="summary-card glass-card-sm mb-4 p-3">
+                                        <h5 class="mb-2">Appointment Summary</h5>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="text-muted">Specialty:</span>
+                                            <span id="summarySpecialty">Not selected</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span class="text-muted">Concern:</span>
+                                            <span id="summaryConcern" class="text-truncate" style="max-width: 200px;">Not provided</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                <input type="text" class="form-control glass-input" id="fullName" 
+                                                       name="name" required placeholder="Your full name">
+                                                <label for="fullName">Full Name</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                <input type="tel" class="form-control glass-input" id="phoneNumber" 
+                                                       name="phone" required placeholder="Phone number">
+                                                <label for="phoneNumber">Phone Number</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                <input type="email" class="form-control glass-input" id="email" 
+                                                       name="email" placeholder="Email address">
+                                                <label for="email">Email (Optional)</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                <input type="date" class="form-control glass-input" id="appointmentDate" 
+                                                       name="appointment_date" required min="{{ min_date }}">
+                                                <label for="appointmentDate">Preferred Date</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                <select class="form-select glass-input" id="appointmentTime" name="appointment_time" required>
+                                                    <option value="" selected disabled>Select a time</option>
+                                                    <!-- Time slots will be populated via JS -->
+                                                </select>
+                                                <label for="appointmentTime">Preferred Time</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                <select class="form-select glass-input" id="visitType" name="visit_type">
+                                                    <option value="video" selected>Video Consultation</option>
+                                                    <option value="clinic">In-Person Visit</option>
+                                                    <option value="phone">Phone Consultation</option>
+                                                </select>
+                                                <label for="visitType">Visit Type</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-check mt-4 mb-3">
+                                        <input class="form-check-input" type="checkbox" id="consentCheck" required>
+                                        <label class="form-check-label" for="consentCheck">
+                                            I consent to telehealth services and understand the <a href="#" data-bs-toggle="modal" data-bs-target="#privacyModal">privacy policy</a>
+                                        </label>
+                                    </div>
                                     
                                     <div class="d-flex justify-content-between mt-4">
-                                        <button type="button" class="btn btn-outline-primary btn-lg" id="backStep2">
-                                            <i class="bi bi-arrow-left me-2"></i> Back
+                                        <button type="button" class="btn btn-outline-primary glass-button-outline" onclick="previousStep(2)"
+                                                aria-label="Back to specialist selection">
+                                            <i class="bi bi-arrow-left me-2" aria-hidden="true"></i> Back
                                         </button>
-                                        <button type="submit" class="btn btn-success btn-lg pulse-animation">
-                                            Confirm Appointment <i class="bi bi-check-lg ms-2"></i>
+                                        <button type="submit" class="btn btn-success glass-button"
+                                                aria-label="Confirm appointment booking">
+                                            <i class="bi bi-check-circle me-2" aria-hidden="true"></i> Confirm Appointment
                                         </button>
                                     </div>
                                 </form>
@@ -104,179 +216,431 @@
     </div>
 </section>
 
+<!-- Story Tips Modal -->
+<div class="modal fade" id="storyTipsModal" tabindex="-1" aria-labelledby="storyTipsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h5 class="modal-title" id="storyTipsModalLabel">Tips for Describing Symptoms</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="bi bi-check-circle text-primary me-2"></i> Describe when symptoms started</li>
+                    <li class="mb-2"><i class="bi bi-check-circle text-primary me-2"></i> Note any patterns or triggers</li>
+                    <li class="mb-2"><i class="bi bi-check-circle text-primary me-2"></i> Mention severity and frequency</li>
+                    <li class="mb-2"><i class="bi bi-check-circle text-primary me-2"></i> List any treatments you've tried</li>
+                    <li class="mb-2"><i class="bi bi-check-circle text-primary me-2"></i> Include other relevant health information</li>
+                </ul>
+                <div class="alert alert-info mt-3">
+                    <i class="bi bi-lightbulb me-2"></i> Example: "I've had persistent headaches for 2 weeks, worse in the mornings, rated 6/10 in pain."
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Got it!</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Privacy Policy Modal -->
+<div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h5 class="modal-title" id="privacyModalLabel">Telehealth Privacy Policy</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Privacy policy content would go here -->
+                <p>Our telehealth services comply with all applicable privacy laws including HIPAA...</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">I Understand</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
-    /* Artistic Glass Morphism */
-    .glass-morphism {
-        background: rgba(255, 255, 255, 0.88);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border-radius: 16px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
-        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    
+    /* Enhanced Glass Morphism */
     .glass-card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px) saturate(180%);
+        -webkit-backdrop-filter: blur(12px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .glass-card:hover {
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+    }
+
+    .glass-card-sm {
         background: rgba(255, 255, 255, 0.75);
         backdrop-filter: blur(8px);
-        border-radius: 12px;
         border: 1px solid rgba(255, 255, 255, 0.18);
-        transition: all 0.4s ease;
     }
-    
-    .glass-card:hover {
-        transform: translateY(-8px) scale(1.02);
-        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-    }
-    
-    /* Step Transitions */
-    .step {
-        transition: all 0.8s cubic-bezier(0.77, 0, 0.175, 1);
-        opacity: 0;
-        pointer-events: none;
-    }
-    
-    .step.active {
-        opacity: 1;
-        pointer-events: all;
-        transform: translateX(0) !important;
-    }
-    
-    /* Artistic Details */
-    .option-icon {
-        font-size: 2.5rem;
-        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+
+    .text-gradient-primary {
+        background: linear-gradient(135deg, #3a7bd5, #00d2ff);
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
-        margin-bottom: 1rem;
     }
-    
-    .pulse-animation {
-        animation: pulse 2s infinite ease-in-out;
+
+    /* Enhanced Progress Bar */
+    .progress-wrapper .progress {
+        height: 6px;
+        background: rgba(13, 110, 253, 0.1);
     }
-    
-    @keyframes pulse {
-        0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.4); }
-        50% { transform: scale(1.03); box-shadow: 0 0 0 12px rgba(13, 110, 253, 0); }
+
+    .progress-wrapper .progress-bar {
+        background: linear-gradient(90deg, #3a7bd5, #00d2ff);
+        transition: width 0.6s ease;
+    }
+
+    .step-label {
+        color: var(--bs-secondary);
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .step-label.active {
+        color: var(--bs-primary);
+        font-weight: 600;
+    }
+
+    /* Department/Specialist Cards */
+    .department-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 1rem;
+    }
+
+    .specialist-card {
+        padding: 1.25rem;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.7);
+        border: 2px solid transparent;
+    }
+
+    .specialist-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(58, 123, 213, 0.15);
+    }
+
+    .specialist-card.selected {
+        background: white;
+        border-color: var(--bs-primary);
+        box-shadow: 0 4px 8px rgba(58, 123, 213, 0.2);
+    }
+
+    .specialist-icon {
+        font-size: 1.75rem;
+        margin-bottom: 0.75rem;
+        color: var(--bs-primary);
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .department-options {
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        }
+        
+        .card-body {
+            padding: 1.5rem !important;
+        }
+    }
+
+    /* Enhanced Form Controls */
+    .form-floating .form-control:focus, 
+    .form-floating .form-select:focus {
+        box-shadow: 0 0 0 0.25rem rgba(58, 123, 213, 0.25);
+    }
+
+    /* Summary Card */
+    .summary-card {
+        background: rgba(58, 123, 213, 0.05);
+        border-left: 4px solid var(--bs-primary);
     }
 </style>
 
 <script>
+    // Initialize with enhanced functionality
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize GSAP plugins
-        gsap.registerPlugin(Flip);
+        // Set up progress tracking
+        updateProgress(1);
+        updateStepLabel(1);
         
-        // Cache DOM elements
-        const elements = {
-            continueStep1: document.getElementById('continueStep1'),
-            continueStep2: document.getElementById('continueStep2'),
-            backStep1: document.getElementById('backStep1'),
-            backStep2: document.getElementById('backStep2'),
-            storyInput: document.querySelector('.story-input'),
-            patientStory: document.getElementById('patientStory'),
-            selectedDepartment: document.getElementById('selectedDepartment'),
-            departmentCards: document.querySelectorAll('.option-card')
-        };
+        // Initialize form elements
+        initSpecialistCards();
+        setupDateTimePicker();
+        setupFormValidation();
         
-        // Initialize step positions
-        gsap.set("#step2", { x: "100%", opacity: 0 });
-        gsap.set("#step3", { x: "100%", opacity: 0 });
+        // Load patient's existing data if available
+        loadPatientData();
+    });
+
+    // Enhanced progress tracking
+    function updateProgress(step) {
+        const progressPercentage = ((step - 1) / 2) * 100;
+        document.querySelector('.progress-bar').style.width = `${progressPercentage}%`;
+        updateStepLabel(step);
+    }
+
+    function updateStepLabel(step) {
+        document.querySelectorAll('.step-label').forEach((label, index) => {
+            if (index < step) {
+                label.classList.add('active');
+            } else {
+                label.classList.remove('active');
+            }
+        });
+    }
+
+    // Smart specialist matching based on patient's story
+    function initSpecialistCards() {
+        const specialties = [
+            { id: 'general', name: 'Primary Care', icon: 'bi-heart-pulse', description: 'General health concerns' },
+            { id: 'cardiology', name: 'Cardiology', icon: 'bi-heart', description: 'Heart and vascular health' },
+            { id: 'dermatology', name: 'Dermatology', icon: 'bi-shield-plus', description: 'Skin conditions' },
+            { id: 'pediatrics', name: 'Pediatrics', icon: 'bi-emoji-smile', description: 'Child health' },
+            { id: 'womens-health', name: "Women's Health", icon: 'bi-gender-female', description: 'Reproductive health' },
+            { id: 'mental-health', name: 'Mental Health', icon: 'bi-people', description: 'Emotional wellbeing' },
+            { id: 'gastroenterology', name: 'Gastroenterology', icon: 'bi-bandaid', description: 'Digestive health' },
+            { id: 'neurology', name: 'Neurology', icon: 'bi-activity', description: 'Brain and nervous system' }
+        ];
+
+        const recommendedContainer = document.getElementById('recommendedSpecialists');
+        const allContainer = document.getElementById('allSpecialistsGrid');
         
-        // Animate first step entrance
-        gsap.from("#step1", {
-            x: "100%",
-            opacity: 0,
-            duration: 1,
-            ease: "power3.out",
-            delay: 0.3
+        // In a real app, this would be dynamically generated based on NLP analysis
+        const recommendedIds = ['general', 'cardiology', 'mental-health'];
+        
+        // Render recommended specialists
+        recommendedIds.forEach(id => {
+            const spec = specialties.find(s => s.id === id);
+            if (spec) {
+                recommendedContainer.appendChild(createSpecialistCard(spec));
+            }
         });
         
-        // Department card selection
-        elements.departmentCards.forEach(card => {
+        // Render all specialists
+        specialties.forEach(spec => {
+            allContainer.appendChild(createSpecialistCard(spec));
+        });
+        
+        // Set up selection handler
+        document.querySelectorAll('.specialist-card').forEach(card => {
             card.addEventListener('click', function() {
-                // Remove previous selections
-                elements.departmentCards.forEach(c => {
+                document.querySelectorAll('.specialist-card').forEach(c => {
                     c.classList.remove('selected');
-                    gsap.to(c, { scale: 1, duration: 0.3 });
                 });
                 
-                // Add selection to clicked card
                 this.classList.add('selected');
-                elements.selectedDepartment.value = this.dataset.dept;
+                document.getElementById('selectedDepartment').value = this.dataset.specialty;
+                document.getElementById('summarySpecialty').textContent = this.dataset.specialtyName;
                 
-                // Artistic micro-interaction
-                gsap.to(this, {
-                    scale: 0.95,
-                    duration: 0.2,
-                    yoyo: true,
-                    repeat: 1,
-                    ease: "power1.inOut"
-                });
+                // Enable continue button
+                document.getElementById('continueSpecialist').disabled = false;
+                
+                // Animate selection
+                animateCSS(this, 'pulse');
             });
         });
+    }
+
+    function createSpecialistCard(specialty) {
+        const card = document.createElement('div');
+        card.className = 'specialist-card';
+        card.dataset.specialty = specialty.id;
+        card.dataset.specialtyName = specialty.name;
+        card.innerHTML = `
+            <div class="specialist-icon text-primary">
+                <i class="bi ${specialty.icon}"></i>
+            </div>
+            <h6 class="mb-1">${specialty.name}</h6>
+            <small class="text-muted">${specialty.description}</small>
+        `;
+        return card;
+    }
+
+    // Date and time handling
+    function setupDateTimePicker() {
+        const dateInput = document.getElementById('appointmentDate');
+        const timeSelect = document.getElementById('appointmentTime');
         
-        // Navigation functions
-        function navigateSteps(current, next, direction) {
-            const currentStep = document.getElementById(`step${current}`);
-            const nextStep = document.getElementById(`step${next}`);
+        // Set minimum date to today
+        dateInput.min = new Date().toISOString().split('T')[0];
+        
+        // Generate time slots
+        function generateTimeSlots() {
+            timeSelect.innerHTML = '<option value="" selected disabled>Select a time</option>';
             
-            // Validate before proceeding
-            if (current === 1 && !elements.storyInput.value.trim()) {
-                gsap.to(elements.storyInput, {
-                    x: -5,
-                    duration: 0.1,
-                    repeat: 5,
-                    yoyo: true,
-                    onComplete: () => elements.storyInput.focus()
-                });
-                return;
-            }
+            // In a real app, this would check provider availability
+            const startHour = 9;
+            const endHour = 17;
+            const interval = 30;
             
-            if (current === 2 && !elements.selectedDepartment.value) {
-                gsap.to(elements.departmentCards, {
-                    y: -5,
-                    duration: 0.1,
-                    repeat: 5,
-                    yoyo: true
-                });
-                return;
-            }
-            
-            // Capture data between steps
-            if (next === 2) {
-                elements.patientStory.value = elements.storyInput.value;
-            }
-            
-            // Create artistic transition
-            const state = Flip.getState([currentStep, nextStep]);
-            
-            currentStep.classList.remove('active');
-            nextStep.classList.add('active');
-            
-            Flip.from(state, {
-                duration: 0.8,
-                ease: "power2.inOut",
-                absolute: true,
-                onStart: () => {
-                    gsap.set(nextStep, { x: direction === 'next' ? '100%' : '-100%', opacity: 0 });
-                },
-                onComplete: () => {
-                    gsap.to(nextStep, { x: '0%', opacity: 1, duration: 0.6 });
-                    gsap.to(currentStep, { 
-                        x: direction === 'next' ? '-100%' : '100%', 
-                        opacity: 0, 
-                        duration: 0.6 
-                    });
+            for (let hour = startHour; hour < endHour; hour++) {
+                for (let minute = 0; minute < 60; minute += interval) {
+                    const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                    const option = document.createElement('option');
+                    option.value = timeString;
+                    option.textContent = timeString;
+                    timeSelect.appendChild(option);
                 }
-            });
+            }
         }
         
-        // Event listeners
-        elements.continueStep1.addEventListener('click', () => navigateSteps(1, 2, 'next'));
-        elements.continueStep2.addEventListener('click', () => navigateSteps(2, 3, 'next'));
-        elements.backStep1.addEventListener('click', () => navigateSteps(2, 1, 'prev'));
-        elements.backStep2.addEventListener('click', () => navigateSteps(3, 2, 'prev'));
-    });
+        dateInput.addEventListener('change', function() {
+            if (this.value) {
+                generateTimeSlots();
+            }
+        });
+    }
+
+    // Form validation and progression
+    function validateAndNext(step) {
+        const currentStep = document.querySelector('.step.active');
+        
+        if (step === 2) {
+            const story = document.getElementById('patientStory').value.trim();
+            if (story.length < 10) {
+                showError('Please describe your symptoms in more detail (minimum 10 characters)');
+                return;
+            }
+            document.getElementById('patientStoryInput').value = story;
+            document.getElementById('summaryConcern').textContent = story.length > 50 ? 
+                `${story.substring(0, 50)}...` : story;
+            
+            // In a real app, we would analyze the story here to recommend specialists
+        }
+        
+        if (step === 3) {
+            if (!document.getElementById('selectedDepartment').value) {
+                showError('Please select a specialty before continuing');
+                return;
+            }
+        }
+        
+        nextStep(step);
+    }
+
+    function nextStep(step) {
+        const currentStep = document.querySelector('.step.active');
+        const nextStep = document.getElementById(`step${step}`);
+        
+        // Animate transition
+        animateCSS(currentStep, 'fadeOutRight').then(() => {
+            currentStep.classList.remove('active');
+            nextStep.classList.add('active');
+            animateCSS(nextStep, 'fadeInLeft');
+            updateProgress(step);
+            
+            // Focus first input in new step for accessibility
+            const firstInput = nextStep.querySelector('input, select, textarea');
+            if (firstInput) firstInput.focus();
+        });
+    }
+
+    function previousStep(step) {
+        const currentStep = document.querySelector('.step.active');
+        const prevStep = document.getElementById(`step${step}`);
+        
+        animateCSS(currentStep, 'fadeOutLeft').then(() => {
+            currentStep.classList.remove('active');
+            prevStep.classList.add('active');
+            animateCSS(prevStep, 'fadeInRight');
+            updateProgress(step);
+        });
+    }
+
+    // Enhanced error handling
+    function showError(message) {
+        const existingAlert = document.querySelector('.step.active .alert-danger');
+        if (existingAlert) existingAlert.remove();
+        
+        const alert = document.createElement('div');
+        alert.className = 'alert alert-danger alert-dismissible fade show mt-3 d-flex align-items-center';
+        alert.innerHTML = `
+            <i class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2"></i>
+            <div>${message}</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        
+        const currentCardBody = document.querySelector('.step.active .card-body');
+        currentCardBody.insertBefore(alert, currentCardBody.firstChild);
+        
+        // Animate error appearance
+        animateCSS(alert, 'shakeX');
+        
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => {
+            animateCSS(alert, 'fadeOut').then(() => alert.remove());
+        }, 5000);
+    }
+
+    // Helper animation function
+    function animateCSS(element, animation, prefix = 'animate__') {
+        return new Promise((resolve) => {
+            const animationName = `${prefix}${animation}`;
+            
+            element.classList.add(`${prefix}animated`, animationName);
+            
+            function handleAnimationEnd() {
+                element.classList.remove(`${prefix}animated`, animationName);
+                element.removeEventListener('animationend', handleAnimationEnd);
+                resolve();
+            }
+            
+            element.addEventListener('animationend', handleAnimationEnd);
+        });
+    }
+
+    // Load patient data if available
+    function loadPatientData() {
+        // In a real app, this would fetch from your backend
+        const patientData = {
+            name: "{{ current_user.full_name if current_user.is_authenticated else '' }}",
+            phone: "{{ current_user.phone if current_user.is_authenticated else '' }}",
+            email: "{{ current_user.email if current_user.is_authenticated else '' }}"
+        };
+        
+        if (patientData.name) document.getElementById('fullName').value = patientData.name;
+        if (patientData.phone) document.getElementById('phoneNumber').value = patientData.phone;
+        if (patientData.email) document.getElementById('email').value = patientData.email;
+    }
+
+    // Form validation setup
+    function setupFormValidation() {
+        const form = document.getElementById('appointmentForm');
+        
+        form.addEventListener('submit', function(e) {
+            if (!form.checkValidity()) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Show validation errors
+                form.classList.add('was-validated');
+                
+                // Scroll to first invalid field
+                const firstInvalid = form.querySelector(':invalid');
+                if (firstInvalid) {
+                    firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    animateCSS(firstInvalid, 'shakeX');
+                }
+            } else {
+                // Show confirmation before submit in a real app
+                // Could add a loading spinner here
+            }
+        }, false);
+    }
 </script>
 {% endblock %}

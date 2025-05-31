@@ -1,83 +1,125 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% block content %}
-<div class="container mt-5 py-xl-5" id="appointments">
-  <h2 class="text-primary mb-4">Manage Your Appointments</h2>
-
-  <!-- Upcoming & Past Appointments -->
-  <div class="accordion" id="appointmentsAccordion">
-    {% for appointment in appointments %}
-      <div class="accordion-item mb-3">
-        <h2 class="accordion-header" id="heading{{ loop.index }}">
-          <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ loop.index }}">
-            {{ appointment.appointment_date.utctime('%B %d, %Y') }} with Dr. {{ appointment.doctor.name }}
-          </button>
-        </h2>
-        <div id="collapse{{ loop.index }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#appointmentsAccordion">
-          <div class="accordion-body">
-            <p><strong>Description:</strong> {{ appointment.description }}</p>
-            <p><strong>Status:</strong> {{ appointment.status or 'Scheduled' }}</p>
-
-            <!-- Appointment Actions -->
-            <div class="d-flex flex-wrap gap-2 mt-3">
-              <a href="#" class="btn btn-outline-success btn-sm">Attend</a>
-              <a href="#" class="btn btn-outline-warning btn-sm">Reschedule</a>
-              <a href="#" class="btn btn-outline-danger btn-sm">Cancel</a>
-            </div>
-
-            {% if appointment.status == 'Completed' %}
-            <!-- Rating, Tip & Comment -->
-            <form class="mt-4">
-              <div class="mb-2">
-                <label for="rating{{ loop.index }}" class="form-label">Rate this Appointment</label>
-                <select id="rating{{ loop.index }}" name="rating" class="form-select">
-                  <option value="5">★★★★★ - Excellent</option>
-                  <option value="4">★★★★☆ - Good</option>
-                  <option value="3">★★★☆☆ - Average</option>
-                  <option value="2">★★☆☆☆ - Poor</option>
-                  <option value="1">★☆☆☆☆ - Terrible</option>
-                </select>
-              </div>
-              <div class="mb-2">
-                <label for="tip{{ loop.index }}" class="form-label">Tip (optional)</label>
-                <input type="number" min="0" class="form-control" id="tip{{ loop.index }}" name="tip" placeholder="Amount in USD">
-              </div>
-              <div class="mb-3">
-                <label for="comment{{ loop.index }}" class="form-label">Comment</label>
-                <textarea name="comment" id="comment{{ loop.index }}" class="form-control" rows="2" placeholder="Share your experience..."></textarea>
-              </div>
-              <button type="submit" class="btn btn-primary">Submit Feedback</button>
-            </form>
-            {% endif %}
-          </div>
-        </div>
-      </div>
-    {% else %}
-      <p class="text-muted">You have no appointments yet.</p>
-    {% endfor %}
-  </div>
-
-  <!-- Suggested Appointments -->
-  <div class="mt-5">
-    <h4 class="mb-3 text-secondary">Suggested Appointments</h4>
+<div class="container py-5">
     <div class="row">
-      {% for doctor in suggested_doctors %}
-      <div class="col-md-4">
-        <div class="card shadow-sm mb-3">
-          <div class="card-body">
-            <h5 class="card-title">Dr. {{ doctor.name }}</h5>
-            <p class="card-text text-muted">{{ doctor.speciality }}</p>
-            <a href="{{ url_for('user_dashboard.book_appointment') }}" class="btn btn-outline-primary btn-sm">Book Appointment</a>
-          </div>
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Appointment Details</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Appointment ID</h5>
+                            <p>{{ appointment.appointment_uid }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Status</h5>
+                            <span class="badge bg-{{ 'success' if appointment.status == 'confirmed' else 
+                                                  'warning' if appointment.status == 'scheduled' else 
+                                                  'danger' if appointment.status in ['cancelled', 'no-show'] else 
+                                                  'info' }}">
+                                {{ appointment.status|title }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Date & Time</h5>
+                            <p>{{ appointment.appointment_date.strftime('%A, %B %d, %Y at %I:%M %p') }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Duration</h5>
+                            <p>{{ appointment.duration }} minutes</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Department</h5>
+                            <p>{{ appointment.department or 'Not specified' }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Type</h5>
+                            <p>{{ appointment.appointment_type|title }}</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5>Reason for Visit</h5>
+                        <p>{{ appointment.reason or 'Not specified' }}</p>
+                    </div>
+
+                    {% if appointment.description %}
+                    <div class="mb-4">
+                        <h5>Additional Notes</h5>
+                        <p>{{ appointment.description }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if appointment.is_telemedicine() and appointment.meeting_link %}
+                    <div class="alert alert-info">
+                        <h5><i class="bi bi-camera-video-fill"></i> Telemedicine Details</h5>
+                        <p>Join your appointment using this link:</p>
+                        <a href="{{ appointment.meeting_link }}" class="btn btn-primary" target="_blank">
+                            Join Virtual Visit
+                        </a>
+                        {% if appointment.meeting_password %}
+                        <p class="mt-2">Meeting Password: <code>{{ appointment.meeting_password }}</code></p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    {% if appointment.cancellation_reason %}
+                    <div class="alert alert-warning">
+                        <h5>Cancellation Reason</h5>
+                        <p>{{ appointment.cancellation_reason }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if appointment.is_upcoming() and current_user.id == appointment.patient_id %}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button class="btn btn-outline-danger me-md-2" data-bs-toggle="modal" 
+                                data-bs-target="#cancelModal">
+                            Cancel Appointment
+                        </button>
+                        {% if appointment.is_telemedicine() %}
+                        <a href="{{ appointment.meeting_link }}" class="btn btn-primary">
+                            Join Now
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
-      </div>
-      {% endfor %}
     </div>
-  </div>
 </div>
 
-<!-- GSAP Animations -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-<script>
-
-</script>
+<!-- Cancel Appointment Modal -->
+<div class="modal fade" id="cancelModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cancel Appointment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('appointments.cancel_appointment', 
+                                                 appointment_uid=appointment.appointment_uid) }}">
+                <div class="modal-body">
+                    <p>Are you sure you want to cancel this appointment?</p>
+                    <div class="mb-3">
+                        <label for="cancelReason" class="form-label">Reason for cancellation</label>
+                        <textarea class="form-control" id="cancelReason" name="cancel_reason" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger">Confirm Cancellation</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

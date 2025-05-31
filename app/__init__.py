@@ -29,8 +29,14 @@ def create_app():
     app.config.from_object(Config)
 
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("SQLALCHEMY_DATABASE_URI")
+    # app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("SQLALCHEMY_DATABASE_URI")
      # Path for refresh tokens
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = (
+    'mssql+pyodbc://@KMC-HEALTH\\SQLEXPRESS/HealthDB?'
+    'driver=ODBC+Driver+17+for+SQL+Server&'
+    'trusted_connection=yes'
+)
 
     app.config['SQLACHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -39,6 +45,9 @@ def create_app():
     migrate.init_app(app)
     # jwt.init_app(app)
     csrf.init_app(app)
+
+    from app.commands.generate_key import generate_key  
+    app.cli.add_command(generate_key)
 
     from app.api import api
     app.register_blueprint(api, url_prefix='/api')
@@ -81,6 +90,7 @@ def create_app():
         from app.models.appointment import Appointment
         from app.models.prescription import Prescription
         from app.models.medical_record import MedicalRecord
+        from app.models.telemedicine_session import TelemedicineSession
         from app.models.payments import Payment
         db.create_all()
 
@@ -99,6 +109,7 @@ def create_app():
             "Admin": Admin,
             "Appointment": Appointment,
             "Prescription": Prescription,
+            "TelemdicineSession": TelemedicineSession,
             "Payment": Payment,
         }
 
@@ -110,7 +121,7 @@ def create_app():
     def inject_notification_count():
         from app.models.message import Message
         if current_user.is_authenticated:
-            unread_count = Message.query.filter_by(user_id=current_user.id, seen=False).count()
+            unread_count = Message.query.filter_by(receiver_id=current_user.id, seen=False).count()
             return dict(unread_notifications_count=unread_count)
         return {}
 
